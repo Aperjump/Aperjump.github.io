@@ -26,26 +26,26 @@ baseurl: # the subpath of your site, e.g. /blog
 title: Aperjump's Playground
 description: "Embrace your inner geek."
 keywords: 'Computer Science'
-author: Aperjump
-  name: Wang Wei
-  job_title: Student
-  location: Califonia
-  email: wangwei_aperion@163.com
-  social_links:
-    - name: facebook
-      url:
-    - name: github
-      url: https://github.com/Aperjump/
-    - name: instagram
-      url:
-    - name: linkedin
-      url:
-    - name: stackoverflow
-      url:
-    - name: twitter
-      url: 
-    - name: vk
-      url:
+author: Wang Wei
+name: Aperjump
+job_title: Student
+location: Califonia
+email: wangwei_aperion@163.com
+social_links:
+  - name: facebook
+    url:
+  - name: github
+    url: https://github.com/Aperjump
+  - name: instagram
+    url:
+  - name: linkedin
+    url:
+  - name: stackoverflow
+    url:
+  - name: twitter
+    url: 
+  - name: vk
+    url:
 home:
   section1: <h1>Simple Texutre</h1>
   section2: <h2>A gem-based responsive simple texture styled Jekyll theme</h2>
