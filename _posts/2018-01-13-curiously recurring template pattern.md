@@ -151,3 +151,14 @@ return std::conj (t)
 ```
 This is one instantialization path of `conj(t)` function. But it's main idea is find return type and parameter type of the function by calling one template function. 
 Through its parameter type`vector<complex<double> >`, this function instantialize one `vector_unary_traits`, and finally find the correct return type. 
+The `CRTP` pattern here mainly provides interface.
+```
+template<class E> 
+    BOOST_UBLAS_INLINE
+    typename vector_unary_traits<E, scalar_conj<typename E::value_type> >::result_type
+    conj (const vector_expression<E> &e) {
+        typedef BOOST_UBLAS_TYPENAME vector_unary_traits<E, scalar_conj<BOOST_UBLAS_TYPENAME E::value_type> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+```
+This function receive `vector_expression<E>` variable and use it to deduct its return type. Also `vector_expression` defines one hierachy of class types. 
