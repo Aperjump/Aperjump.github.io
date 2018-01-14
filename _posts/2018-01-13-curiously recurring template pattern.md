@@ -9,7 +9,7 @@ redirect_from:
 ---
 
 ## 1. Intro to the series
-Hi, I'm a finance student but with great enthusiam in C++. Currently, I'm reading the source code of `Boost.uBLAS`. Starting with `vector_expression.hpp` and `vector.hpp`, I find the authors repeatedly using **CRTP(curiously recurring template pattern)** to define `vector`, `unit_vector` and `zero_vector` class. So, I believe it necessary to collect more information on this and make a brief summary. 
+Hi, I'm a finance student but have great enthusiam in C++. Currently, I'm reading the source code of `Boost.uBLAS`. Starting with `vector_expression.hpp` and `vector.hpp`, I find the authors repeatedly using **CRTP(curiously recurring template pattern)** to define `vector`, `unit_vector` and `zero_vector` class. So, I believe it necessary to collect more information on this and make a brief summary. 
 This blog series will focuse on different implementation of `Boost.uBLAS` library and potential method to accelerate it. Most of the source code comes from the `boost-1.29.0`, the first version of `Boost.uBLAS`, and at the end, I will compare its differences with later version.
 The source code can be found [here](https://github.com/boostorg/ublas/releases?after=boost-1.34.0-beta1).
 ## 2. CRTP
@@ -80,24 +80,24 @@ Another way to achieve polymorphism is what we call **dynamic polymorphism**, bu
 template <typename T>
 class Base
 {
-    public:
-        void method() {
-            static_cast<T*>(this)->method();
-        }
+public:
+    void method() {
+        static_cast<T*>(this)->method();
+    }
 };
 class Derived1 : public Base<Derived1>
 {
-    public:
-        void method() {
-            std::cout << "Derived1 method" << std::endl;
-        }
+public:
+    void method() {
+        std::cout << "Derived1 method" << std::endl;
+    }
 };
 class Derived2 : public Base<Derived2>
 {
-    public:
-        void method() {
-            std::cout << "Derived2 method" << std::endl;
-        }
+public:
+    void method() {
+        std::cout << "Derived2 method" << std::endl;
+    }
 };
 int main()
 {
@@ -108,3 +108,46 @@ int main()
     return 0;
 }
 ```
+I'd like to quote some words from [Jonathan Boccara](https://www.fluentcpp.com/2017/05/16/what-the-crtp-brings-to-code/), who said:
+
+> 
+With the CRTP the situation is radically different. The derived class does not express the fact it “is a” base class. Rather, it expands its interface by inherting from the base class, in order to add more functionality. In this case it makes sense to use the derived class directly, and to never use the base class.
+Therefore the base class is not the interface, and the derived class is not the implementation. Rather, it is the other way around: the base class uses the derived class methods . In this regard, **the derived class offers an interface to the base class**. This illustrates again the fact that inheritance in the context of the CRTP can express quite a different thing from classical inheritance.
+
+## 3. Usage in `Boost.uBLAS`
+```
+int main () {
+    using namespace boost::numeric::ublas;
+    vector<std::complex<double> > v (3);
+    for (int i = 0; i < v.size (); ++ i) 
+        v (i) = std::complex (i, i);
+    std::cout << conj (v) << std::endl;
+}
+--------------------------------------
+vector<std::complex<double> > 
+        | // class vector : public vector_expression<vector<T, A> >
+        | // T = complex<double>, A = unbounded_array<comeplex<double> >
+vector<std::complex<double> >::size_ = complex<double>
+        |
+conj(v)
+        | // typename vector_unary_traits<E, scalar_conj<typename E::value_type> >::result_type conj (const vector_expression<E> &e)
+typedef BOOST_UBLAS_TYPENAME vector_unary_traits<E, scalar_conj<BOOST_UBLAS_TYPENAME E::value_type> >::expression_type expression_type;
+        | // E = vector<complex<duoble> >
+vector_unary_traits<E, scalar_conj<typename E::value_type> >
+        | // E::value_type = complex<T>
+typedef vector_unary<typename E::const_closure_type, F> expression_type;
+        | // in `template<class E, class F> vector_unary_traits`
+        | // F = scalar_conj<E::value_type>
+scalar_conj<complex<double> >
+        | //     struct scalar_conj: public scalar_unary_functor<T> {
+        | //     typedef typename scalar_unary_functor<T>::argument_type argument_type;
+        | //    typedef typename scalar_unary_functor<T>::result_type result_type;
+        | //    result_type operator () (argument_type t) const {
+        | //    return type_traits<result_type>::conj(t);
+        | //};
+struct type_traits<std::complex<double> > // traits Specialization
+        | typeof(t) = complex<double>
+return std::conj (t)
+```
+This is one instantialization path of `conj(t)` function. But it's main idea is find return type and parameter type of the function by calling one template function. 
+Through its parameter type`vector<complex<double> >`, this function instantialize one `vector_unary_traits`, and finally find the correct return type. 
