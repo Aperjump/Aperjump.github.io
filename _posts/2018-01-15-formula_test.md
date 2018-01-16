@@ -8,13 +8,15 @@ redirect_from:
   - /2018/01/15/
 ---
 
-#### 1. 设$x\sim N(\mu, \Sigma)$,其中$x = \begin{matrix} (x_1 , x_2 ,\cdots,x_p)\end{matrix}'$, $\mu = \begin{matrix}(\mu_1, \mu_2,\cdots, \mu_p)\end{matrix}'$, $\Sigma = \begin{matrix}diag(\sigma_1^2, \sigma_2^2, \cdots, \sigma_p^2)\end{matrix}$,试证$x_1, x_2, \cdots, x_p$相互独立
+#### 1. problem 1
+设$x\sim N(\mu, \Sigma)$,其中$x = \begin{matrix} (x_1 , x_2 ,\cdots,x_p)\end{matrix}'$, $\mu = \begin{matrix}(\mu_1, \mu_2,\cdots, \mu_p)\end{matrix}'$, $\Sigma = \begin{matrix}diag(\sigma_1^2, \sigma_2^2, \cdots, \sigma_p^2)\end{matrix}$,试证$x_1, x_2, \cdots, x_p$相互独立
 
 由性质（6）可知：对于多元正态变量而言，其子向量之间互不相关与相互独立是等价的，所以证明$x_1, x_2, \cdots, x_p$之间相互独立转化为证明$x_1, x_2, \cdots, x_p$之间不相关。
 $$Cov(x_i,x_j) = \Sigma_{ij}$$
 由于$\Sigma = \begin{matrix}diag(\sigma_1^2, \sigma_2^2, \cdots, \sigma_p^2)\end{matrix}$，对于$i\neq j$，$\Sigma_{ij} = 0$所以$x_1, x_2, \cdots, x_p$之间不相关,故$x_1, x_2, \cdots, x_p$之间相互独立。
 
-#### 2. 设$x\sim N_{2p}(\mu, \Sigma)$，$x,\mu,\Sigma$的刨分如下：
+#### 2. problem 2
+设$x\sim N_{2p}(\mu, \Sigma)$，$x,\mu,\Sigma$的刨分如下：
 $$ 
 x = \left(
     \begin{array}{cc}
@@ -96,13 +98,15 @@ $$
 $$
 f(y) = f(x_1+x_2)f(x_1-x_2)
 $$
-3. 导出统计量$T^2 = n(C\bar{x} - \varphi)'(CSC')^{-1}(C\bar{x}-\varphi)$
+####3. problem 3
+导出统计量$T^2 = n(C\bar{x} - \varphi)'(CSC')^{-1}(C\bar{x}-\varphi)$
 由于$x = (x_1,x_2,\cdots,x_n)$取自正态总体$N(\mu, \Sigma)$则$Cx-\varphi\sim N(0, \Sigma)$并且根据Wishart分布的性质，
 $\sum(Cx-\varphi)(Cx-\varphi)'\sim W_p(n,C\Sigma C')$
 样本方差矩阵具有$(n-1)CSC'\sim W_p(n-1,C\Sigma C')$
 根据Hotelling分布的定义，有
 $$T^2 = n(Cx-\varphi)(CSC')(Cx-\varphi)'\sim T^2(p, n-1)$$
-4. 检验甲乙两种品牌之间各个指标是否存在显著的差异
+####4. problem 4
+检验甲乙两种品牌之间各个指标是否存在显著的差异
 
     A <- c(11, 33, 20, 18, 22, 18, 27, 28, 26, 23, 
            15, 31, 27, 18, 22, 18, 21, 23, 18, 16,
