@@ -12,6 +12,7 @@ gems:
   - jekyll-sitemap
 
 markdown: kramdown
+mathjax: true
 kramdown:
   auto_id_prefix: 'heading-'
   smart_quotes: ["apos", "apos", "quot", "quot"]
