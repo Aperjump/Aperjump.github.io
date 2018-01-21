@@ -29,5 +29,43 @@ v1.data_.data_ = (boost::numeric::ublas::unbounded_array<float>::pointer) 0x69c0
 Copy assginment operator v1 = v2
 data () = v.data ();
 --------------------------------
-
+v1.data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe048: {size_ = 3, data_ = 0x69c030}
+v2_data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe068: {size_ = 3, data_ = 0x69c050}
+```
+This copy assignment actually calls 
+`unbounded_array &operator = (const unbounded_array &a)`, then 
+`std::copy (a.data_, a.data_ + a.size_, data_);`
+**vector copy assignment operator is deep copy.**
+```
+--------------------------------
+assign temporary 
+swap(v)
+--------------------------------
+v1.data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe048: {size_ = 3, data_ = 0x69c050}
+v2_data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe068: {size_ = 3, data_ = 0x69c030}
+```
+`assign_temporary` and `swap` function will only change pointers in two `data_`.
+```
+--------------------------------
+v2 = -v1
+--------------------------------
+v1.data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe048: {size_ = 3, data_ = 0x69c050}
+v2_data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe068: {size_ = 3, data_ = 0x69c030}
+```
+Here will use the first expression template. After a long template parameter deduction, we can find its expression type only changes result type. 
+```
+typename vector_unary_traits<E, scalar_negate<typename E::value_type> >::result_type 
+operator - (const vector_expression<E> &e) {
+    typedef typename vector_unary_traits<E, scalar_negate<typename E::value_type> >::expression_type expression_type;
+    return expression_type(e());
+}
+template<class E, class F>
+struct vector_unary_traits {
+    typedef vector_unary<typename E::const_closure_type, F> expression_type;
+#ifdef BOOST_UBLAS_USE_ET
+    typedef expression_type result_type; 
+#else
+    typedef vector<typename F::result_type> result_type;
+#endif
+};
 ```
