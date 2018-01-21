@@ -49,8 +49,8 @@ v2_data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounde
 --------------------------------
 v2 = -v1
 --------------------------------
-v1.data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe048: {size_ = 3, data_ = 0x69c050}
-v2_data_ = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> >::const_array_type &) @0x7fffffffe068: {size_ = 3, data_ = 0x69c030}
+v2 = (boost::numeric::ublas::vector<float, boost::numeric::ublas::unbounded_array<float> > &) @0x7fffffffe060: {<boost::numeric::ublas::vector_expression<boost::numeric::ublas::vector<float, boost::numer
+ic::ublas::unbounded_array<float> > >> = {<No data fields>}, size_ = 3, data_ = {size_ = 3, data_ = 0x69c050}}
 ```
 Here will use the first expression template. After a long template parameter deduction, we can find its expression type only changes result type. 
 ```
@@ -80,4 +80,34 @@ struct scalar_negate:
         return - t;
     }
 };
+BOOST_UBLAS_INLINE
+const expression_type &operator () () const {
+    return *static_cast<const expression_type *> (this);
+}
 ```
+If we try to access `v2.data_.data_[1]`, you will find its value has changed to `-1`, which happens during the copy assignment operator through `std::copy`.
+
+```
+--------------------------------
+v2 = ublas::conj(v1);
+--------------------------------
+template<class E> 
+BOOST_UBLAS_INLINE
+typename vector_unary_traits<E, scalar_conj<typename E::value_type> >::result_type
+conj (const vector_expression<E> &e) {
+    typedef BOOST_UBLAS_TYPENAME vector_unary_traits<E, scalar_conj<BOOST_UBLAS_TYPENAME E::value_type> >::expression_type expression_type;
+    return expression_type (e ());
+}
+template<class T>
+struct scalar_conj:
+    public scalar_unary_functor<T> {
+    typedef typename scalar_unary_functor<T>::argument_type argument_type;
+    typedef typename scalar_unary_functor<T>::result_type result_type;
+
+    BOOST_UBLAS_INLINE
+    result_type operator () (argument_type t) const {
+        return type_traits<result_type>::conj (t);
+    }
+};
+```
+Here `scalar_conj` transfer the operation to a range of `type_traits` specialization. We can always find one in `/boost/numeric/ublas/traist.hpp` file.
