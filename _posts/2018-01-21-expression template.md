@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "The Annotated uBLAS Sources 2_Vector Expression Template"
-description: "my notes on reading uBLAS code1"
+description: "my notes on reading uBLAS code2"
 categories: [C++]
 tags: [C++, Template]
 redirect_from:
