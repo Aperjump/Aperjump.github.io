@@ -62,10 +62,22 @@ operator - (const vector_expression<E> &e) {
 template<class E, class F>
 struct vector_unary_traits {
     typedef vector_unary<typename E::const_closure_type, F> expression_type;
+    //typedef const vector_unary<E, F> const_closure_type;
 #ifdef BOOST_UBLAS_USE_ET
     typedef expression_type result_type; 
 #else
     typedef vector<typename F::result_type> result_type;
 #endif
+};
+template<class T>
+struct scalar_negate:
+    public scalar_unary_functor<T> {
+    typedef typename scalar_unary_functor<T>::argument_type argument_type;
+    typedef typename scalar_unary_functor<T>::result_type result_type;
+
+    BOOST_UBLAS_INLINE
+    result_type operator () (argument_type t) const {
+        return - t;
+    }
 };
 ```
