@@ -69,4 +69,36 @@ void operator () (V &v, const vector_expression<E> &e) {
 #endif
 }
 ```
-This is a `functor`, 
+This is a `functor`, and inside this `operator ()` function will call `operator () (v, e, storage_category ())`, this function call one of the two functions:
+```
+void iterating_assign (V &v, const vector_expression<E> &e) {
+    typedef typename V::difference_type difference_type;
+    difference_type size (BOOST_UBLAS_SAME (v.size (), e ().size ()));
+    typename V::iterator it (v.begin ());
+    BOOST_UBLAS_CHECK (v.end () - it == size, bad_size ());
+    typename E::const_iterator ite (e ().begin ());
+    BOOST_UBLAS_CHECK (e ().end () - ite == size, bad_size ());
+#ifndef BOOST_UBLAS_USE_DUFF_DEVICE
+    while (-- size >= 0)
+        functor_type () (*it, *ite), ++ it, ++ ite;
+#else
+    DD (size, 2, r, (functor_type () (*it, *ite), ++ it, ++ ite));
+#endif
+}
+// Indexing case
+template<class V, class E>
+// This function seems to be big. So we do not let the compiler inline it.
+// BOOST_UBLAS_INLINE
+void indexing_assign (V &v, const vector_expression<E> &e) {
+    typedef typename V::difference_type difference_type;
+    difference_type size (BOOST_UBLAS_SAME (v.size (), e ().size ()));
+#ifndef BOOST_UBLAS_USE_DUFF_DEVICE
+    for (difference_type i = 0; i < size; ++ i)
+        functor_type () (v (i), e () (i));
+#else
+    difference_type i (0);
+    DD (size, 2, r, (functor_type () (v (i), e () (i)), ++ i));
+#endif
+}
+```
+See? there is one loop inside, that sequential loop makes this assignment operator slow. 
