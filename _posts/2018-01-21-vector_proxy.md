@@ -102,3 +102,42 @@ void indexing_assign (V &v, const vector_expression<E> &e) {
 }
 ```
 See? there is one loop inside, that sequential loop makes this assignment operator slow. 
+```
+void evaluate_vector_assign (const F &f, V &v, const vector_expression<E> &e, dense_proxy_tag) {
+    typedef F functor_type;
+#ifdef BOOST_UBLAS_USE_INDEXING
+    indexing_vector_assign (functor_type (), v, e);
+#elif BOOST_UBLAS_USE_ITERATING
+    iterating_vector_assign (functor_type (), v, e);
+#else
+    typedef typename V::difference_type difference_type;
+    difference_type size (BOOST_UBLAS_SAME (v.size (), e ().size ()));
+    if (size >= BOOST_UBLAS_ITERATOR_THRESHOLD)
+        iterating_vector_assign (functor_type (), v, e);
+    else
+        indexing_vector_assign (functor_type (), v, e);
+#endif
+}
+```
+
+```
+-----------------------
+v1.assign_temporary(v2);
+-----------------------
+vector_range &assign_temporary (vector_range &vr) {
+    // FIXME: this is suboptimal.
+    // return *this = vr;
+    vector_assign<scalar_assign<value_type, value_type> > () (*this, vr);
+    return *this;
+}
+-----------------------
+v1 = v1 - v2;
+template<class E> 
+BOOST_UBLAS_INLINE
+typename vector_unary_traits<E, scalar_negate<typename E::value_type> >::result_type
+operator - (const vector_expression<E> &e) {
+    typedef BOOST_UBLAS_TYPENAME vector_unary_traits<E, scalar_negate<BOOST_UBLAS_TYPENAME E::value_type> >::expression_type expression_type;
+    return expression_type (e ());
+}
+```
+The remaining operation is just the same as other vector expression. 
