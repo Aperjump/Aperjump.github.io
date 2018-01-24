@@ -80,3 +80,76 @@ public:
     typedef unknown_storage_tag storage_category;
 };
 ```
+This `matrix_unary1_traits` type can nest multiple levels of expression. In `matrix_unary1`, `matrix_unary1<E,F>` is defined as `const_closure_type`, and through the overriding version of `operator ()`, `expression()` can initialize its value through calling `matrix_unary1::operator ()`. 
+```
+----------------
+m1 = conj(m2);
+----------------
+template<class E> 
+BOOST_UBLAS_INLINE
+typename matrix_unary1_traits<E, scalar_conj<typename E::value_type> >::result_type
+conj (const matrix_expression<E> &e) {
+    typedef BOOST_UBLAS_TYPENAME matrix_unary1_traits<E, scalar_conj<BOOST_UBLAS_TYPENAME E::value_type> >::expression_type expression_type;
+    return expression_type (e ());
+}
+----------------
+m1 = m1 + m2;
+----------------
+template<class E1, class E2>
+BOOST_UBLAS_INLINE
+typename matrix_binary_traits<E1, E2, scalar_plus<typename E1::value_type, 
+      typename E2::value_type> >::result_type
+operator + (const matrix_expression<E1> &e1, 
+            const matrix_expression<E2> &e2) {
+    typedef BOOST_UBLAS_TYPENAME matrix_binary_traits<E1, E2, scalar_plus<BOOST_UBLAS_TYPENAME E1::value_type, 
+      BOOST_UBLAS_TYPENAME E2::value_type> >::expression_type expression_type;
+    return expression_type (e1 (), e2 ());
+}
+-----------------
+m2 = ublas::trans(m1);
+----------------
+// (trans m) [i] [j] = m [j] [i]
+template<class E>
+BOOST_UBLAS_INLINE
+typename matrix_unary2_traits<E, scalar_identity<typename E::value_type> >::result_type
+trans (const matrix_expression<E> &e) {
+    typedef BOOST_UBLAS_TYPENAME matrix_unary2_traits<E, scalar_identity<BOOST_UBLAS_TYPENAME E::value_type> >::expression_type expression_type;
+    return expression_type (e ());
+}
+// Dispatcher
+template<class M, class E>
+BOOST_UBLAS_INLINE
+void operator () (M &m, const matrix_expression<E> &e) {
+    typedef typename matrix_assign_traits<BOOST_UBLAS_TYPENAME M::storage_category,
+      assign_category,
+      BOOST_UBLAS_TYPENAME E::const_iterator1::iterator_category,
+      BOOST_UBLAS_TYPENAME E::const_iterator2::iterator_category>::storage_category storage_category;
+    // FIXME: can't we improve the dispatch here?
+    // typedef typename E::orientation_category orientation_category;
+    typedef typename M::orientation_category orientation_category;
+#ifndef BOOST_UBLAS_ENABLE_SPECIALIZED_ASSIGN
+    operator () (m, e, storage_category (), orientation_category ());
+#else
+    evaluate_matrix_assign (functor_type (), m, e, storage_category (), orientation_category ());
+#endif
+}
+};
+void evaluate_matrix_assign (const F &f, M &m, const matrix_expression<E> &e, dense_proxy_tag, C c) {
+    typedef F functor_type;
+    typedef C orientation_category;
+#ifdef BOOST_UBLAS_USE_INDEXING
+    indexing_matrix_assign (functor_type (), m, e, orientation_category ());
+#elif BOOST_UBLAS_USE_ITERATING
+    iterating_matrix_assign (functor_type (), m, e, orientation_category ());
+#else
+    typedef typename M::difference_type difference_type;
+    difference_type size1 (BOOST_UBLAS_SAME (m.size1 (), e ().size1 ()));
+    difference_type size2 (BOOST_UBLAS_SAME (m.size2 (), e ().size2 ()));
+    if (size1 >= BOOST_UBLAS_ITERATOR_THRESHOLD &&
+        size2 >= BOOST_UBLAS_ITERATOR_THRESHOLD)
+        iterating_matrix_assign (functor_type (), m, e, orientation_category ());
+    else
+        indexing_matrix_assign (functor_type (), m, e, orientation_category ());
+#endif
+}
+```
