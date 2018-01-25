@@ -14,7 +14,7 @@ Fibonacci heap supports following operations(min-heap):
  - `new_heap()` constructor
  - `insert(x)` insert element `x` into heap
  - `union(H)` create one new heap combining `*this` and `H`
- - `min()` return a pointer to min
+ - `root()` return a pointer to min/max pointer on root
  - `extract()` delete min node, and return its pointer
  - `destroy(&Node)` delete element x from heap, note: x needs to be a pointer 
  - `search(x)` search element one by one, if use the `destory(x)` needs to find the element first
@@ -24,4 +24,41 @@ Fibonacci heap supports following operations(min-heap):
 
 ## 2. Implementation
 Fibonacci heap has a collection of min-heap ordered trees. 
-![Fibonacci3](https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG)
+
+![Fibonacci1](https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG)
+As we can see, each node should have a pointer pointing to parent and a pointer to child node. Each child node should link a circle using double linked list. 
+
+```
+template<typename K, typename V>
+typedef struct Node {
+public:
+  typedef V value_type;
+  typedef K key_type;
+  typedef Node<key_type,value_type>* pointer;
+  Node(): val(), key(), left_child(NULL), right_child(NULL), 
+    parent(NULL), child(NULL), degree(1), mark(false) { }
+  // When copy construct from another Node, I think it inappropriate 
+  // to copy Node pointers, if you really need to full copy Node, use 
+  // deep_copy method explicitly
+  Node(Node node) : val(node.val), key(node.key), left_child(NULL),
+    right_child(NULL), parent(NULL), child(NULL),
+    degree(1), mark(false) { } 
+  key_type get_key() {
+    return key;
+  }
+  value_type get_val() {
+    return val;
+  }
+  void copy(Node node);
+  void deep_copy(Node node);
+private:
+  value_type val;
+  key_type key;
+  pointer left_child;
+  pointer right_child;
+  pointer parent;
+  pointer child; // pointer to any of the child
+  int degree; // number of child
+  bool mark; // whether lost a child
+} Node;
+```
