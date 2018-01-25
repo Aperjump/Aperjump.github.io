@@ -145,3 +145,26 @@ const_reference operator () (size_type i, size_type j) const {
     return functor_type () (e1_, e2_, i, j);
 }
 ```
+
+### 4. from matrix_class to functor
+The last part is the evlaution of functor class. 
+With `matrix_matrix_prob` type, we will call its `operator ()`:
+```
+template<class E1, class E2>
+BOOST_UBLAS_INLINE
+result_type operator () (const matrix_expression<E1> &e1,
+     const matrix_expression<E2> &e2,
+     size_type i, size_type j) const {
+    size_type size = BOOST_UBLAS_SAME (e1 ().size2 (), e2 ().size1 ());
+    result_type t (0);
+#ifndef BOOST_UBLAS_USE_DUFF_DEVICE
+    for (size_type k = 0; k < size; ++ k)
+        t += e1 () (i, k) * e2 () (k, j);
+#else
+    size_type k (0);
+    DD (size, 4, r, (t += e1 () (i, k) * e2 () (k, j), ++ k));
+#endif
+    return t;
+}
+```
+This function will access each element in `e1` and `e2`, and sum them up to get one element. This is slow and I believe I can think of method to solve this performance bottleneck with GPU. 
