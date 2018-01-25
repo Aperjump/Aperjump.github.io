@@ -11,7 +11,6 @@ redirect_from:
 
 This passage I try to discuss the structure of `boost::ublas`. After analyzing many functionality of `vector` and `matrix`, I begin to grasp the idea of this project and try to break it down with an exaple of `ublas::prod`. 
 
-
 ```
 m3 = ublas::prod(m1, m2);
 ```
@@ -27,16 +26,17 @@ There are many auxillary parts besides these, like iterator, storage, and assign
 ### 1. from operation to functor
 `ublas:prob(matrix, matrix)` calls 
 ```
+// Dispatcher
 template<class E1, class E2>
 BOOST_UBLAS_INLINE
-typename matrix_vector_binary2_traits<typename E1::value_type, E1,
-      typename E2::value_type, E2>::result_type
-prod (const vector_expression<E1> &e1,
+typename matrix_matrix_binary_traits<typename E1::value_type, E1,
+     typename E2::value_type, E2>::result_type
+prod (const matrix_expression<E1> &e1,
       const matrix_expression<E2> &e2) {
-    typedef BOOST_UBLAS_TYPENAME matrix_vector_binary2_traits<BOOST_UBLAS_TYPENAME E1::value_type, E1,
-      BOOST_UBLAS_TYPENAME E2::value_type, E2>::storage_category storage_category;
-    typedef BOOST_UBLAS_TYPENAME matrix_vector_binary2_traits<BOOST_UBLAS_TYPENAME E1::value_type, E1,
-      BOOST_UBLAS_TYPENAME E2::value_type, E2>::orientation_category orientation_category;
+    typedef BOOST_UBLAS_TYPENAME matrix_matrix_binary_traits<BOOST_UBLAS_TYPENAME E1::value_type, E1,
+     BOOST_UBLAS_TYPENAME E2::value_type, E2>::storage_category storage_category;
+    typedef BOOST_UBLAS_TYPENAME matrix_matrix_binary_traits<BOOST_UBLAS_TYPENAME E1::value_type, E1,
+     BOOST_UBLAS_TYPENAME E2::value_type, E2>::orientation_category orientation_category;
     return prod (e1, e2, storage_category (), orientation_category ());
 }
 ```
@@ -44,14 +44,14 @@ Scary at first, but this function only add two paramters `storage_category` and 
 ```
 template<class E1, class E2>
 BOOST_UBLAS_INLINE
-typename matrix_vector_binary2_traits<typename E1::value_type, E1,
-      typename E2::value_type, E2>::result_type
-prod (const vector_expression<E1> &e1,
+typename matrix_matrix_binary_traits<typename E1::value_type, E1,
+     typename E2::value_type, E2>::result_type
+prod (const matrix_expression<E1> &e1,
       const matrix_expression<E2> &e2,
       unknown_storage_tag,
-      column_major_tag) {
-    typedef BOOST_UBLAS_TYPENAME matrix_vector_binary2_traits<BOOST_UBLAS_TYPENAME E1::value_type, E1,
-      BOOST_UBLAS_TYPENAME E2::value_type, E2>::expression_type expression_type;
+      unknown_orientation_tag) {
+    typedef BOOST_UBLAS_TYPENAME matrix_matrix_binary_traits<BOOST_UBLAS_TYPENAME E1::value_type, E1,
+     BOOST_UBLAS_TYPENAME E2::value_type, E2>::expression_type expression_type;
     return expression_type (e1 (), e2 ());
 }
 ```
@@ -62,19 +62,21 @@ In previous passage, I have seen this function multiple times, and they share so
 What does traits look like:
 ```
 template<class T1, class E1, class T2, class E2>
-struct matrix_vector_binary2_traits {
+struct matrix_matrix_binary_traits {
     typedef unknown_storage_tag storage_category;
-    typedef column_major_tag orientation_category;
+    typedef unknown_orientation_tag orientation_category;
     typedef typename promote_traits<T1, T2>::promote_type promote_type;
-    typedef matrix_vector_binary2<typename E1::const_closure_type,
-      typename E2::const_closure_type,
-      matrix_vector_prod2<T1, T2, promote_type> > expression_type;
+    typedef matrix_matrix_binary<typename E1::const_closure_type,
+     typename E2::const_closure_type,
+     matrix_matrix_prod<T1, T2, promote_type> > expression_type;
 #ifdef BOOST_UBLAS_USE_ET
     typedef expression_type result_type;
 #else
-    typedef vector<promote_type> result_type;
+    typedef matrix<promote_type> result_type;
 #endif
 };
 ```
 Two main features is `promote_traits` and `expression_type`. The first one is simpler, and it converts two `value_type` to one larger type, such as one float type and one double will promoted to double. 
 `eexpression_type` is a recursive definition, cause `const_closure` type is just the expression type itself. and with `matrix_vector_binary2`, it treats the last type `matrix_vector_prod2<T1, T2, promote_type>` a functor. 
+### 2. from functor to binary/unary class
+Here, we have finished the type deduction step for compiler, and need to initialize some real classes. 
