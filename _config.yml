@@ -46,14 +46,14 @@ social_links:
     url: 
   - name: vk
     url:
-#home:
-#  section1: <h1>Simple Texutre</h1>
-#  section2: <h2>A gem-based responsive simple texture styled Jekyll theme</h2>
-#  section3: <div class="social-links"><a class="ico-github btn" href="https://github.com/Aperjump/Aperjump.github.io" title="Aperjump's Playground"></a></div>
-#blog:
-#  cc_license: # A link to CC License of your choice, e.g. http://creativecommons.org/licenses/by-sa/4.0/.
-#  cc_license_image: # An image of your CC License, e.g. /assets/images/theme/cc-by-sa.png
-#  footer_content: A gem-based responsive simple texture styled Jekyll theme.
+home:
+  section1: <h1>Aperjump's Playground</h1>
+  section2: <h2>A gem-based responsive simple texture styled Jekyll theme</h2>
+  section3: <div class="social-links"><a class="ico-github btn" href="https://github.com/Aperjump/Aperjump.github.io" title="Aperjump's Playground"></a></div>
+blog:
+  cc_license: # A link to CC License of your choice, e.g. http://creativecommons.org/licenses/by-sa/4.0/.
+  cc_license_image: # An image of your CC License, e.g. /assets/images/theme/cc-by-sa.png
+  footer_content: A gem-based responsive simple texture styled Jekyll theme.
 
 disqus:
   shortname:
