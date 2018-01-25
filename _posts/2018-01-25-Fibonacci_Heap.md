@@ -24,4 +24,4 @@ Fibonacci heap supports following operations(min-heap):
 
 ## 2. Implementation
 Fibonacci heap has a collection of min-heap ordered trees. 
-![Fibonacci2](../_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG)
+![Fibonacci3](https://github.com/Aperjump/Aperjump.github.io/blob/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG)
