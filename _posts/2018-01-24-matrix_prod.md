@@ -21,7 +21,7 @@ m3 = ublas::prod(m1, m2);
 - unary, binary functor
 - operation
 
-There are many auxillary parts besides these, like iterator, storage, and assignment. And I will try to group them together to form a big picture. 
+There are many auxillary parts besides these, like iterator, storage, and assignment. Since their implementation implies lower-level facilities, I will not discuss them in great detail and leave them to readers. 
 
 ### 1. from operation to functor
 `ublas:prob(matrix, matrix)` calls 
@@ -40,7 +40,7 @@ prod (const matrix_expression<E1> &e1,
     return prod (e1, e2, storage_category (), orientation_category ());
 }
 ```
-Scary at first, but this function only add two paramters `storage_category` and `orientation_category()` to `prob`. Next, our leading actor comes in:
+Though Scary at first, this function only add two paramters `storage_category` and `orientation_category()` to `prob`. Next, our leading actor comes in:
 ```
 template<class E1, class E2>
 BOOST_UBLAS_INLINE
@@ -55,9 +55,9 @@ prod (const matrix_expression<E1> &e1,
     return expression_type (e1 (), e2 ());
 }
 ```
-In previous passage, I have seen this function multiple times, and they share some common property:
+In previous passage, I have seen this function multiple times, and they share some common properties:
 1. use `traits` to determine `expression_type` and `result_type`.
-2. return one `expression_type`, and it plays the evaluation part. 
+2. return one `expression_type`, and it doesn't have  evaluation function. 
 
 What does traits look like:
 ```
@@ -76,8 +76,9 @@ struct matrix_matrix_binary_traits {
 #endif
 };
 ```
-Two main features is `promote_traits` and `expression_type`. The first one is simpler, and it converts two `value_type` to one larger type, such as one float type and one double will promoted to double. 
-`eexpression_type` is a recursive definition, cause `const_closure` type is just the expression type itself. and with `matrix_vector_binary2`, it treats the last type `matrix_vector_prod2<T1, T2, promote_type>` a functor. 
+Two main features is `promote_traits` and `expression_type`. The first one is simpler, since it converts two `value_type` to one larger type, for example one float type and one double type will promoted to double. 
+`expression_type` is a recursive definition, cause `const_closure` type is just the expression type itself. and with `matrix_vector_binary2`, it treats the last type `matrix_vector_prod2<T1, T2, promote_type>` a functor. 
+
 ### 2. from functor to binary/unary class
 Here, we have finished the type deduction step for compiler, and need to initialize some real classes. 
 As we have seen, `expression_type` is a `matrix_matrix_binary` class and this class has one `operator ()` which accepts two `matrix_expression` type. 
@@ -86,6 +87,7 @@ matrix_matrix_binary (const expression1_type &e1, const expression2_type &e2):
     e1_ (e1), e2_ (e2) {}
 ```
 This two copy assignment operator will not actually do the copy work, their evaluation happens when assigned to the left hand side `matrix`. 
+
 ### 3. from binary/unary class to matrix class 
 This function will do the rest part:
 ```
