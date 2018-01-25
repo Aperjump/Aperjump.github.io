@@ -9,7 +9,7 @@ redirect_from:
 ---
 ## Matrix Prod
 
-In this passage I will try to discuss the structure of `boost::ublas`. After analyzing many functionality of `vector` and `matrix`, I begin to grasp the idea of this project and try to break it down with an exaple of `ublas::prod`. 
+In this blog I will try to discuss the structure of `boost::ublas`. After analyzing many functionality of `vector` and `matrix`, I begin to grasp the idea of this project and try to break it down with an exaple of `ublas::prod`. 
 
 ```
 m3 = ublas::prod(m1, m2);
