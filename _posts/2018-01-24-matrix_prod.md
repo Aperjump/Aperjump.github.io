@@ -80,3 +80,10 @@ Two main features is `promote_traits` and `expression_type`. The first one is si
 `eexpression_type` is a recursive definition, cause `const_closure` type is just the expression type itself. and with `matrix_vector_binary2`, it treats the last type `matrix_vector_prod2<T1, T2, promote_type>` a functor. 
 ### 2. from functor to binary/unary class
 Here, we have finished the type deduction step for compiler, and need to initialize some real classes. 
+As we have seen, `expression_type` is a `matrix_matrix_binary` class and this class has one `operator ()` which accepts two `matrix_expression` type. 
+```
+matrix_matrix_binary (const expression1_type &e1, const expression2_type &e2): 
+    e1_ (e1), e2_ (e2) {}
+```
+This two copy assignment operator will not actually do the copy work, their evaluation happens when assigned to the left hand side `matrix`. 
+### 3. from binary/unary class to matrix class 
