@@ -55,6 +55,26 @@ prod (const vector_expression<E1> &e1,
     return expression_type (e1 (), e2 ());
 }
 ```
-In previous passage, I have seen this function multiple times, and they share one common interface:
+In previous passage, I have seen this function multiple times, and they share some common property:
 1. use `traits` to determine `expression_type` and `result_type`.
 2. return one `expression_type`, and it plays the evaluation part. 
+
+What does traits look like:
+```
+template<class T1, class E1, class T2, class E2>
+struct matrix_vector_binary2_traits {
+    typedef unknown_storage_tag storage_category;
+    typedef column_major_tag orientation_category;
+    typedef typename promote_traits<T1, T2>::promote_type promote_type;
+    typedef matrix_vector_binary2<typename E1::const_closure_type,
+      typename E2::const_closure_type,
+      matrix_vector_prod2<T1, T2, promote_type> > expression_type;
+#ifdef BOOST_UBLAS_USE_ET
+    typedef expression_type result_type;
+#else
+    typedef vector<promote_type> result_type;
+#endif
+};
+```
+Two main features is `promote_traits` and `expression_type`. The first one is simpler, and it converts two `value_type` to one larger type, such as one float type and one double will promoted to double. 
+`eexpression_type` is a recursive definition, cause `const_closure` type is just the expression type itself. and with `matrix_vector_binary2`, it treats the last type `matrix_vector_prod2<T1, T2, promote_type>` a functor. 
