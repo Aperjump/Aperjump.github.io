@@ -48,7 +48,7 @@ social_links:
     url:
 home:
   section1: <h1>Aperjump's Playground</h1>
-  section2: <h2>A gem-based responsive simple texture styled Jekyll theme</h2>
+  section2: <h2>Embrace your inner geek</h2>
   section3: <div class="social-links"><a class="ico-github btn" href="https://github.com/Aperjump/Aperjump.github.io" title="Aperjump's Playground"></a></div>
 blog:
   cc_license: # A link to CC License of your choice, e.g. http://creativecommons.org/licenses/by-sa/4.0/.
