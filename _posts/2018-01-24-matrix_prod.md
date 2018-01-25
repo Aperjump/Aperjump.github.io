@@ -87,3 +87,61 @@ matrix_matrix_binary (const expression1_type &e1, const expression2_type &e2):
 ```
 This two copy assignment operator will not actually do the copy work, their evaluation happens when assigned to the left hand side `matrix`. 
 ### 3. from binary/unary class to matrix class 
+This function will do the rest part:
+```
+template<class AE>
+BOOST_UBLAS_INLINE
+matrix (const matrix_expression<AE> &ae):
+    size1_ (ae ().size1 ()), size2_ (ae ().size2 ()), data_ (ae ().size1 () * ae ().size2 ()) { 
+    matrix_assign<scalar_assign<value_type, BOOST_UBLAS_TYPENAME AE::value_type> > () (*this, ae);
+}
+```
+After copying all the data from the expression, it calls one `matrix_assign` function. We have seen this before and the rest comes easily:
+```
+// Dispatcher
+template<class M, class E>
+BOOST_UBLAS_INLINE
+void operator () (M &m, const matrix_expression<E> &e) {
+    typedef typename matrix_assign_traits<BOOST_UBLAS_TYPENAME M::storage_category,
+      assign_category,
+      BOOST_UBLAS_TYPENAME E::const_iterator1::iterator_category,
+      BOOST_UBLAS_TYPENAME E::const_iterator2::iterator_category>::storage_category storage_category;
+    // FIXME: can't we improve the dispatch here?
+    // typedef typename E::orientation_category orientation_category;
+    typedef typename M::orientation_category orientation_category;
+#ifndef BOOST_UBLAS_ENABLE_SPECIALIZED_ASSIGN
+    operator () (m, e, storage_category (), orientation_category ());
+#else
+    evaluate_matrix_assign (functor_type (), m, e, storage_category (), orientation_category ());
+#endif
+}
+```
+`evaluate_matrix_assign` did most of the work and transfer to `index_matrix_assign` or `iterating_matrix_assign`. 
+```
+void evaluate_matrix_assign (const F &f, M &m, const matrix_expression<E> &e, dense_proxy_tag, C c) {
+    typedef F functor_type;
+    typedef C orientation_category;
+#ifdef BOOST_UBLAS_USE_INDEXING
+    indexing_matrix_assign (functor_type (), m, e, orientation_category ());
+#elif BOOST_UBLAS_USE_ITERATING
+    iterating_matrix_assign (functor_type (), m, e, orientation_category ());
+#else
+    typedef typename M::difference_type difference_type;
+    difference_type size1 (BOOST_UBLAS_SAME (m.size1 (), e ().size1 ()));
+    difference_type size2 (BOOST_UBLAS_SAME (m.size2 (), e ().size2 ()));
+    if (size1 >= BOOST_UBLAS_ITERATOR_THRESHOLD &&
+        size2 >= BOOST_UBLAS_ITERATOR_THRESHOLD)
+        iterating_matrix_assign (functor_type (), m, e, orientation_category ());
+    else
+        indexing_matrix_assign (functor_type (), m, e, orientation_category ());
+#endif
+}
+```
+And inside its loop, this function will call `functor_type () (m (i, j), e () (i, j));`
+This fnction resides in `matrix_matirx_binary` class.
+```
+BOOST_UBLAS_INLINE
+const_reference operator () (size_type i, size_type j) const { 
+    return functor_type () (e1_, e2_, i, j);
+}
+```
