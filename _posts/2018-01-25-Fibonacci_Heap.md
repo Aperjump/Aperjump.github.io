@@ -7,6 +7,7 @@ tags: [C++, Algorithm]
 redirect_from:
   - /2018/01/24/
 ---
+
 ## 1. Supporting Operations
 Fibonacci heap supports following operations(min-heap):
 
@@ -20,6 +21,7 @@ Fibonacci heap supports following operations(min-heap):
  - `degrade_key(&Node, k)` degrade key value, first argument needs to be pointer
 
  Fibonacci heap has very desirable amortized cost: except `extract()`, `destroy(&Node)` have `O(lgn)` complexity, `search()` has `O(n)` complexity, others all maintain an `O(1)` complexity.
-![](../_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.png)
+
 ## 2. Implementation
 Fibonacci heap has a collection of min-heap ordered trees. 
+![Fibonacci2](../_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG)
