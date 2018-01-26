@@ -252,4 +252,64 @@ private:
   int maxdegree;
 };
 ```
-Its main difficulties is the `extract()` function. 
+Its main difficulties is the `extract()` function. This picture can briefly summarize its operation:
+![Fibonacci2](https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci2.PNG)
+![Fibonacci2](https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci3.PNG)
+And this is my test code:
+```
+#include <iostream>
+#include <cstdio>
+#include <cstdlib>
+#include "Fibo.h"
+int main() {
+  using namespace std;
+  Node<int, int> Node_1(3, 4);
+  printf("Node1 is (%d, %d)\n", Node_1.get_key(), Node_1.get_val());
+  Node<int, int> Node_2{ 2, 7 };
+  printf("Node2 is (%d, %d)\n", Node_2.get_key(), Node_2.get_val());
+  Node<int, int> Nodetest[] = { {1,3}, {4,5}, {7,8}, {7, 9}, {8, 3} };
+  Node<int, int> Nodetest_2[] = { {2,4}, {3,5}, {7,9}, {1,10} };
+  printf("Nodelist is (%d, %d)\n", Nodetest[2].get_key(), Nodetest[2].get_val());
+  Fibonacci_heap<int,int, min_heap<int> > fibo(&Node_1);
+  fibo.insert(&Node_2);
+  for (int i = 0; i < 5; i++)
+  {
+    fibo.insert(&Nodetest[i]);
+  }
+  printf("root of fibo is (%d,%d)\n", fibo.root()->get_key(), fibo.root()->get_val());
+  Fibonacci_heap<int, int, min_heap<int> > fibo2(&Node_1);
+  for (int i = 0; i < 4; i++)
+  {
+    fibo2.insert(&Nodetest_2[i]);
+  }
+  printf("root of fibo2 is (%d,%d)\n", fibo2.root()->get_key(), fibo2.root()->get_val());
+  fibo.combine(&fibo2);
+  printf("root of fibo is (%d,%d)\n", fibo.root()->get_key(), fibo.root()->get_val());
+  Node<int, int>* new_point = fibo.extract();
+  printf("new_point is (%d, %d)\n", new_point->get_key(), new_point->get_val());
+  Node<int, int>* new_point2 = fibo.extract();
+  printf("new_point is (%d, %d)\n", new_point2->get_key(), new_point2->get_val());
+  Fibonacci_heap_min<int, int> a(&Node_1);
+  a.insert(&Node_2);
+  for (int i = 0; i < 5; i++)
+  {
+    a.insert(&Nodetest[i]);
+  }
+  printf("root of a is (%d,%d)\n", a.root()->get_key(), a.root()->get_val());
+  Node<int, int>* new_point3 = a.extract();
+  printf("new_point3 is (%d, %d)\n", new_point3->get_key(), new_point3->get_val());
+
+}
+/*
+Node1 is(3, 4)
+Node2 is(2, 7)
+Nodelist is(7, 8)
+root of fibo is(1, 3)
+root of fibo2 is(1, 10)
+root of fibo is(1, 3)
+new_point is(1, 3)
+new_point is(2, 7)
+root of a is(1, 3)
+new_point3 is(1, 3)
+*/
+```
