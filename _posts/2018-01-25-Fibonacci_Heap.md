@@ -26,23 +26,39 @@ Fibonacci heap supports following operations(min-heap):
 Fibonacci heap has a collection of min-heap ordered trees. 
 
 ![Fibonacci1](https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG)
+
 As we can see, each node should have a pointer pointing to parent and a pointer to child node. Each child node should link a circle using double linked list. 
 
 ```
 template<typename K, typename V>
-typedef struct Node {
+class Node {
 public:
   typedef V value_type;
   typedef K key_type;
-  typedef Node<key_type,value_type>* pointer;
-  Node(): val(), key(), left_child(NULL), right_child(NULL), 
+  typedef Node<key_type, value_type>* pointer;
+  Node() : val(), key(), left_child(NULL), right_child(NULL),
     parent(NULL), child(NULL), degree(1), mark(false) { }
+  Node(key_type key, value_type val) : key(key), val(val), left_child(NULL), 
+    right_child(NULL),parent(NULL), child(NULL), degree(1), mark(false) { }
   // When copy construct from another Node, I think it inappropriate 
   // to copy Node pointers, if you really need to full copy Node, use 
   // deep_copy method explicitly
-  Node(Node node) : val(node.val), key(node.key), left_child(NULL),
+  template<typename K, typename V>
+  Node(Node<K,V>& node) : val(node.val), key(node.key), left_child(NULL),
     right_child(NULL), parent(NULL), child(NULL),
-    degree(1), mark(false) { } 
+    degree(1), mark(false) { }
+  pointer operator=(pointer other)
+  {
+    if (other == NULL)
+    {
+      val(0); key(0); left_child(NULL);
+      right_child(NULL); parent(NULL); child(NULL);
+    }
+    else {
+      copy(*other);
+    }
+    return *this;
+  }
   key_type get_key() {
     return key;
   }
@@ -51,7 +67,7 @@ public:
   }
   void copy(Node node);
   void deep_copy(Node node);
-private:
+
   value_type val;
   key_type key;
   pointer left_child;
@@ -60,5 +76,5 @@ private:
   pointer child; // pointer to any of the child
   int degree; // number of child
   bool mark; // whether lost a child
-} Node;
+};
 ```
