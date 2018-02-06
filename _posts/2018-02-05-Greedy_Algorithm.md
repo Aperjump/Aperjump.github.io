@@ -112,4 +112,5 @@ If this exists, we can swap $i$ and $j$, and after swap this solution has a maxi
 
 ### 1.3 Optimal Caching
 Consider a set of $U$ of $n$ pieces of data stored in main memory, we also have a cache that can hold $k<n$ pieces of data at any one time. Assuming that cache initially holds some set of $k$ items. A sequence of data items $D=d_1, d_2, ..., d_m$ drawn from U is presented to us. 
+
 When item $d_i$ is presented, we can access it very quickly if it is already in the cache, otherwise, we are required to bring it from main memory into cache and if the cache is full, to evict some other piece of data that is currently in the cache to make room for $d_i$. 
