@@ -36,7 +36,9 @@ We want to show that each of intervals in $A$ finishes at least as soon as the c
 **Proof**: contradiction
 If $A$ is not optimal, then an optimal set $O$ must have more requests, and $m > k$, since we already have $f(i_k) \leq f(j_k)$, there is another request $j_{k+1}$ in $O$. But this request finish after $f(i_k)$, thus our algorithm can still pick this request, thus contractdicts $m>k$. 
 A related problem: if we have many identical resources available and we wish to schedule all the requests using as few resources as possible. 
+
 ![greedy_1](https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-02-05-Greedy_Algorithm/greedy_1.PNG)
+
 Suppose we define the **depth** of a set of the interval to be the maximum number that pass over any single point on the time-line, we can calim: 
 *In any instance of Interval Partitioning, the number of resources needed is at least the depth of the set of intervals*
 We can now design a greedy algo that schedules all intervals using a number of resources equal to depth. 
