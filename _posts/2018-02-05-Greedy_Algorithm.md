@@ -73,8 +73,26 @@ for j = 1:n
 **statement 1: no interval ends up unlabeled**
 Consider one interval $I_j$, and suppose there are t intervals earlier in the sorted order that overlap it. 
 These t intervals with $I_j$ form a set of $t+1$ intervals that all pass over a common point in time, which is bounded by $t+1 \leq d$.
-
+------------------------------
 **statement 2: no two overlapping intervals are assigned to the same label**
 If two are the same, during iteration, this label will be excluded. 
 
 ### 1.2 Exchange Argument
+A list of requests, each only has a dealine $d_i$, and requires a contiguous time interval $t_i$, but it is willing to be scheduled at any time before the deadline. 
+we can find following relationship:
+$$ f(i) = s(i) + t_i$$, and we can define *lateness* as $l_i = f(i) - d_i$. 
+Our goal in this optimization problem will be to schedule all requests, using nonoverlapping intervals to minimize the maximum latemness, $L = max_il_i$
+We can sort the jobs in increasing order of their deadlines $d_i$. 
+```
+Order the jobs in order of their deadlines
+Assume for simplicity of notation that d_1 <= ... <= d_n
+Initially, f = s
+Consider the jobs i = 1, ..., n in this order
+Assign job j to the time interval from s(i) = f to f(i) = f + t_i
+```
+**statement 1**: There is an optimal schedule with no idle time
+Our plan here is to gradually modify $O$, preserving its optimality at each step but eventually transforming it into a schedule that is identical to the schedule $A$ found by the greedy algorithm. 
+This approach we call it **exchange argument**
+We say that a schedule $A'$ has an nversion if a job $i$ with deadline $d_i$ is scheduled before another job $j$ with earlier deadline $d_j \leq d_j$. 
+**statement 2**: All schedules with no inversions and no idle time have the same maximum lateness.
+**statement 3** There is an optimal schedule that has no inversions and no idle time. 
