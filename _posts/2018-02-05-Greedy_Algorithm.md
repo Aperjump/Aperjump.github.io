@@ -96,3 +96,10 @@ This approach we call it **exchange argument**
 We say that a schedule $A'$ has an nversion if a job $i$ with deadline $d_i$ is scheduled before another job $j$ with earlier deadline $d_j \leq d_j$. 
 **statement 2**: All schedules with no inversions and no idle time have the same maximum lateness.
 **statement 3** There is an optimal schedule that has no inversions and no idle time. 
+If $O$ has an inversion, then there is a pair of jobs $i$ and $j$ such that $j$ is $d_j < d_i$
+If this exists, we can swap $i$ and $j$, and after swap this solution has a maximum lateness no larger than $O$.
+**statement 4** The schedule A produced by the greedy algo has optimal maximum lateness L.
+
+### 1.3 Optimal Caching
+Consider a set of $U$ of $n$ pieces of data stored in main memory, we also have a cache that can hold $k<n$ pieces of data at any one time. Assuming that cache initially holds some set of $k$ items. A sequence of data items $D=d_1, d_2, ..., d_m$ drawn from U is presented to us. 
+When item $d_i$ is presented, we can access it very quickly if it is already in the cache, otherwise, we are required to bring it from main memory into cache and if the cache is full, to evict some other piece of data that is currently in the cache to make room for $d_i$. 
