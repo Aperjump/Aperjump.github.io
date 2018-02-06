@@ -34,13 +34,14 @@ The core idea of the proof is to show that for each step, our choice can be bett
 Let $i_1, ..., i_k$ be the set of requests in $A$, and $j_1, ..., j_m$ in set $O$. 
 We want to show that each of intervals in $A$ finishes at least as soon as the corresponding interval in the set $O$.
 
-**statement 1: for all indices $r \leq k$, we have $f(i_r) \leq f(j_r)$**
+>>**statement 1: for all indices $r \leq k$, we have $f(i_r) \leq f(j_r)$**
 
 **Proof**: mathematical induction
 (1) for $r = 1$ holds
 (2) suppose $f(i_{r-1}) \leq f(j_{r-1})$, since $f(j_{r-1}) \leq s(j_r)$, so $f(i_{r-1}) \leq s(j_r)$. Thus the interval $j_r$ is in the set of available intervals. 
 And the algo selects the smallest finish time, thus $f(i_r) \leq f(j_r)$. 
-**statement 2: the greedy algorithm returns an optimal set $A$**.
+
+>>**statement 2: the greedy algorithm returns an optimal set $A$**.
 
 **Proof**: contradiction
 If $A$ is not optimal, then an optimal set $O$ must have more requests, and $m > k$, since we already have $f(i_k) \leq f(j_k)$, there is another request $j_{k+1}$ in $O$. 
@@ -71,11 +72,11 @@ for j = 1:n
     else 
         leave I_j unlabled
 ```
-**statement 1: no interval ends up unlabeled**
+>>**statement 1: no interval ends up unlabeled**
 Consider one interval $I_j$, and suppose there are t intervals earlier in the sorted order that overlap it. 
 These t intervals with $I_j$ form a set of $t+1$ intervals that all pass over a common point in time, which is bounded by $t+1 \leq d$.
 
-**statement 2: no two overlapping intervals are assigned to the same label**
+>>**statement 2: no two overlapping intervals are assigned to the same label**
 If two are the same, during iteration, this label will be excluded. 
 
 ### 1.2 Exchange Argument
@@ -93,20 +94,21 @@ Initially, f = s
 Consider the jobs i = 1, ..., n in this order
 Assign job j to the time interval from s(i) = f to f(i) = f + t_i
 ```
-**statement 1**: There is an optimal schedule with no idle time
+
+>>**statement 1**: There is an optimal schedule with no idle time
 
 Our plan here is to gradually modify $O$, preserving its optimality at each step but eventually transforming it into a schedule that is identical to the schedule $A$ found by the greedy algorithm. 
 This approach we call it **exchange argument**
 We say that a schedule $A'$ has an nversion if a job $i$ with deadline $d_i$ is scheduled before another job $j$ with earlier deadline $d_j \leq d_j$. 
 
-**statement 2**: All schedules with no inversions and no idle time have the same maximum lateness.
+>>**statement 2**: All schedules with no inversions and no idle time have the same maximum lateness.
 
-**statement 3** There is an optimal schedule that has no inversions and no idle time. 
+>>**statement 3** There is an optimal schedule that has no inversions and no idle time. 
 
 If $O$ has an inversion, then there is a pair of jobs $i$ and $j$ such that $j$ is $d_j < d_i$
 If this exists, we can swap $i$ and $j$, and after swap this solution has a maximum lateness no larger than $O$.
 
-**statement 4** The schedule A produced by the greedy algo has optimal maximum lateness L.
+>>**statement 4** The schedule A produced by the greedy algo has optimal maximum lateness L.
 
 ### 1.3 Optimal Caching
 Consider a set of $U$ of $n$ pieces of data stored in main memory, we also have a cache that can hold $k<n$ pieces of data at any one time. Assuming that cache initially holds some set of $k$ items. A sequence of data items $D=d_1, d_2, ..., d_m$ drawn from U is presented to us. 
