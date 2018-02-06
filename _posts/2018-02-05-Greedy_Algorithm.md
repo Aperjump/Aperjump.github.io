@@ -24,3 +24,6 @@ while (!R.isempty())
 end
 return A
 ```
+**Proof**
+Let `O` be the optimal set of intervals, and we compare `|A|` and `|O|`, since there may be multiple optimal solutions. This compare means the requests in set `A` is as much as elements in `O`. 
+The core idea of the proof is to show that for each step, our choice can be better than solution `O`.(We call this **step ahead**)
