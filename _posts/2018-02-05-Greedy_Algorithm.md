@@ -25,7 +25,7 @@ end
 return A
 ```
 **Proof**
-
+-----------------------
 Let $O$ be the optimal set of intervals, and we compare $|A|$ and $|O|$, since there may be multiple optimal solutions. 
 This compare means the requests in set $A$ is as much as elements in $O$. 
 
@@ -63,7 +63,8 @@ Let $d$ be the depth of the set of intervals.
 Sort the intervals by start time
 Let I_1, I_2, ..., I_n denote the intervals in this order
 for j = 1:n
-    for each interval I_t that precedes I_j in sorted order and overlaps it 
+    for each interval I_t that p
+    recedes I_j in sorted order and overlaps it 
         exclude the label of I_t from consideration for I_j
     if there is any label that has not been excluded then assign it to label I_j
     else 
@@ -72,6 +73,7 @@ for j = 1:n
 **statement 1: no interval ends up unlabeled**
 Consider one interval $I_j$, and suppose there are t intervals earlier in the sorted order that overlap it. 
 These t intervals with $I_j$ form a set of $t+1$ intervals that all pass over a common point in time, which is bounded by $t+1 \leq d$.
+
 **statement 2: no two overlapping intervals are assigned to the same label**
 If two are the same, during iteration, this label will be excluded. 
 
