@@ -1,8 +1,8 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="categories" content="[Algorithm]">
-<meta name="description" content="&quot;Greedy Algorithm&quot;">
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="tags" content="[Algorithm]">
+<meta name="layout" content="post">
 <meta name="redirect_from" content="">
-<meta name="tags" content="[Algorithm]">
-<meta name="layout" content="post"><style>body {
+<meta name="description" content="&quot;Greedy Algorithm&quot;">
+<meta name="categories" content="[Algorithm]"><style>body {
   max-width: 980px;
   border: 1px solid #ddd;
   outline: 1300px solid #fff;
@@ -1041,18 +1041,14 @@ This compare means the requests in set $A$ is as much as elements in $O$. </p>
 <p>Let $i_1, &hellip;, i_k$ be the set of requests in $A$, and $j_1, &hellip;, j_m$ in set $O$. <br />
 We want to show that each of intervals in $A$ finishes at least as soon as the corresponding interval in the set $O$.</p>
 <blockquote>
-<blockquote>
 <p><strong>statement 1: for all indices $r \leq k$, we have $f(i_r) \leq f(j_r)$</strong></p>
-</blockquote>
 </blockquote>
 <p><strong>Proof</strong>: mathematical induction<br />
 (1) for $r = 1$ holds<br />
 (2) suppose $f(i_{r-1}) \leq f(j_{r-1})$, since $f(j_{r-1}) \leq s(j_r)$, so $f(i_{r-1}) \leq s(j_r)$. Thus the interval $j_r$ is in the set of available intervals. <br />
 And the algo selects the smallest finish time, thus $f(i_r) \leq f(j_r)$. </p>
 <blockquote>
-<blockquote>
 <p><strong>statement 2: the greedy algorithm returns an optimal set $A$</strong>.</p>
-</blockquote>
 </blockquote>
 <p><strong>Proof</strong>: contradiction<br />
 If $A$ is not optimal, then an optimal set $O$ must have more requests, and $m &gt; k$, since we already have $f(i_k) \leq f(j_k)$, there is another request $j_{k+1}$ in $O$. </p>
@@ -1077,13 +1073,11 @@ for j = 1:n
         leave I_j unlabled
 </code></pre></p>
 <blockquote>
-<blockquote>
 <p><strong>statement 1: no interval ends up unlabeled</strong><br />
 Consider one interval $I_j$, and suppose there are t intervals earlier in the sorted order that overlap it. <br />
 These t intervals with $I_j$ form a set of $t+1$ intervals that all pass over a common point in time, which is bounded by $t+1 \leq d$.</p>
 <p><strong>statement 2: no two overlapping intervals are assigned to the same label</strong><br />
 If two are the same, during iteration, this label will be excluded. </p>
-</blockquote>
 </blockquote>
 <h3 id="12-exchange-argument"><a name="user-content-12-exchange-argument" href="#12-exchange-argument" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>1.2 Exchange Argument</h3>
 <p>A list of requests, each only has a dealine $d_i$, and requires a contiguous time interval $t_i$, but it is willing to be scheduled at any time before the deadline. <br />
@@ -1098,26 +1092,60 @@ Consider the jobs i = 1, ..., n in this order
 Assign job j to the time interval from s(i) = f to f(i) = f + t_i
 </code></pre></p>
 <blockquote>
-<blockquote>
 <p><strong>statement 1</strong>: There is an optimal schedule with no idle time</p>
-</blockquote>
 </blockquote>
 <p>Our plan here is to gradually modify $O$, preserving its optimality at each step but eventually transforming it into a schedule that is identical to the schedule $A$ found by the greedy algorithm. <br />
 This approach we call it <strong>exchange argument</strong><br />
 We say that a schedule $A&rsquo;$ has an nversion if a job $i$ with deadline $d_i$ is scheduled before another job $j$ with earlier deadline $d_j \leq d_j$. </p>
 <blockquote>
-<blockquote>
 <p><strong>statement 2</strong>: All schedules with no inversions and no idle time have the same maximum lateness.</p>
 <p><strong>statement 3</strong> There is an optimal schedule that has no inversions and no idle time. </p>
-</blockquote>
 </blockquote>
 <p>If $O$ has an inversion, then there is a pair of jobs $i$ and $j$ such that $j$ is $d_j &lt; d_i$<br />
 If this exists, we can swap $i$ and $j$, and after swap this solution has a maximum lateness no larger than $O$.</p>
 <blockquote>
-<blockquote>
 <p><strong>statement 4</strong> The schedule A produced by the greedy algo has optimal maximum lateness L.</p>
-</blockquote>
 </blockquote>
 <h3 id="13-optimal-caching"><a name="user-content-13-optimal-caching" href="#13-optimal-caching" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>1.3 Optimal Caching</h3>
 <p>Consider a set of $U$ of $n$ pieces of data stored in main memory, we also have a cache that can hold $k&lt;n$ pieces of data at any one time. Assuming that cache initially holds some set of $k$ items. A sequence of data items $D=d_1, d_2, &hellip;, d_m$ drawn from U is presented to us. </p>
-<p>When item $d_i$ is presented, we can access it very quickly if it is already in the cache, otherwise, we are required to bring it from main memory into cache and if the cache is full, to evict some other piece of data that is currently in the cache to make room for $d_i$. </p></article></body></html>
+<p>When item $d_i$ is presented, we can access it very quickly if it is already in the cache, otherwise, we are required to bring it from main memory into cache and if the cache is full, to evict some other piece of data that is currently in the cache to make room for $d_i$. </p>
+<p><pre><code>When d_i needs to be brough into the cache,
+    evict the item that is needed the farthest into the future
+</code></pre><br />
+When it is time to evict item, choose the one that will be used as late as possible. <br />
+If d item is not the cache, bring it in step $i$, if there is a request for it.<strong>schedule reduced</strong><br />
+One can imagine an algo that produced schedules which are not reduced, by bringring initems in steps when they are not requested. </p>
+<blockquote>
+<p><strong>statement 1</strong> $\bar{S}$ is a reduced schedule that brings in at most as many items as the schedule $S$</p>
+</blockquote>
+<p>Consider an arbitrart seq $D$ of memory references, let $S_{FF}$ denote the schedule produced by farthest in future, let $S^*$ denote a schedule that incurs the minimum possible number of misses. </p>
+<blockquote>
+<p><strong>statement 2</strong> : Let $S$ be a reduced schedule that makes the same eviction decisions as $S_{FF}$ through the first $j$ items in the sequence, for a number $j$. Then there is a reduced schedule $S&rsquo;$ that makes the same eviction decisions as $S_{FF}$ through the first $j+1$ items, and incurs no more misses than $S$ does. </p>
+</blockquote>
+<p>This proof is verbose in book <strong>Algorithm Design</strong>, so I will omit it here. </p>
+<h3 id="14-shorted-path-in-a-graph"><a name="user-content-14-shorted-path-in-a-graph" href="#14-shorted-path-in-a-graph" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>1.4 Shorted Path in a Graph</h3>
+<p>We have a directed graph $G=(V,E)$, with a designated start node $s$, and we asssume $s$ has a path to every node in $G$. Each edge $e$ has a length $l_e \geq 0$. For a path $P$, the length of $P$ -denoted $l(P)$ is the sum of the lengths of all edges in $P$. Our goal is to determine the shortest ath from s to every other node in the graqph. <br />
+<pre><code>Dijkstra's Algo(G, l)
+Let S be the set of explored nodes
+    For each $u \in S$, we explore a distance $d(u)$
+Initially $S = {s}$, $d(s) = 0$
+While $S\neq V$
+    Select a node $v \in S$ with at least one eduge from $S$ for which $d'(v) = min_{e = (u,v);u \in S}(d(u) + l_e)$ is as small as possible
+    Add $v$ to $S$ and define $d(v) = d'(v)$
+EndWhile
+</code></pre><br />
+<strong>Proof</strong></p>
+<blockquote>
+<p><strong>statement 1</strong>: Consider the set S at any point in the algorithm&rsquo;s execution. For each $u \in S$, the path $P_u$ is a shortest $s-u$ path.</p>
+</blockquote>
+<p>Proof by induction:<br />
+When $|S| = 1$ is easy, suppose $|S| = k$, and we add new points $v$. Let $(u,v)$ be the final edge on our $P_v$. Consider another $s-v$ path, there must be some point $y$ not in set $S$, let $x$ be the node just before leave $S$. At iteration $k+1$, algo must consider adding $y$ to $S$ and reject $v$. This eans that there is no path from $s$ to $y$ through $x$ which is shorter than $(s,u) + (u,v)$</p>
+<p>Using a priority queue, Dijkstra&rsquo;s Algo can be implementented on a graph with n nodes and m edges to run in $O(m)$ time, plus the time for $n$ <code>ExtractMin</code> and $m$ <code>ChangeKey</code> operations. </p>
+<h3 id="16-minimum-spanning-tree"><a name="user-content-16-minimum-spanning-tree" href="#16-minimum-spanning-tree" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>1.6 Minimum Spanning Tree</h3>
+<p>We have a set of locations $V = {v_1, v_2, &hellip; , v_n}$, for certain pairs$(v_i,v_j)$, we may build a direct link between $v_i$ and $v_j$ for a certain cost $c(v_i,v_j) &gt; 0$. The problem is to find a subset of edges so that the graph is connected, and the total cost is as small as possible. We call a subset $T \subseteq E$ a spanning tree of $G$ if $(V, T)$ is a tree. </p>
+<p>(1) Kruskal&rsquo;s Algorithm:<br />
+Insert edges from E in order of increasing cost, if we meet a cycle discard that edge and move on.</p>
+<p>(2) Prim&rsquo;s Algorithm: <br />
+Mainatin a set $S \subseteq V$ on which a spanning tree has been constructed so far. In each iteration, we grow $S$ by one node, adding the node that minimize the cost $min_{e = (u,v):u \in S}C_e$ and include the edge $e = (u,v)$ in the spanning tree.</p>
+<p>(3) Reverse Delete Algorithm:<br />
+Start with the full graph $(V,E)$ and begin deleting edges in order of decreasing cost. As we get to each edge $e$, we delete it as long as doing so would not actually disconnect the graph we currently have. </p></article></body></html>

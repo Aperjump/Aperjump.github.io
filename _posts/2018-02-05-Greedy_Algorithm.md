@@ -114,3 +114,49 @@ If this exists, we can swap $i$ and $j$, and after swap this solution has a maxi
 Consider a set of $U$ of $n$ pieces of data stored in main memory, we also have a cache that can hold $k<n$ pieces of data at any one time. Assuming that cache initially holds some set of $k$ items. A sequence of data items $D=d_1, d_2, ..., d_m$ drawn from U is presented to us. 
 
 When item $d_i$ is presented, we can access it very quickly if it is already in the cache, otherwise, we are required to bring it from main memory into cache and if the cache is full, to evict some other piece of data that is currently in the cache to make room for $d_i$. 
+
+```
+When d_i needs to be brough into the cache,
+    evict the item that is needed the farthest into the future
+```
+When it is time to evict item, choose the one that will be used as late as possible. 
+If d item is not the cache, bring it in step $i$, if there is a request for it.**schedule reduced**
+One can imagine an algo that produced schedules which are not reduced, by bringring initems in steps when they are not requested. 
+
+>**statement 1** $\bar{S}$ is a reduced schedule that brings in at most as many items as the schedule $S$
+
+Consider an arbitrart seq $D$ of memory references, let $S_{FF}$ denote the schedule produced by farthest in future, let $S^*$ denote a schedule that incurs the minimum possible number of misses. 
+>**statement 2** : Let $S$ be a reduced schedule that makes the same eviction decisions as $S_{FF}$ through the first $j$ items in the sequence, for a number $j$. Then there is a reduced schedule $S'$ that makes the same eviction decisions as $S_{FF}$ through the first $j+1$ items, and incurs no more misses than $S$ does. 
+
+This proof is verbose in book **Algorithm Design**, so I will omit it here. 
+### 1.4 Shorted Path in a Graph
+We have a directed graph $G=(V,E)$, with a designated start node $s$, and we asssume $s$ has a path to every node in $G$. Each edge $e$ has a length $l_e \geq 0$. For a path $P$, the length of $P$ -denoted $l(P)$ is the sum of the lengths of all edges in $P$. Our goal is to determine the shortest ath from s to every other node in the graqph. 
+```
+Dijkstra's Algo(G, l)
+Let S be the set of explored nodes
+    For each $u \in S$, we explore a distance $d(u)$
+Initially $S = {s}$, $d(s) = 0$
+While $S\neq V$
+    Select a node $v \in S$ with at least one eduge from $S$ for which $d'(v) = min_{e = (u,v);u \in S}(d(u) + l_e)$ is as small as possible
+    Add $v$ to $S$ and define $d(v) = d'(v)$
+EndWhile
+```
+**Proof**
+>**statement 1**: Consider the set S at any point in the algorithm's execution. For each $u \in S$, the path $P_u$ is a shortest $s-u$ path.
+
+Proof by induction:
+When $|S| = 1$ is easy, suppose $|S| = k$, and we add new points $v$. Let $(u,v)$ be the final edge on our $P_v$. Consider another $s-v$ path, there must be some point $y$ not in set $S$, let $x$ be the node just before leave $S$. At iteration $k+1$, algo must consider adding $y$ to $S$ and reject $v$. This eans that there is no path from $s$ to $y$ through $x$ which is shorter than $(s,u) + (u,v)$
+
+Using a priority queue, Dijkstra's Algo can be implementented on a graph with n nodes and m edges to run in $O(m)$ time, plus the time for $n$ `ExtractMin` and $m$ `ChangeKey` operations. 
+
+### 1.6 Minimum Spanning Tree
+We have a set of locations $V = \{v_1, v_2, ... , v_n\}$, for certain pairs$(v_i,v_j)$, we may build a direct link between $v_i$ and $v_j$ for a certain cost $c(v_i,v_j) > 0$. The problem is to find a subset of edges so that the graph is connected, and the total cost is as small as possible. We call a subset $T \subseteq E$ a spanning tree of $G$ if $(V, T)$ is a tree. 
+
+(1) Kruskal's Algorithm:
+Insert edges from E in order of increasing cost, if we meet a cycle discard that edge and move on.
+
+(2) Prim's Algorithm: 
+Mainatin a set $S \subseteq V$ on which a spanning tree has been constructed so far. In each iteration, we grow $S$ by one node, adding the node that minimize the cost $min_{e = (u,v):u \in S}C_e$ and include the edge $e = (u,v)$ in the spanning tree.
+
+(3) Reverse Delete Algorithm:
+Start with the full graph $(V,E)$ and begin deleting edges in order of decreasing cost. As we get to each edge $e$, we delete it as long as doing so would not actually disconnect the graph we currently have. 
