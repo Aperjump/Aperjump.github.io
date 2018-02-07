@@ -25,7 +25,7 @@ end
 return A
 ```
 **Proof**
------------------------
+
 Let $O$ be the optimal set of intervals, and we compare $|A|$ and $|O|$, since there may be multiple optimal solutions. 
 This compare means the requests in set $A$ is as much as elements in $O$. 
 
@@ -160,3 +160,12 @@ Mainatin a set $S \subseteq V$ on which a spanning tree has been constructed so 
 
 (3) Reverse Delete Algorithm:
 Start with the full graph $(V,E)$ and begin deleting edges in order of decreasing cost. As we get to each edge $e$, we delete it as long as doing so would not actually disconnect the graph we currently have. 
+
+>**statement 1** Assume that all edge costs are distinct. Let $S$ be any subset of nodes that is neither empty nor equal to all of $V$, and let edge $e = (v,w)$ be the minimum cost edge with one end in $S$ and the other in $V-S$. Then every minimum spanning tree contains the edge $e$. 
+
+**Proof**: We can find another edge $e'$ satisfies the same property but $e' \geq e$, and we can swap $e$ for $e'$, and this time the overall connecting cost decreases. 
+The difficulty is to prove the new tree is still connected(the two vertice in the set is connected)
+
+>**statement 2** Kruskal's Algo produces a minimum spanning tree of $G$
+
+Consider any edge $e = (v,w)$ added by Krukal's Algo, and let $S$ be the set of all nodes to which $v$ has a path at the moment just before $e$ is added. Clearly $v \in S$, but $w \notin S$, since adding $e$ does not create a cycle. Moreover, no edge from $S$ TO $V-S$ has been encountered, this $e$ satisfy the following property. 
