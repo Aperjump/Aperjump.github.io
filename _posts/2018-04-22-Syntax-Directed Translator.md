@@ -1,3 +1,12 @@
+---
+layout: post
+title: "Syntax Directed Translator"
+description: "Syntax Directed Translator"
+categories: [Compiler]
+tags: [Compiler]
+redirect_from:
+  - /2018/04/22/
+---
 ## Syntax-Directed Translator
 **syntax**: the proper form of its program -> context-free grammar or BNF(Backus-Naur Form)
 **semantic**: meaning of the program
