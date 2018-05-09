@@ -26,7 +26,9 @@ The semantic analyzer use the syntax tree and symbol table to check the source p
 **type checking** happens in this phase. 
 ### part 4. intermediate code generation
 use syntax tree to create an explicit low-level or machine-like intermediate representation. **three-address code**
+
 ### part 5. code optimization
 The machine-independent code-optimization phase attempts to improve the intermediate code so that better target code will result. 
+
 ### part 6. code generation
 The code generator takes intermediate code as input and maps it into the target language. The intermediate instructions are translated into sequence of machine instructions that perform the same task. 
