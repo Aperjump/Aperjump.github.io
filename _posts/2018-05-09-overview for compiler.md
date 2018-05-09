@@ -24,6 +24,7 @@ This phase is called **syntax analysis** or **parsing**. The parser uses the fir
 ### part 3. semantic analysis
 The semantic analyzer use the syntax tree and symbol table to check the source program for semantic consistency with the language definition. It also gathers type information and saves it in either the syntax tree or the symbol table, for subsequent use during intermediate-code generation phase. 
 **type checking** happens in this phase. 
+
 ### part 4. intermediate code generation
 use syntax tree to create an explicit low-level or machine-like intermediate representation. **three-address code**
 
