@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Notes on C++ Templates 14 | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="Notes on C++ Templates 14" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="C++ Templates notes series" />
+<meta property="og:description" content="C++ Templates notes series" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/19/template_14/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/19/template_14/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-19T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/19/template_14/"},"url":"http://localhost:4000/blog/2018/01/19/template_14/","author":{"@type":"Person","name":"Wang Wei"},"description":"C++ Templates notes series","headline":"Notes on C++ Templates 14","dateModified":"2018-01-19T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-19T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="C++,Template" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">Notes on C++ Templates 14</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-19T00:00:00-08:00" datetime="2018-01-19T00:00:00-08:00">January 19, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#C++" title="C++">
+            C++ <span>24</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#C++" title="C++">C++ <span>21</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#Template" title="Template">Template <span>19</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <p>函数对象是指：可以用函数调用语法进行回调的任何对象．
+回调：对于一个程序库，它的客户端希望这个程序库能够调用客户端自定义的某些函数．</p>
+
+<h2 id="heading-1-直接调用间接调用和内联调用">1. 直接调用，间接调用和内联调用</h2>
+<p><code class="highlighter-rouge">f()</code>会生成函数f的机器吗，调用指令本身需要f的起始位置．这出现了两种情况：该起始位置可能成为指令的一部分（直接调用），也可能位于内存的某个位置（间接调用).
+编译器刚开始并不知道函数的地址，然而如果编译器知道了函数的名称，它会首先生成一个不含地址的调用命令，另外编译器在目标文件中还会生成一个实体，借助这个实体，连接器在后面能够更新上面创建的调用指令，使它的地址指向给定名称的函数，从而成为一个地址确定的调用命令．
+但是当函数名称不确定时，就只能呢个用间接调用了．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>void foo (void (*pf)())
+{
+    pf();
+}
+</code></pre>
+</div>
+<p>这个例子中，连接器不能知道<code class="highlighter-rouge">pf</code>指向那个函数，因此编译器不能根据pf来匹配名字，而是到代码运行时才能知道具体的函数调用是什么．
+如果我们使用基于模板的回调生成机器码，那么这些机器码主要涉及到直接调用和内联调用;而如果使用传统回调的话，则会产生间接调用．</p>
+
+<h2 id="heading-2-函数指针和函数引用">2. 函数指针和函数引用</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>/functors/funcptr.cpp
+
+#include &lt;iostream&gt;
+#include &lt;typeinfo&gt;
+
+void foo()
+{
+        std::cout &lt;&lt; "foo() called" &lt;&lt; std::endl;
+}
+
+typedef void FooT();// FooT是一个函数类型
+
+int main()
+{
+        foo();
+        std::cout &lt;&lt; "Types of foo: " &lt;&lt; typeid(foo).name() &lt;&lt; '\n';
+        std::cout &lt;&lt; "Types of FooT: " &lt;&lt; typeid(FooT).name() &lt;&lt; '\n';
+
+        FooT* pf = foo;
+        pf();
+        (*pf)();
+
+        std::cout &lt;&lt; "Types of pf: " &lt;&lt; typeid(pf).name() &lt;&lt; '\n';
+
+        FooT&amp; rf = foo;
+        rf();
+
+        std::cout &lt;&lt; "Types of rf: " &lt;&lt; typeid(rf).name() &lt;&lt; '\n';
+}
+</code></pre>
+</div>
+<p>函数引用时存在的，而且<code class="highlighter-rouge">foo</code>其实是一个左值，因为它可以绑到一个non-const类型的引用，但是我们却不能修改这个左值．</p>
+
+<h2 id="heading-3-成员函数指针">3. 成员函数指针</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>#include &lt;iostream&gt;
+class B1 {
+private:
+        int b1;
+public:
+        void mf1();
+};
+
+void B1::mf1()
+{
+        std::cout &lt;&lt; "b1=" &lt;&lt; b1 &lt;&lt; std::endl;
+}
+
+class B2 {
+private: 
+        int b2;
+public:
+        void mf2();
+};
+
+void B2::mf2()
+{
+        std::cout &lt;&lt; "b2=" &lt;&lt; b2 &lt;&lt; std::endl;
+}
+
+class D : public B1, public B2 {
+private:
+        int d;
+};
+
+void call_memfun(D obj, void (D::*pmf)())
+{
+        (obj.*pmf)();
+}
+int main()
+{
+        D obj;
+        call_memfun(obj, &amp;D::mf1);
+        call_memfun(obj, &amp;D::mf2);
+}
+</code></pre>
+</div>
+<p>对于某些成员函数指针，除了需要知道函数的地址外，还需要知道基于this指针的地址调整．
+成员函数指针通常都使用了三值结构：</p>
+<ol>
+  <li>成员函数的地址，如果时一个虚函数的话，那么该值为null</li>
+  <li>基于this的地址调整</li>
+  <li>一个虚函数索引</li>
+</ol>
+
+<h2 id="heading-4-class类型仿函数">4. class类型仿函数</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>
+//functors/functor1.hpp
+
+#include &lt;iostream&gt;
+
+class ConstantIntFunctor {
+private:
+        int value;
+public:
+        ConstantIntFunctor(int n) : value(n) {
+        }
+
+        int operator() const {
+                return value;
+        }
+};
+
+void client(ConstantIntFunctor const&amp; cif)
+{
+        std::cout &lt;&lt; "calling back functor yields" &lt;&lt; cif() &lt;&lt; '\n';
+}
+
+int main()
+{
+        ConstantIntFunctor sever(7);
+        ConstantIntFunctor fortytwo(42);
+        client(sever);
+        client(fortytwo);
+}
+</code></pre>
+</div>
+<p>class类的仿函数能够根据不同参数生成不同的实例．</p>
+<h2 id="heading-5-指定仿函数">5. 指定仿函数</h2>
+<h3 id="heading-51-作为模板类型实参的仿函数">5.1 作为模板类型实参的仿函数</h3>
+<p>传递防函数的一个方法时让它的类型作为一个模板实参．然而类型本身并不是一个仿函数，因此客户端函数需要创建一个给定类型的仿函数对象．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template &lt;typename FO&gt;
+void my_sort (...)
+{
+    FO cmp;
+    ...
+    if (cmp(x,y)) {
+        ...
+    }
+}
+my_sort&lt;std::less&lt;...&gt;&gt;(...);
+</code></pre>
+</div>
+<p>上面这个做法，<code class="highlighter-rouge">std::less&lt;&gt;</code>的选择会在编译期进行，并且由于操作时内联的，所以一个优化的编译器将能产生本质上等价于不使用仿函数，而直接写的代码．</p>
+
+<h3 id="heading-52-作为函数调用实参的仿函数">5.2 作为函数调用实参的仿函数</h3>
+<p>函数调用实参和函数类型参数本质上类似，区别在于当传递参数的时候，函数调用实参需要拷贝一个仿函数对象．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;typename F&gt;
+void my_sort(..., F cmp)
+{
+    ...
+    if (cmp(x,y)) {
+        ...
+    }
+    ...
+}
+my_sort(...,std::less&lt;...&gt;());
+</code></pre>
+</div>
+<h3 id="heading-53-两者结合">5.3 两者结合</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>template &lt;typename F&gt;
+void my_sort (..., F cmp = F())
+{
+    ...
+    if (cmp(x,y)) {
+        ...
+    }
+    ...
+}
+bool my_criterion() (T const&amp; x, T const&amp; y);
+my_sort&lt;std::less&lt;...&gt;&gt;(...);
+my_sort(..., std::less&lt;...&gt;());
+my_sort(...,my_criterion);
+</code></pre>
+</div>
+<h3 id="heading-54-封装函数指针">5.4 封装函数指针</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>//functors/funcwrap.cpp
+
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;cstdlib&gt;
+
+template&lt;int (*FP)()&gt;
+class FunctionReturningIntWrapper {
+public:
+        int operator() {
+                return FP();
+        }
+};
+
+int random_int()
+{
+        return std::rand();
+}
+
+template&lt;typename FO&gt;
+void initialize (std::vector&lt;int&gt;&amp; coll)
+{
+        FO fo;
+        for (std::vector&lt;int&gt;::size_type i = 0; i &lt; coll.size(); i++) {
+                coll[i] = fo();
+        }
+}
+
+int main()
+{
+        std::vector&lt;int&gt; v(10);
+        initialize&lt;FunctionReturningIntWrapper&lt;random_int&gt;&gt;(v);
+        for (std::vector&lt;int&gt;::size_type i = 0; i &lt; v.size(); i++) {
+                std::cout &lt;&lt; "coll[" &lt;&lt; i &lt;&lt; "]: " &lt;&lt; v[i] &lt;&lt; std::endl;
+        }
+}
+</code></pre>
+</div>
+<h2 id="heading-6-内省">6. 内省</h2>
+<p>内省是指一种能够查看自身的能力．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>class PersonSortCriterion {
+public:
+    enum { NumParams = 2 };
+    typedef bool ReturnT;
+    typedef Person const&amp; Param1T;
+    typedef Person const&amp; Param2T;
+    bool operator()(Person const&amp; p1, Person const p2) const {
+        ...
+    }
+};
+</code></pre>
+</div>
+<p>下面我们希望编写一个类型函数，对于一个给定的仿函数类型和一个常数Ｎ，可以给出函数第Ｎ个参数的类型.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//functors/functorparam1.hpp
+
+#include "ifthenelse.hpp"
+
+template&lt;typename F, int N&gt;
+class UsedFunctorParam;
+
+template&lt;typename F, int N&gt;
+class FunctorParam {
+private:
+        class Unused {
+        private:
+                class Private {};
+        public:
+                typedef Private Type;
+        };
+public:
+        typedef typename IfThenElse&lt;F::NumParams&gt;=N, UsedFunctorParam&lt;F,N&gt;,
+        Unused&gt;::ResultT::Type Type;
+};
+
+template &lt;typename F&gt;
+class UsedFunctorParam&lt;F,1&gt; {
+public:
+        typedef typename F::Param1T Type;
+};
+</code></pre>
+</div>
+<p>还可以写一个宏对每个特定的Ｎ值都进行局部特化</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>#define FunctorParamSpec(N)     
+    template&lt;typename F&gt;        
+    class UsedFunctorParam&lt;F,N&gt; {
+    public:                     
+        typedef typename F::Param##N##T Type; 
+    }
+FunctorParam(2);
+FunctorParam(3);
+</code></pre>
+</div>
+<h3 id="heading-61-封装函数指针">6.1 封装函数指针</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>//functors/functionptrt.hpp
+
+template&lt;typename RT, typename P1 = void, typename P2 = void,
+                 typename P3 = void&gt;
+class FunctionPtrT {
+public:
+        enum { NumParams = 3 };
+        typedef RT (*Type)(P1,P2,P3);
+};
+
+template&lt;typename RT, typename P1, typename P2&gt;
+class FunctionPtrT&lt;RT,P1,P2,void&gt; {
+public:
+        enum { NumParams = 2 };
+        typedef RT (*Type)(P1,P2);
+};
+
+template&lt;typename RT, typename P1&gt;
+class FunctionPtrT&lt;RT,P1,void,void&gt; {
+public:
+        enum { NumParams = 1 };
+        typedef RT (*Type)(P1);
+};
+
+template&lt;typename RT&gt;
+class FunctionPtrT&lt;RT,void,void,void&gt; {
+public:
+        enum { NumParams = 0 };
+        typedef RT (*Type)();
+};
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>// functors/fowardparam.hpp
+
+#ifndef FORWARD_HPP
+#define FORWARD_HPP
+
+#include "ifthenelse.hpp"
+
+template&lt;typename T&gt;
+class ForwardParamT {
+public:
+        typedef typename IfThenElse&lt;TypeT&lt;T&gt;::IsClassT, 
+        typename TypeOp&lt;T&gt;::RefConstT,
+        typename TypeOp&lt;T&gt;::ArgT&gt;::ResultT Type;
+};
+
+template&lt;&gt;
+class ForwardParamT&lt;void&gt; {
+private:
+        class Unused { };
+public:
+        typedef Unused Type;
+};
+
+#endif
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>//functors/functionptr.hpp
+
+#include "forwardparam.hpp"
+#include "functionptrt.hpp"
+
+template&lt;typename RT, typename P1 = void,
+                 typename P2 = void, 
+                 typename P3 = void&gt;
+class FunctionPtr {
+private:
+        typedef typename FunctionPtrT&lt;RT,P1,P2,P3&gt;::NumParams;
+        FuncPtr fptr;
+public:
+        enum { NumParams = FunctionPtrT&lt;RT,P1,P2,P3&gt;::NumParams };
+        typedef RT ReturnT;
+        typedef P1 Param1T;
+        typedef P2 Param2T;
+        typedef P3 Param3T;
+
+        FunctionPtr(FuncPtr ptr) : fptr(ptr) {
+        }
+
+        RT operator()() {
+                return fptr();
+        }
+
+        RT operator()(typename ForwardParamT&lt;P1&gt;::Type a1) {
+                return fptr(a1);
+        }
+
+        RT operator()(typename ForwardParamT&lt;P1&gt;::Type a1,
+                                  typename ForwardParamT&lt;P2&gt;::Type a2) {
+                return fptr(a1,a2);
+        }
+
+        RT operator()(typename ForwardParamT&lt;P1&gt;::Type a1,
+                                  typename ForwardParamT&lt;P2&gt;::Type a2,
+                                  typename ForwardParamT&lt;P3&gt;::Type a3) {
+                return fptr(a1, a2, a3);
+        }
+};
+</code></pre>
+</div>
+
+<h2 id="heading-8-值绑定">8. 值绑定</h2>
+<p>一个binder会把<strong>仿函数</strong>的<strong>一个特定参数</strong>绑定到<strong>一个特定的值</strong>．这里出现了三个特定，而这三个方面都可以在运行期或者编译期进行选择．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;typename F, int P, int V&gt;
+class BindIntStatically;
+</code></pre>
+</div>
+<p>我们可以把参数选择作为一个模板参数，从而能够进行静态的选择．
+为了让仿函数的选择时动态的，我们需要给binder增加一个构造函数，它接受一个仿函数作为参数．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>/functors/boundva1.hpp
+
+#include "typeop.hpp"
+
+template&lt;typename T&gt;
+class BoundVal {
+private:
+        T value;
+public:
+        typedef T ValueT;
+        BoundVal(T v) : value(v) {
+        }
+
+        typename TypeOp&lt;T&gt;::RefT get() {
+                return value;
+        }
+};
+
+template&lt;typename T&gt;
+class StaticBoundVal {
+public:
+        typedef T ValueT;
+        T get() {
+                return Val;
+        }
+};
+</code></pre>
+</div>
+<h3 id="heading-81-签名绑定">8.1 签名绑定</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>//functors/binderparams.hpp
+
+#include "ifthenelse.hpp"
+
+template&lt;typename F, int P&gt;
+class BinderParams {
+public:
+        enum { NumParamT = F::NumParamT - 1 };
+#define ComposeParamT(N)
+        typedef typename IfThenElse&lt;(N&lt;P), FunctorParam&lt;F,N&gt;, 
+                    FunctorParam&lt;F,N+1&gt;
+                    &gt;::ResultT::Typ
+                        Param##N##T
+        ComposeParamT(1);
+        ComposeParamT(2);
+        ComposeParamT(3);
+        ...
+#undef ComposeParamT
+};
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>//functors/binder2.hpp
+
+template&lt;typename FO, int P, typename V&gt;
+class Binder : private FO, private V {
+public:
+        enum { NumParams = FO::NumParams - 1 };
+        typedef typename FO::ReturnT ReturnT;
+
+        typedef BinderParams&lt;FO, P&gt; Params;
+
+#define ComposeParamT(N)
+                typedef typename ForwardParamT&lt;typename Params::Param##N##T&gt;::Type 
+                 Param##N##T                                                                                                 \
+                ComposeParamT(1);
+                ComposeParamT(2);
+                ComposeParamT(3);
+                ...
+#undef ComposeParamT
+...
+};
+</code></pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/19/template_13/" title=" 'Notes on C++ Templates 13'"> ← Notes on C++ Templates 13</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/20/UNP_1/" title="Next Post 'UNP_1'">UNP_1 → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

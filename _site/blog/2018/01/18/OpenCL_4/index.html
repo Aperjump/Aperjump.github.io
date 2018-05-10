@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OpenCL notes_4 operators and functions | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="OpenCL notes_4 operators and functions" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="OpenCL notes_4 operators and functions" />
+<meta property="og:description" content="OpenCL notes_4 operators and functions" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/18/OpenCL_4/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/18/OpenCL_4/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-18T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/18/OpenCL_4/"},"url":"http://localhost:4000/blog/2018/01/18/OpenCL_4/","author":{"@type":"Person","name":"Wang Wei"},"description":"OpenCL notes_4 operators and functions","headline":"OpenCL notes_4 operators and functions","dateModified":"2018-01-18T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-18T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="parallel,OpenCL" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">OpenCL notes_4 operators and functions</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-18T00:00:00-08:00" datetime="2018-01-18T00:00:00-08:00">January 18, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#OpenCL" title="OpenCL">
+            OpenCL <span>8</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#OpenCL" title="OpenCL">OpenCL <span>8</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#parallel" title="parallel">parallel <span>8</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-operator">1. Operator</h2>
+<p>The relational operators tests all components of a vector and the components of the resulting vector identify whether the corresponding test returned true or false. 
+For vector components, truth is represented by all 1s (<code class="highlighter-rouge">0xFF, 0xFFFF, 0xFFFFFFFF</code>), openCL represents signed integers using their two's componnets . So the signed value for true is <code class="highlighter-rouge">-1</code> not <code class="highlighter-rouge">1</code>. 
+If <code class="highlighter-rouge">x</code> is a vector, you cannot use <code class="highlighter-rouge">if (x &gt; 0)</code>, this will generate compile time error. 
+However, you can test individual components:
+<code class="highlighter-rouge">if (x.s0 &gt; 2 &amp;&amp; x.s1 &gt; 2)</code>, or use <code class="highlighter-rouge">any</code> or <code class="highlighter-rouge">all</code> function:
+<code class="highlighter-rouge">while(all(x &gt; 2))</code></p>
+
+<h2 id="heading-2-work-itrem-and-work-group">2. Work-itrem and Work-group</h2>
+<h3 id="heading-21-dimensions-and-work-items">2.1 Dimensions and work-items</h3>
+<p>A work-item is a single implementation of a kernel, and each work-item has an identifier that distinguishes it from every other work-itm that processes the kernel. This identifier, called the global ID, is an array of unsigned integers.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>uint get_work_dim();
+size_t get_global_size(unit dim);
+size_t get_global_id(uint dim);
+size_t get_global_offset(uint dim);
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>for (int i= 3; i &lt; 9; i++) {
+	for (int j = 5; j &lt; 9; j++) {
+		process(data(i,j));
+	}
+}
+</code></pre>
+</div>
+<p>The loop pair is <code class="highlighter-rouge">(3,5)</code>, and a work-item can obtain its ID by calling <code class="highlighter-rouge">get_global_id(0)</code> and <code class="highlighter-rouge">get_global_id(1)</code>. In the nested loop, the index pair of the first iteration is <code class="highlighter-rouge">(3,5)</code>. This corresponding to OpenCL's global offset, which is the first global ID given to a work-item. A work-item can access this by calling <code class="highlighter-rouge">get_global_offset(0)</code> and <code class="highlighter-rouge">get_global_offset(1)</code>.</p>
+
+<h3 id="heading-22-work-groups">2.2 Work-groups</h3>
+<p>Work-group become important when work-items need to synchronize their execution.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>size_t get_num_groups(uint dim);
+size_t get_group_id(uint dim);
+size_t get_local_id(uint dim);
+size_t get_local_size(uint dim);
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">get_global_id</code> identifies a work-item among all other work-items executing the kernel. But <code class="highlighter-rouge">get_local_id</code> identifies the work-item only among work-items in the same work-group. Similarly, <code class="highlighter-rouge">get_gloal_size</code> will tell you how many work-items are executing the same kernel. <code class="highlighter-rouge">get_local_size</code> tells you how many work-items are in the same work-group as the calling work-item. 
+One example:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void id_check(__global float *output) { 
+
+   /* Access work-item/work-group information */
+   size_t global_id_0 = get_global_id(0);
+   size_t global_id_1 = get_global_id(1);
+   size_t global_size_0 = get_global_size(0);
+   size_t offset_0 = get_global_offset(0);
+   size_t offset_1 = get_global_offset(1);
+   size_t local_id_0 = get_local_id(0);
+   size_t local_id_1 = get_local_id(1);
+
+   /* Determine array index */
+   int index_0 = global_id_0 - offset_0;
+   int index_1 = global_id_1 - offset_1;
+   int index = index_1 * global_size_0 + index_0;
+   
+   /* Set float data */
+   float f = global_id_0 * 10.0f + global_id_1 * 1.0f;
+   f += local_id_0 * 0.1f + local_id_1 * 0.01f;
+
+   output[index] = f;
+}
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>result:
+$ ./Ch5_id_check.exe
+35.00     45.10     55.20     65.00     75.10     85.20
+36.01     46.11     56.21     66.01     76.11     86.21
+37.00     47.10     57.20     67.00     77.10     87.20
+38.01     48.11     58.21     68.01     78.11     88.21
+</code></pre>
+</div>
+
+<h2 id="heading-3-data-transfer">3. Data Transfer</h2>
+<h3 id="heading-31-transfer-same-type">3.1 Transfer same type</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void test (__global int4 *int_data, __global int4* out_data) {
+    __local int4 local_data;
+    int id = get_local_id(0);
+    local_data = in_data[id];
+    ...
+    out_data[id] = local_data;
+}
+</code></pre>
+</div>
+<h3 id="heading-32-load-vector-from-scalar-array">3.2 Load vector from scalar array</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>vector vloadn(size_t offset, const __(g|c|l|p) scalar* mem)
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">n</code> identifies the number of components in the returned vector and it must be set to 2, 3, 4, 8, 16. The offset argument determines which elements of the array are placed in the vector. <strong>This is given in terms of the size of the <code class="highlighter-rouge">vector</code>, not the size of it scalar components.</strong></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>void vstoren(vector vec, size_t offset, __(g|l|p) scalar* mem)
+</code></pre>
+</div>
+<p>Just as <code class="highlighter-rouge">vloadn</code> transfer data from a scalar array to a vector, <code class="highlighter-rouge">vstoren</code> transfer data from a vector to a scalar array.</p>
+<h3 id="heading-33-store-vectors-to-a-scalar-array">3.3 Store vectors to a scalar array</h3>
+<p><code class="highlighter-rouge">vstoren</code> transfer data from a vector to a scalar array.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>void vstoren(vector vec, size_t offset, __(g|l|p) scalar *mem);
+</code></pre>
+</div>
+
+<h2 id="heading-4-shuffle-and-select-functions">4. Shuffle and select functions</h2>
+<p>Two shuffle functions rely on index values inside the mask vector to create the output, and the two select functions rely on bits inside the mask vector.</p>
+
+<h3 id="heading-41-shuffle-function">4.1 Shuffle function</h3>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>allm shuffle(alln x, uintegrem mask);
+allm shuffle2(alln x, alln y, unitegrem mask);
+</code></pre>
+</div>
+<p>The <code class="highlighter-rouge">shuffle</code> function creates a vector whose components are taken from those in the input <code class="highlighter-rouge">x</code> vector, and <code class="highlighter-rouge">shuffle2</code> creates a vector from componnets in <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code>. The size of the components of the mask vector must be the same size as those of the returned vector. But the data type must be an unsingned integer. 
+<img src="https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-18-OpenCL_4/OpenCL_4_1.PNG" alt="openCL_4_1" /></p>
+
+<p><code class="highlighter-rouge">shuffle2</code> version:
+<img src="https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-18-OpenCL_4/OpenCL_4_2.PNG" alt="openCL_4_2" /></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void shuffle_test(__global float8 *s1, 
+                           __global char16 *s2) {
+
+   /* Execute the first example */
+   uint8 mask1 = (uint8)(1, 2, 0, 1, 3, 1, 2, 3);
+   float4 input = (float4)(0.25f, 0.5f, 0.75f, 1.0f);
+   *s1 = shuffle(input, mask1); 
+   
+   /* Execute the second example */
+   uchar16 mask2 = (uchar16)(6, 10, 5, 2, 8, 0, 9, 14, 
+                             7, 5, 12, 3, 11, 15, 1, 13);
+   char8 input1 = (char8)('l', 'o', 'f', 'c', 'a', 'u', 's', 'f');
+   char8 input2 = (char8)('f', 'e', 'h', 't', 'n', 'n', '2', 'i');
+   *s2 = shuffle2(input1, input2, mask2); 
+}
+</code></pre>
+</div>
+
+<h3 id="heading-42-select-function">4.2 select function</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>alln select(alln a , alln b, u/integern mask)
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void select_test(__global float4 *s1, 
+                          __global uchar2 *s2) {
+
+   /* Execute select */
+   int4 mask1 = (int4)(-1, 0, -1, 0);
+   float4 input1 = (float4)(0.25f, 0.5f, 0.75f, 1.0f);
+   float4 input2 = (float4)(1.25f, 1.5f, 1.75f, 2.0f);
+   *s1 = select(input1, input2, mask1); 
+   
+   /* Execute bitselect */
+   uchar2 mask2 = (uchar2)(0xAA, 0x55);
+   uchar2 input3 = (uchar2)(0x0F, 0x0F);
+   uchar2 input4 = (uchar2)(0x33, 0x33);
+   *s2 = bitselect(input3, input4, mask2); 
+}
+</code></pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/18/OpenCL_3/" title=" 'OpenCL notes_3 data types and device memory'"> ← OpenCL notes_3 data types and device memory</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/18/template_10/" title="Next Post 'Notes on C++ Templates 10'">Notes on C++ Templates 10 → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

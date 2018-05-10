@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OpenCL notes_8 How to write an OpenCL wrapper | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="OpenCL notes_8 How to write an OpenCL wrapper" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="OpenCL notes_8 How to write an OpenCL wrapper" />
+<meta property="og:description" content="OpenCL notes_8 How to write an OpenCL wrapper" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/31/OpenCL_8/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/31/OpenCL_8/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-31T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/31/OpenCL_8/"},"url":"http://localhost:4000/blog/2018/01/31/OpenCL_8/","author":{"@type":"Person","name":"Wang Wei"},"description":"OpenCL notes_8 How to write an OpenCL wrapper","headline":"OpenCL notes_8 How to write an OpenCL wrapper","dateModified":"2018-01-31T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-31T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="parallel,OpenCL" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">OpenCL notes_8 How to write an OpenCL wrapper</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-31T00:00:00-08:00" datetime="2018-01-31T00:00:00-08:00">January 31, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#OpenCL" title="OpenCL">
+            OpenCL <span>8</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#OpenCL" title="OpenCL">OpenCL <span>8</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#parallel" title="parallel">parallel <span>8</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-an-opencl-wrapper">1. An OpenCL wrapper</h2>
+<p>Have been working on <code class="highlighter-rouge">OpenCL</code> these days. Since the complexity of those "environment objects", I think it necessary to write a wrapper to include all necessary components when performing computation. 
+My purpose is to write one matrix-matrix multiplication instance. The question is that if I put all <code class="highlighter-rouge">OpenCL</code> configurations in the matrix class, all instances of this matrix class will need to hold one copy of this class. So I think it appropriate to declare this config subclass <code class="highlighter-rouge">static</code>. 
+But this is not the end, since if I declare one non-built-in class within one class, this <code class="highlighter-rouge">static</code> type should be defined outside of the class.</p>
+<h2 id="heading-2-implementation">2. Implementation</h2>
+<p>First, you need to wrap two functions for selecting platform and device. There are so many parameters and error check in <code class="highlighter-rouge">OpenCL</code> API, so I tried to simplify their numbers.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>	cl_platform_id choose_platform(const std::string&amp; pltfrm_name);
+	// offset is device's position in a vector&lt;cl_device_id&gt;
+	// this function will call choose_mult_device and select one with offset
+	cl_device_id choose_device(cl_platform_id platform, const std::string&amp; devs_name, size_t offset);
+	std::vector&lt;cl_device_id&gt; choose_mult_device(cl_platform_id, const std::string&amp; device_type);
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>	cl_platform_id choose_platform(const std::string&amp; pltfrm_name) {
+		cl_uint platform_num = 0;
+		cl_int err = clGetPlatformIDs(0, NULL, &amp;platform_num);
+		if (err &lt; 0) {
+			perror("query platform error\n");
+		}
+		std::vector&lt;cl_platform_id&gt; platforms(platform_num);
+		err = clGetPlatformIDs(platform_num, &amp;platforms[0], NULL);
+		if (err &lt; 0) {
+			perror("get platform vector error\n");
+		}
+		cl_uint index = platform_num;
+		// Query info for each devices and try to match pltfrm_name
+		for (cl_uint i = 0; i &lt; platform_num; i++)
+		{
+			size_t plt_name_len = 0;
+			err = clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 0, 0, &amp;plt_name_len);
+			if (err &lt; 0) {
+				perror("cannot find platform\n");
+			}
+			std::vector&lt;char&gt; plt_name(plt_name_len);
+			err = clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, plt_name_len,
+				&amp;plt_name[0], NULL);
+			if (err &lt; 0) {
+				perror("cannot find platform\n");
+			}
+			if (std::string(&amp;plt_name[0]).find(pltfrm_name) != std::string::npos)
+			{
+				printf("%s\n", &amp;plt_name[0]);
+				index = i;
+			}
+		}
+		if (index &gt;= platform_num) {
+			perror("out of platform index\n");
+			exit(1);
+		}
+		// may have truble
+		return platforms[index];
+	}
+	std::vector&lt;cl_device_id&gt; choose_mult_device(cl_platform_id platform, const std::string&amp; device_type) {
+		cl_device_type type;
+		if (device_type == "gpu" || device_type == "GPU") {
+			type = CL_DEVICE_TYPE_GPU;
+		} 
+		else if (device_type == "cpu" || device_type == "CPU") {
+			type = CL_DEVICE_TYPE_CPU;
+		} 
+		else {
+			type = CL_DEVICE_TYPE_DEFAULT;
+		}
+		cl_uint device_num = 0;
+		cl_int err = clGetDeviceIDs(platform, type, 0, 0, &amp;device_num);
+		if (err &lt; 0) {
+			perror("cannot find device");
+		}
+		std::vector&lt;cl_device_id&gt; devices(device_num);
+		err = clGetDeviceIDs(platform, type, device_num, &amp;devices[0], NULL);
+		if (err &lt; 0) {
+			perror("cannot find device");
+		}
+		return devices;
+	}
+	cl_device_id choose_device(cl_platform_id platform, const std::string&amp; devs_name, size_t offset) {
+		std::vector&lt;cl_device_id&gt; devices = choose_mult_device(platform, devs_name);
+		assert(offset &lt; devices.size());
+		return devices[offset];
+	}
+</code></pre>
+</div>
+<p>Then you can declare one config class interface like this:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>	class CL_Base {
+	public:
+		CL_Base(const std::string&amp; pltform_name) { _platform = ww_matrix::choose_platform(pltform_name); }
+		CL_Base(cl_platform_id platform) : _platform(platform) { }
+		CL_Base(CL_Base&amp; other) : _platform(other._platform),
+			current_device(other.current_device), _devices(other._devices),
+			_context(other._context), _cmdque(other._cmdque), _program(other._program) { }
+		CL_Base&amp; operator= (const CL_Base&amp; other);
+		~CL_Base() { }
+		bool init(const std::string&amp; device_type, cl_command_queue_properties queue_prop, 
+			const cl_context_properties* additional_context_props);
+		cl_device_id switch_device(int offset);
+		bool create_program(const std::string&amp; file);
+		//bool create_kernels();
+
+		cl_platform_id _platform;
+		cl_device_id current_device;
+		std::vector&lt;cl_device_id&gt; _devices;
+		cl_context _context;
+		cl_command_queue _cmdque;
+		cl_program _program;
+		//cl_kernel* _kernels;
+		//cl_uint kernel_num;
+	};
+</code></pre>
+</div>
+<p>The reason here is I want to compile program when calling matrix multiplication function but kernel program should be build in the class. 
+But maybe compile all the kernel at this stage and use a sort of searching method during run time can also be one good choice. 
+I will provide serveral function implementations:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>bool CL_Base::init(const std::string&amp; device_type, cl_command_queue_properties queue_prop = 0,
+		const cl_context_properties* additional_context_props = 0) {
+		cl_int err = 0;
+		_devices = ww_matrix::choose_mult_device(_platform, device_type);
+		current_device = _devices[0];
+		char deviceName[1024];
+		clGetDeviceInfo(current_device, CL_DEVICE_NAME, 1024, deviceName, NULL);
+		printf("%s\n", deviceName);
+		_context = clCreateContext(NULL, 1, &amp;current_device, NULL, NULL, &amp;err);
+		if (err &lt; 0) {
+			perror("create context error\n");
+			return false;
+		}
+		_cmdque = clCreateCommandQueue(_context, current_device, NULL, &amp;err);
+		if (err &lt; 0) {
+			perror("create command queue error\n");
+			return false;
+		}
+		return true;
+	}
+	cl_device_id CL_Base::switch_device(int offset) {
+		current_device = _devices[offset]; 
+		cl_int err = 0;
+		_context = clCreateContext(NULL, 1, &amp;current_device, NULL, NULL, &amp;err);
+		if (err &lt; 0) {
+			perror("create context error\n");
+		}
+		_cmdque = clCreateCommandQueue(_context, current_device, NULL, &amp;err);
+		if (err &lt; 0) {
+			perror("create command queue error\n");
+		}
+		return current_device; 
+	}
+	bool CL_Base::create_program(const std::string&amp; file) {
+		std::fstream kernelfile(file.c_str(), std::fstream::in | std::fstream::out);
+		std::string content((std::istreambuf_iterator&lt;char&gt;(kernelfile)),
+			std::istreambuf_iterator&lt;char&gt;());
+		size_t program_size = content.size();
+		const char * kernel = (char*)malloc(content.size());
+		kernel = content.c_str();
+		cl_int err = 0;
+		_program = clCreateProgramWithSource(_context, 1, (const char**)&amp;kernel,
+			&amp;program_size, &amp;err);
+		if (err &lt; 0) {
+			perror("create program error");
+			return false;
+		}
+		size_t log_size = 0;
+		char* program_log;
+		err = clBuildProgram(_program, 0, NULL, NULL, NULL, NULL);
+		if (err &lt; 0) {
+			/* Find size of log and print to std output */
+			clGetProgramBuildInfo(_program, current_device, CL_PROGRAM_BUILD_LOG,
+				0, NULL, &amp;log_size);
+			program_log = (char*)malloc(log_size + 1);
+			program_log[log_size] = '\0';
+			clGetProgramBuildInfo(_program, current_device, CL_PROGRAM_BUILD_LOG,
+				log_size + 1, program_log, NULL);
+			printf("%s\n", program_log);
+			free(program_log);
+			exit(1);
+		}
+		clGetProgramBuildInfo(_program, current_device, CL_PROGRAM_BUILD_LOG,
+			0, NULL, &amp;log_size);
+		program_log = (char*)malloc(log_size + 1);
+		program_log[log_size] = '\0';
+		clGetProgramBuildInfo(_program, current_device, CL_PROGRAM_BUILD_LOG,
+			log_size + 1, program_log, NULL);
+		printf("%s\n", program_log);
+		free(program_log);
+		return true;
+	}
+</code></pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/27/OpenCL_7/" title=" 'OpenCL notes_6 Mapreduce'"> ← OpenCL notes_6 Mapreduce</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/02/03/Macro/" title="Next Post 'Macro usage'">Macro usage → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

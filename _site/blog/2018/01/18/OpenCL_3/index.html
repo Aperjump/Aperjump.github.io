@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OpenCL notes_3 data types and device memory | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="OpenCL notes_3 data types and device memory" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="OpenCL notes_3 data types and device memory" />
+<meta property="og:description" content="OpenCL notes_3 data types and device memory" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/18/OpenCL_3/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/18/OpenCL_3/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-18T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/18/OpenCL_3/"},"url":"http://localhost:4000/blog/2018/01/18/OpenCL_3/","author":{"@type":"Person","name":"Wang Wei"},"description":"OpenCL notes_3 data types and device memory","headline":"OpenCL notes_3 data types and device memory","dateModified":"2018-01-18T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-18T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="parallel,OpenCL" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">OpenCL notes_3 data types and device memory</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-18T00:00:00-08:00" datetime="2018-01-18T00:00:00-08:00">January 18, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#OpenCL" title="OpenCL">
+            OpenCL <span>8</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#OpenCL" title="OpenCL">OpenCL <span>8</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#parallel" title="parallel">parallel <span>8</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-kernel-functions">1. Kernel functions</h2>
+<p>The <code class="highlighter-rouge">clSetKernelArg</code> function sets argument for kernels, but there are no function that access a kernel's return value. This is because kernels don't have return values – every kernel functions returns <code class="highlighter-rouge">void</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void func_name(args) {
+    ...
+}
+</code></pre>
+</div>
+<p>A kernel function can only access and return data through its arguments, and if you attempt to compile a kernel without arguments, some compilers will give you an error. <strong>all pointers passed to a kernel must be preceded by an address space qualifier.</strong>
+This tells the device what address space the argument should be stored in. <code class="highlighter-rouge">__global__, __constant__, __local, __private</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>char msg[16];
+cl_mem msg_buffer;
+msg_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY, sizeof(msg), NULL, &amp;err);
+clSetKernelArg(kernel, 0, sizeof(cl_mem), &amp;msg_buffer);
+</code></pre>
+</div>
+<p>After the kernel is enqueued and the device executes the function, the host application accesses the buffer data using <code class="highlighter-rouge">clEnqueueReadBuffer</code>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clEnqueueReadBuffer(queue, msg_buffer, CL_TRUE, 0, sizeof(msg), &amp;msg, 0, NULL, NULL);
+</code></pre>
+</div>
+<h2 id="heading-2-double-type">2. Double type</h2>
+<p>The double data type can be accessed if the device supports the <code class="highlighter-rouge">cl_khr_fp64</code> extension. From the host, you can determine whether this extension is available by calling <code class="highlighter-rouge">clGetDeviceInfo</code>. If the extension is supported, you can enable this capability in the kernel with the following <code class="highlighter-rouge">pragma</code> statement:
+<code class="highlighter-rouge">#pragma OPENCL EXTENSION cl_khr_fp64 : enable</code>
+Here is one code example:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>#ifdef FP_64
+#pragma OPENCL EXTENSION cl_khr_fp64 : enable
+#endif 
+
+__kernel void double_test(__global float* a, __global float* b, 
+						  __global float* out) {
+#ifdef FP_64
+	double c = (double)(*a / *b);
+	*out = (float)c;
+#else
+	*out = *a * *b;
+#endif
+}
+</code></pre>
+</div>
+<h2 id="heading-3-vector-data-types">3. Vector data types</h2>
+<p>Vectors resemble arrays in that they contain multiple elements of the same type. But there are two main differences:
+(1) A vector of a given type can only contain a specific number of elements.
+(2) When a vector is operated upon, every element is operated upon <strong>at the same time</strong>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>float a[4], b[4], c[4];
+for (int i = 0; i &lt; 4; i++) {
+    c[i] = a[i] + b[i];
+}
+float4 a, b, c;
+c = a + b;
+</code></pre>
+</div>
+<p>Elements within a vector are called <strong>components</strong>
+vector types:
+<code class="highlighter-rouge">charn, ucharn, shortn, ushortn, intn, uintn, longn, ulongn, floatn</code>
+The OpenCL standard requires that device compilers know the limitations of the target device and divide large vectors into sizes that the device can operate on.</p>
+<h3 id="heading-31-preferred-vector-width">3.1 preferred vector width</h3>
+<p><code class="highlighter-rouge">clGetDeviceInfo</code> accepts a parameter that identifies what information is being sought.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_uint char_width;
+clGetDeviceInfo(device, CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR, sizeof(char_width), &amp;char_width, NULL);
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>float4 data_vec = (float4)(1.0, 1.0, 1.0, 1.0);
+float4 data_vec = (float4)(1.0);
+float2 a_vector = (float2)(1.0,1.0);
+float2 b_vector = (float2)(2.0,2.0);
+float4 c_vector = (float4)(a_vector, b_vector);
+</code></pre>
+</div>
+<h3 id="heading-32-indexing">3.2 Indexing</h3>
+<h4 id="heading-321-numerb-index">3.2.1 Numerb-index</h4>
+<div class="highlighter-rouge"><pre class="highlight"><code>char16 msg = (char16)('H','e','l','l','o','P','r','o','g','r','a','m','m','e','r','!');
+char a = msg.s0; // a = 'H'
+char d = msg.sC; // 0xC d = 'm'
+char8 e = msg.s01234567; // e = "HelloPro"
+msg.s7E = (char2)(msg.s1);
+msg.s5 = 'O';
+</code></pre>
+</div>
+<h4 id="heading-322-letter-indexing">3.2.2 Letter indexing</h4>
+<div class="highlighter-rouge"><pre class="highlight"><code>float4 coord = (float4)(3.0, 5.0, 7.0, 9.0);
+float a = coord.x; // a = 3
+float2 e = coord.xy; // e = (5.0, 7.0)
+float4 h = coord.wwwx; // h = (11.0, 11.0, 11.0, 5.0)
+coord.x = 2.0;
+</code></pre>
+</div>
+<h4 id="heading-323-hi-lo-even-odd">3.2.3 HI, LO, EVEN, ODD</h4>
+<div class="highlighter-rouge"><pre class="highlight"><code>ushort8 shorts = (ushort8)(0, 10, 20, 30, 40, 50, 60, 70);
+ushort4 a = shorts.hi; // a = (40, 50, 60, 70)
+ushort4 b = shorts.lo; // b = (0, 10, 20, 30)
+ushort4 c = shorts.even; // c = (0, 20, 40, 60)
+ushort4 d = shorts.odd; // d = (10, 30, 50, 70)
+</code></pre>
+</div>
+<h2 id="heading-4-device-model">4. Device Model</h2>
+<p>compute unit: processing core. 
+each compute unit can be occupied by a work-group. 
+There are many work-item in one work-group. 
+global memory: stores data for the entire device and can be read from and written to.–&gt;<code class="highlighter-rouge">__global</code>
+constant memory: similar to global memory, but is read-only–&gt;<code class="highlighter-rouge">__constant</code>
+local memory: stores data for the work-item in a work group –&gt; <code class="highlighter-rouge">__local</code>
+private memory: stores data for an individual work-item
+–&gt; <code class="highlighter-rouge">__private</code>
+<code class="highlighter-rouge">global/const</code> memory can be read from and written to by both host and device. 
+When the host apllication transfer a buffer object to the device, the buffer's data is stored in <code class="highlighter-rouge">global/constant</code> memory. 
+global memory is commonly the largest memory region on an OpenCL compliant device, but it's also the slowest for work-itm to access.
+Work-items can access local memory much faster (~100x) than they can access global/constant emmory. (help to store intermidiate result)</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void kernel_func(__global float *f) {
+    __global uint* x = 5;
+    f = (global float*)x;
+}
+</code></pre>
+</div>
+<p>The <code class="highlighter-rouge">__local</code> qualifier can be used for kernel arguments and variables declared within a kernel, <strong>but local variables cannot be directly initialized.</strong>
+<code class="highlighter-rouge">__local float x = 4.0</code> will cause an error. You should uuse <code class="highlighter-rouge">__local float x; x = 4.0</code></p>
+
+<h3 id="heading-41-memory-alignment">4.1 Memory Alignment</h3>
+<p>You can control data alignment with the <code class="highlighter-rouge">aligned</code> attribute, which can only beused when the data is declared. The <code class="highlighter-rouge">aligned</code> keyword must be preceded by <code class="highlighter-rouge">__attribute__</code>:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>short x __attribute__ ((aligned(4)))
+</code></pre>
+</div>
+<h3 id="heading-42-local-and-private-kernel-arguments">4.2 Local and Private Kernel Arguments</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>clSetKernelArg(cl_kernel kernel, cl_uint index, size_t size, const void* value);
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">value</code> identifies the data that will be sent to the device as a kernel argument. So far, the example code has always set this to point to a memory object, adn the corresponding kernel argument must be decalred as <code class="highlighter-rouge">__global</code> or <code class="highlighter-rouge">__constant</code>. 
+If you transfer data to a kernel using a memory object, you cannot set the kernel argument specifier to <code class="highlighter-rouge">__local</code>. If you attempt to do this, you will receive a runtime error whose code is <code class="highlighter-rouge">-50</code>: <code class="highlighter-rouge">CL_INVALID_ARG_VALUE</code>. Since host cannot access local memory directly. 
+But a host can tell the device to allocate local memory for a kernel argument by setting the last argument of <code class="highlighter-rouge">clSetKernelArg</code> to <code class="highlighter-rouge">NULL</code>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clSetKernelArg(kernel, 0, 16 * sizeof(float), NULL);
+__kernel void proc_data(__local float* nums, ...)
+{
+
+}
+</code></pre>
+</div>
+
+<p>Unlike local data, a kernel's private data can be initialized by a host application. To configure this in code, the host needs to make the last parameter of <code class="highlighter-rouge">clSetKernelArg</code> a pointer to primitive data: <code class="highlighter-rouge">int*</code>, <code class="highlighter-rouge">float*</code>, <code class="highlighter-rouge">char*</code> and so on.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>int num = 4;
+clSetKernelArg(kernel, 0, sizeof(num), &amp;num);
+__kernel void proc_data(int num, ...) {
+
+}
+</code></pre>
+</div>
+<p>It has no space specifier like <code class="highlighter-rouge">__global</code> and <code class="highlighter-rouge">__local</code>. This means that <code class="highlighter-rouge">num</code> will be stored in the device's private space and each work item will have its own copy. Second, <code class="highlighter-rouge">num</code> isn't a pointer, private kernel arg cannot be references, they must be simple primitives like <code class="highlighter-rouge">int</code> and <code class="highlighter-rouge">float</code>.</p>
+
+<p>Private kernel arguments must be primitives, but they don't have to be scalars.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>float nums[4] = { 0.0f, 1.0f, 2.0f, 3.0f };
+clSetKernelArg(kernel, 0, sizeof(nums), nums);
+__kernel void proc_data(float4 values, ...) {
+
+}
+</code></pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/17/template_8/" title=" 'Notes on C++ Templates 8'"> ← Notes on C++ Templates 8</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/18/OpenCL_4/" title="Next Post 'OpenCL notes_4 operators and functions'">OpenCL notes_4 operators and functions → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

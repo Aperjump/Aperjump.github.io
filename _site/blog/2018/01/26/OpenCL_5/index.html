@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OpenCL notes_5 Event, Profiling, and Synchronization | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="OpenCL notes_5 Event, Profiling, and Synchronization" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="OpenCL notes_5 Event, Profiling, and Synchronization" />
+<meta property="og:description" content="OpenCL notes_5 Event, Profiling, and Synchronization" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/26/OpenCL_5/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/26/OpenCL_5/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-26T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/26/OpenCL_5/"},"url":"http://localhost:4000/blog/2018/01/26/OpenCL_5/","author":{"@type":"Person","name":"Wang Wei"},"description":"OpenCL notes_5 Event, Profiling, and Synchronization","headline":"OpenCL notes_5 Event, Profiling, and Synchronization","dateModified":"2018-01-26T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-26T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="parallel,OpenCL" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">OpenCL notes_5 Event, Profiling, and Synchronization</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-26T00:00:00-08:00" datetime="2018-01-26T00:00:00-08:00">January 26, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#OpenCL" title="OpenCL">
+            OpenCL <span>8</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#OpenCL" title="OpenCL">OpenCL <span>8</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#parallel" title="parallel">parallel <span>8</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <p>In openCL, an event is a data structure that corresponds too an occurence. One event migh monitor the completion of a data transfer operation and another might monitor the execution of a kernel.</p>
+<ul>
+  <li>host notification</li>
+  <li>command synchronization</li>
+  <li>profiling</li>
+</ul>
+
+<h2 id="heading-1-host-notification">1. Host Notification</h2>
+<p>After the host enqueues a command, it has no controal over how the command will be processed, but it can receive notification when the command completes its execution. –&gt; <code class="highlighter-rouge">cl_event</code>
+For example, when the data transfer is complete, you may want the host application to respond by processing the data. 
+You need to assocaite the event with the data transfer command. Then you need to associate the event with a function to be called on the host when the transfer command finishes. –&gt;<code class="highlighter-rouge">callback function</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_event ev;
+clEnqueueTask(queue, kernel, 0, NULL, &amp;ev);
+cl_int clSetEventCallback(cl_event event, cl_int callback_type, void (CL_CALLBACK *func_name) (cl_event, cl_int status, void *data), void* data);
+</code></pre>
+</div>
+<p>The second arg <code class="highlighter-rouge">callback_type</code> identifies the type of command status you're interested in monitoring. <code class="highlighter-rouge">CL_COMPLETE</code>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clsetEventCallback(ev, CL_COMPLETE, &amp;process, NULL);
+void CL_CALLBACK func_name(cl_event event, cl_int status, void* data);
+</code></pre>
+</div>
+<p>It's important to remember that <code class="highlighter-rouge">clSetEventCallback</code> must be called <strong>after</strong> the command enqueueing functions, else you will receive a segmentation fault.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>/* Enqueue kernel */
+err = clEnqueueTask(queue, kernel, 0, NULL, &amp;kernel_event);
+if(err &lt; 0) {
+  perror("Couldn't enqueue the kernel");
+  exit(1);   
+}
+
+/* Read the buffer */
+err = clEnqueueReadBuffer(queue, data_buffer, CL_FALSE, 0, 
+  sizeof(data), &amp;data, 0, NULL, &amp;read_event);
+if(err &lt; 0) {
+  perror("Couldn't read the buffer");
+  exit(1);   
+}
+
+/* Set event handling routines */
+kernel_msg = "The kernel finished successfully.\n\0";
+err = clSetEventCallback(kernel_event, CL_COMPLETE, 
+     &amp;kernel_complete, kernel_msg);
+if(err &lt; 0) {
+  perror("Couldn't set callback for event");
+  exit(1);   
+}
+clSetEventCallback(read_event, CL_COMPLETE, &amp;read_complete, data);
+</code></pre>
+</div>
+
+<h2 id="heading-2-command-sync-events">2. Command Sync Events</h2>
+<p>command queue executes commands in order, but when dispatch different command queue, there will be no order guarantee. 
+You can force one or more commands to wait until a set of events have completed. These events are called <code class="highlighter-rouge">wait list</code></p>
+<h3 id="heading-21-wait-list-and-command-events">2.1 Wait list and command events</h3>
+<p>If you set the last argument of an enqueuing function to point to a <code class="highlighter-rouge">cl_event</code>, that event will be assocaited with the enqueued command. –&gt; <strong>command event</strong>. 
+Every OpenCL command has a wait list made of <code class="highlighter-rouge">cl_event</code> structures. If a command's waitlist is NULL, it can start executing as soon as it reaches the end of the command queue. If the command's wait list isn't NULL, then for every <code class="highlighter-rouge">cl_event</code> in the list, the command must halt until the event's corresponding occurrences has completed.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//cl_uint num_events --&gt; num of cl_event in the command's wait list
+//const cl_event *wait_list -&gt; pointer to the cl_event in the wait list
+cl_event kernel_event[2];
+clEnqueueTask(queue_a, kernel_a, 0, NULL, &amp;kernel_event[0]);
+clEnqueueTask(queue_b, kernel_b, 0, NULL, &amp;kernel_event[1]);
+clEnqueueTask(queue_c, kernel_c, 2, kernel_event, NULL);
+</code></pre>
+</div>
+
+<h3 id="heading-22-user-events">2.2 user events</h3>
+<p>If an event is associate with an occurence within a host application, it's <strong>user event</strong>. 
+Command events correspond to commands executing on the device, but but a user event is generated by the host application.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_event clCreateUserEvent(cl_context context, cl_int *err);
+</code></pre>
+</div>
+<p>If you add a user event to a command's wait list, theexecution of the command wait halt until the host application updates the event's status. This is accompolished by calling <code class="highlighter-rouge">clSetUserEventStatus</code> function.</p>
+
+<h3 id="heading-23-marker-command">2.3 Marker command</h3>
+<p><code class="highlighter-rouge">clEnqueueMarker</code> function enqueues a command called a <strong>marker command</strong> and associates an event with the execution of every command preceding it.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clEnqueueMarker(cl_command_queue command_queue, cl_event*event);
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>void CL_CALLBACK process(cl_event event, cl_int status, void* data) {
+	...
+}
+int main() {
+	cl_event ev;
+	cl_int clSetEventCallback(ev, CL_COMPLETE, &amp;process, NULL);
+	cl_int clEnqueueMarker(cl_command_queue, ev);
+}
+</code></pre>
+</div>
+<h3 id="heading-24-wait-command">2.4 Wait Command</h3>
+<p><strong>wait command</strong> tells the command queue not to execute any following commands until the events in its wait list have reached a completed state.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_nt clEnqueueWaitForEvents(cl_command_queue queue, cl_int num_events, const cl_event *wait_list);
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_event e;
+e = clCreateUserEvent(context, &amp;err);
+clEnqueueWaitForEvents(queue, 1, &amp;e);
+clSetUserEventStatus(e, CL_SUCCESS);
+</code></pre>
+</div>
+<h3 id="heading-25-barrier-command">2.5 Barrier Command</h3>
+<p><code class="highlighter-rouge">clEnqueueBarrier</code> prevent later commands on the queue from executing. It enqueues a command called a <strong>barrier command</strong>. This forces following commands to stall until preceding commands have completed their execution.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clEnqueueBarrier(cl_command_queue queue);
+</code></pre>
+</div>
+
+<h2 id="heading-3-profiling-events">3. Profiling Events</h2>
+<h3 id="heading-31-configure-command-profiling">3.1 Configure command profiling</h3>
+<p>Three steps:</p>
+<ol>
+  <li>Set the <code class="highlighter-rouge">CL_QUEUE_PROFILING_ENABLE</code> flag when you create a command queue with <code class="highlighter-rouge">clCreateCommandQueue</code>.</li>
+  <li>Associate a <code class="highlighter-rouge">cl_event</code> with the command you want to profile.</li>
+  <li>After the command completes its executing, call <code class="highlighter-rouge">clGetEventProfilingInfo</code> to access the <code class="highlighter-rouge">cl_event</code> and obtain information about the command's timing.</li>
+</ol>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clGetEventProfilingInfo(cl_event event, cl_profiling_info param, 
+	size_t param_value_size, void* param_value, size_t* param_value_size_ret);
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_event timing_event;
+cl_ulong time_start, time_end, read_time;
+queue = clCreateCommandQueue(context, device,
+CL_QUEUE_PROFILING_ENABLE, NULL);
+clEnqueueReadBuffer(queue, data_buffer, TRUE, 0,
+sizeof(data), data, 0, NULL, &amp;timing_event);
+clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_START,
+sizeof(time_start), &amp;time_start, NULL);
+clGetEventProfilingInfo(timing_event, CL_PROFILING_COMMAND_END,
+sizeof(time_end), &amp;time_end, NULL);
+read_time = time_end - time_start;
+</code></pre>
+</div>
+
+<h2 id="heading-4-work-item-synchronization">4. Work-item Synchronization</h2>
+<p>openCL provides two kinds of synchronization: command synchronization and work-item synchronization.</p>
+<h3 id="heading-41-barrier-and-fences">4.1 Barrier and Fences</h3>
+<p><code class="highlighter-rouge">int barrier (cl_mem_fence_flags flags)</code> forces a work-item until every other work-item in the group reaches the barrier. By creating a barrier, you can make sure that every work-itm has reached the same point in its processing. 
+The <code class="highlighter-rouge">ClK_LOCAL_MEM_FENCE</code> flag specifies that the barrier will affect memory operations related to the work-group's local memory. 
+Fences are similar to barriers, but they make it possible to synchronize specific memory operations.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>void read_mem_fence(cl_mem_fence_flags flags);
+void write_mem_fence(cl_mem_fence_flags flags);
+void mem_fence(cl_mem_fence_flags flags);
+// stalls further read/write operations until every preceding read/write operation has completed.
+</code></pre>
+</div>
+
+<h3 id="heading-42-atomic-operation">4.2 Atomic operation</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>__kernel void atomic(__global int* x) {
+	__local int a, b;
+	a = 0;
+	b = 0;
+	a++;
+	atomic_inc(&amp;b);
+	x[0] = a;
+	x[1] = b;
+}
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>if (atomic_cmpxchg(&amp;mutex, 0, 1) == 0) {
+	process_critical_data();
+	atomic_xchg(&amp;mutex, 0);
+}
+</code></pre>
+</div>
+<h3 id="heading-43-asynchronous-data-transfer">4.3 Asynchronous data transfer</h3>
+<p>Transfer data between local and global memory:
+–&gt; <strong>asynchronous data transfer</strong>
+<img src="https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-18-OpenCL_4/OpenCL_4_3.PNG" alt="openCL_5" /></p>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/25/Fibonacci_Heap/" title=" 'Fibonacci Heap Implementation'"> ← Fibonacci Heap Implementation</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/27/OpenCL_6/" title="Next Post 'OpenCL notes_6 reduction'">OpenCL notes_6 reduction → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Notes on C++ Templates 12 | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="Notes on C++ Templates 12" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="C++ Templates notes series" />
+<meta property="og:description" content="C++ Templates notes series" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/19/template_12/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/19/template_12/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-19T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/19/template_12/"},"url":"http://localhost:4000/blog/2018/01/19/template_12/","author":{"@type":"Person","name":"Wang Wei"},"description":"C++ Templates notes series","headline":"Notes on C++ Templates 12","dateModified":"2018-01-19T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-19T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="C++,Template" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">Notes on C++ Templates 12</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-19T00:00:00-08:00" datetime="2018-01-19T00:00:00-08:00">January 19, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#C++" title="C++">
+            C++ <span>24</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#C++" title="C++">C++ <span>21</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#Template" title="Template">Template <span>19</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-smart-pointer">1. smart pointer</h2>
+<p>holder: 独占类型
+trule: 对象拥有者</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>//pointers/holder.hpp
+
+template &lt;typename T&gt;
+class Holder {
+private:
+        T* ptr;
+public:
+        Holder() : ptr(0) {
+        }
+
+        explicit Holder (T* p) : ptr(p) {
+        }
+
+        ~Holder() {
+                delete ptr;
+        }
+
+        Holder&lt;T&gt;&amp; operator= (T* p) {
+                delete ptr;
+                ptr = p;
+                return *this;
+        }
+
+        T&amp; operator* () const {
+                return *ptr;
+        }
+
+        T* opeartor-&gt; () const {
+                return ptr;
+        }
+
+        T* get() const {
+                return ptr;
+        }
+
+        T* release() {
+                T* ret = ptr;
+                ptr = 0;
+                return ret;
+        }
+        void exchange_with (Holder&lt;T&gt;&amp; h) {
+                swap(ptr, h.ptr);
+        }
+
+        void exchaneg_with(T*&amp; p) {
+                swap(ptr, p);
+        }
+
+private:
+        Holder(Holder&lt;T&gt; const&amp;);
+        Holder&lt;T&gt;&amp; opeartor= (Holder&lt;T&gt; const&amp;);
+};
+</code></pre>
+</div>
+<p>跨函数调用holder的问题：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>Something* creator()
+{
+    Holder&lt;Something&gt; h(new Something);
+    MyClass x;
+    return h.release();
+}
+</code></pre>
+</div>
+<p>当h释放资源之后，x也会释放，但是如果此时x抛出异常，就会发生资源泄漏的问题．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//pointers/trule.hpp
+
+#ifndef TRULE_HPP
+#define TRULE_HPP
+
+template&lt;typename T&gt;
+class Holder;
+
+template&lt;typename T&gt;
+class Trule {
+private:
+        T* ptr; // Trule所引用的对象
+public:
+        Trule (HOlder&lt;T&gt;&amp; h) {
+                ptr = h.get();
+                h.release();
+        }
+
+        Trule (Trule&lt;T&gt; const&amp; t) {
+                ptr = t.ptr;
+                const_cast&lt;Trule&lt;T&gt;&amp;&gt;(t).prt = 0;
+        }
+
+        ~Trule() {
+                delete ptr;
+        }
+private:
+        Trule(Trule&lt;T&gt;&amp;);
+        Trule&lt;T&gt;&amp; operator= (Trule&lt;T&gt;&amp;);
+        friend class Holder&lt;T&gt;;
+};
+#endif
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">trule</code>通常时作为那些想传递holder的返回类型，因此trule总是作为rvalues出现，他们的类型也只能时reference to const．我们必须要移除原trule的所有权，因此需要将其置空，但是置空需要<code class="highlighter-rouge">const_cast</code>函数．</p>
+<h2 id="heading-2-引用计数">2. 引用计数</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>class CounterPolicy {
+public:
+    CounterPolicy();
+    CounterPolicy(CounterPolicy const&amp;);
+    ~CounterPolicy();
+    CounterPolicy&amp; operator= (CounterPolicy const&amp;);
+    
+    void init(T*) // 初始化为１，为计数器分配空间
+    void dispose(T*) // 计数器空间释放
+    void increment(T*) // 增加１的原子操作
+    void decrement(T*) // 减少１的原子操作
+    bool is_zero(T*) // 检查是否为０
+};
+</code></pre>
+</div>
+<p>计数器锁只能锁住计数器，不能锁住CounterPolicy
+由于析构的时候可能采用不同的方式，因此我们需要引入一个单独的对象policy</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>class ObjectPolicy　{
+public:
+    ObjectPolicy();
+    ObjectPolicy(CounterPolicy const&amp;);
+    ~ObjectPolicy();
+    ObjectPolicy&amp; operator= (ObjectPolicy const&amp;);
+    // 假设Ｔ时所指向对象的类型
+    void dispose (T*);
+};
+class StandardObjectPolicy {
+public:
+    template&lt;typename T&gt; void dispose (T* object) {
+        delete object;
+    }
+};
+class StandardArrayPolicy {
+public:
+    template&lt;typename T&gt; void dispose (T* object) {
+        delete [] object;
+    }
+};
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>//pointers/countingptr.hpp
+
+template&lt;typename T, typename CounterPolicy = SimpleReferenceCount,
+        typename ObjectPolicy = StandardObjectPolicy&gt;
+class CountingPtr : private CounterPolicy, private ObjectPolicy {
+private:
+        typedef CounterPolicy CP;
+        typedef ObjectPolicy OP;
+
+        T* object_pointed_to;
+public:
+        CountingPtr() {
+                this-&gt;object_pointed_to = NULL;
+        }
+
+        explicit CountingPtr(T* p) {
+                this-&gt;init(p);
+        }
+
+        CountingPtr(CountingPtr&lt;T,CP,OP&gt; const&amp; cp) : CP((CP const&amp;)cp), OP((OP const&amp;)cp) {
+                this-&gt;attach(cp);
+        }
+
+        ~CountingPtr() {
+                this-&gt;detach();
+        }
+
+        CountingPtr&lt;T,CP,OP&gt;&amp; operator= (T* p) {
+                assert(p != this-&gt;object_pointed_to);
+                this-&gt;detach();
+                this-&gt;init(p);
+                return *this;
+        }
+
+        CountingPtr&lt;T,CP,OP&gt;&amp; operator= (CountingPtr&lt;T,CP,OP&gt; const&amp; cp) {
+                if (this-&gt;object_pointed_to != cp.object_pointed_to) {
+                        this-&gt;detach();
+                        CP::operator=((CP const&amp;) cp);
+                        OP::operator=((OP const&amp;) cp);
+                        this-&gt;attach(cp);
+                }
+                return *this;
+        }
+        T* operator-&gt;() const {
+                return this-&gt;object_pointed_to;
+        }
+
+        T&amp; operator* () const {
+                return this-&gt;object_pointed_to;
+        }
+
+private:
+        void init(T* p) {
+                if (p != NULL) {
+                        CountingPtr::init(p);
+                }
+                this-&gt;object_pointed_to = p;
+        }
+
+        void attach (CountingPtr&lt;T,CP,OP&gt; const&amp; cp) {
+                this-&gt;object_pointed_to = cp.object_pointed_to;
+                if (cp.object_pointed_to != NULL)
+                        CounterPolicy::increment(cp.object_pointed_to);
+        }
+
+        void detach() {
+                if (this-&gt;object_pointed_to != NULL ) {
+                        CounterPolicy::decrement(this-&gt;object_pointed_to);
+                        if (CounterPolicy::is_zero(this-&gt;object_pointed_to)) {
+                                CounterPolicy::dispose(this-&gt;object_pointed_to);
+                                ObjectPolicy::dispose(this-&gt;object_pointed_to);
+                        }
+                }
+        }
+};
+</code></pre>
+</div>
+<h3 id="heading-21-非侵入式计数器">2.1 非侵入式计数器</h3>
+<p>当不把计数器放在所指对象内部时，我们称之为非侵入式计数器．
+同一个计数器需要被很多个对象共享，它的生命周期持续到最后一个智能指针被释放．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//pointers/simplerefcount.hpp
+#include &lt;stddef.h&gt;
+#include "allocator.hpp"
+
+class SimpleReferenceCount {
+private:
+        size_t* counter;
+public:
+        SimpleReferenceCount() {
+                counter = NULL;
+        }
+
+public:
+        template&lt;typename T&gt; void init(T*) {
+                counter = alloc_counter();
+                *counter = 1;
+        }
+
+        template&lt;typename T&gt; void dispose (T*) {
+                dealloc_counter(counter);
+        }
+
+        template&lt;typename T&gt; void increment (T*) {
+                ++*counter;
+        }
+
+        template&lt;typename T&gt; void decrement (T*) {
+                --*counter;
+        }
+
+        template&lt;typename T&gt; bool is_zero(T*) {
+                return *counter == 0;
+        }
+};
+</code></pre>
+</div>
+<h3 id="heading-22-侵入式计数器模板">2.2 侵入式计数器模板</h3>
+<p>侵入式计数器policy就是将计数器放到被管理对象本身的类型中．</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>//pointers/memberrefcount.hpp
+
+template&lt;typename ObjectT, 
+        typename CountT,
+        CountT Object::*CountP&gt;
+class MemberReferenceCount
+{
+public:
+        void init(ObjectT* object) {
+                object-&gt;*CountP = 1;
+        }
+
+        void dispose (ObjectT*) {
+        }
+
+        void increment (ObjectT* object) {
+                ++object-&gt;*CountP;
+        }
+
+        void decrement (ObjectT* object) {
+                --object-&gt;*CountP;
+        }
+
+        template&lt;typename T&gt; bool is_zero (ObjectT* object) {
+                return object-&gt;*CountP == 0;
+        }
+};
+</code></pre>
+</div>
+
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/18/template_9/" title=" 'Notes on C++ Templates 9'"> ← Notes on C++ Templates 9</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/19/template_13/" title="Next Post 'Notes on C++ Templates 13'">Notes on C++ Templates 13 → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

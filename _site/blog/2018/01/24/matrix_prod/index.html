@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>The Annotated uBLAS Sources 5 Matrix_Prod | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="The Annotated uBLAS Sources 5 Matrix_Prod" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="my notes on reading uBLAS code5" />
+<meta property="og:description" content="my notes on reading uBLAS code5" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/24/matrix_prod/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/24/matrix_prod/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-24T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/24/matrix_prod/"},"url":"http://localhost:4000/blog/2018/01/24/matrix_prod/","author":{"@type":"Person","name":"Wang Wei"},"description":"my notes on reading uBLAS code5","headline":"The Annotated uBLAS Sources 5 Matrix_Prod","dateModified":"2018-01-24T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-24T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="C++,Template" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">The Annotated uBLAS Sources 5 Matrix_Prod</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-24T00:00:00-08:00" datetime="2018-01-24T00:00:00-08:00">January 24, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#C++" title="C++">
+            C++ <span>24</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#C++" title="C++">C++ <span>21</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#Template" title="Template">Template <span>19</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-matrix-prod">Matrix Prod</h2>
+
+<p>In this blog I will try to discuss the structure of <code class="highlighter-rouge">boost::ublas</code>. After analyzing many function of <code class="highlighter-rouge">vector</code> and <code class="highlighter-rouge">matrix</code>, I begin to grasp the idea of this project and try to break it down with an example of <code class="highlighter-rouge">ublas::prod</code>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>m3 = ublas::prod(m1, m2);
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">ublas</code> break the idea of matrix, vector operation into different concepts layers:</p>
+
+<ul>
+  <li>expression</li>
+  <li>unary, binary expression</li>
+  <li>unary, binary functor</li>
+  <li>operation</li>
+</ul>
+
+<p>There are many auxillary parts besides these, like iterator, storage, and assignment. Since their implementation implies lower-level facilities, I will not discuss them in great detail and leave them to readers.</p>
+
+<h3 id="heading-1-from-operation-to-functor">1. from operation to functor</h3>
+<p><code class="highlighter-rouge">ublas:prob(matrix, matrix)</code> calls</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>// Dispatcher
+template&lt;class E1, class E2&gt;
+BOOST_UBLAS_INLINE
+typename matrix_matrix_binary_traits&lt;typename E1::value_type, E1,
+     typename E2::value_type, E2&gt;::result_type
+prod (const matrix_expression&lt;E1&gt; &amp;e1,
+      const matrix_expression&lt;E2&gt; &amp;e2) {
+    typedef BOOST_UBLAS_TYPENAME matrix_matrix_binary_traits&lt;BOOST_UBLAS_TYPENAME E1::value_type, E1,
+     BOOST_UBLAS_TYPENAME E2::value_type, E2&gt;::storage_category storage_category;
+    typedef BOOST_UBLAS_TYPENAME matrix_matrix_binary_traits&lt;BOOST_UBLAS_TYPENAME E1::value_type, E1,
+     BOOST_UBLAS_TYPENAME E2::value_type, E2&gt;::orientation_category orientation_category;
+    return prod (e1, e2, storage_category (), orientation_category ());
+}
+</code></pre>
+</div>
+<p>Though Scary at first, this function only add two paramters <code class="highlighter-rouge">storage_category</code> and <code class="highlighter-rouge">orientation_category()</code> to <code class="highlighter-rouge">prob</code>. Next, our leading actor comes in:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;class E1, class E2&gt;
+BOOST_UBLAS_INLINE
+typename matrix_matrix_binary_traits&lt;typename E1::value_type, E1,
+     typename E2::value_type, E2&gt;::result_type
+prod (const matrix_expression&lt;E1&gt; &amp;e1,
+      const matrix_expression&lt;E2&gt; &amp;e2,
+      unknown_storage_tag,
+      unknown_orientation_tag) {
+    typedef BOOST_UBLAS_TYPENAME matrix_matrix_binary_traits&lt;BOOST_UBLAS_TYPENAME E1::value_type, E1,
+     BOOST_UBLAS_TYPENAME E2::value_type, E2&gt;::expression_type expression_type;
+    return expression_type (e1 (), e2 ());
+}
+</code></pre>
+</div>
+<p>In previous passage, I have seen this function multiple times, and they share some common properties:</p>
+<ol>
+  <li>use <code class="highlighter-rouge">traits</code> to determine <code class="highlighter-rouge">expression_type</code> and <code class="highlighter-rouge">result_type</code>.</li>
+  <li>return one <code class="highlighter-rouge">expression_type</code>, and it doesn't have  evaluation function.</li>
+</ol>
+
+<p>What does traits look like:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;class T1, class E1, class T2, class E2&gt;
+struct matrix_matrix_binary_traits {
+    typedef unknown_storage_tag storage_category;
+    typedef unknown_orientation_tag orientation_category;
+    typedef typename promote_traits&lt;T1, T2&gt;::promote_type promote_type;
+    typedef matrix_matrix_binary&lt;typename E1::const_closure_type,
+     typename E2::const_closure_type,
+     matrix_matrix_prod&lt;T1, T2, promote_type&gt; &gt; expression_type;
+#ifdef BOOST_UBLAS_USE_ET
+    typedef expression_type result_type;
+#else
+    typedef matrix&lt;promote_type&gt; result_type;
+#endif
+};
+</code></pre>
+</div>
+<p>Two main features is <code class="highlighter-rouge">promote_traits</code> and <code class="highlighter-rouge">expression_type</code>. The first one is simpler, since it converts two <code class="highlighter-rouge">value_type</code> to one larger type, for example one float type and one double type will promoted to double. 
+<code class="highlighter-rouge">expression_type</code> is a recursive definition, cause <code class="highlighter-rouge">const_closure</code> type is just the expression type itself. and with <code class="highlighter-rouge">matrix_vector_binary2</code>, it treats the last type <code class="highlighter-rouge">matrix_vector_prod2&lt;T1, T2, promote_type&gt;</code> a functor.</p>
+
+<h3 id="heading-2-from-functor-to-binaryunary-class">2. from functor to binary/unary class</h3>
+<p>Here, we have finished the type deduction step for compiler, and need to initialize some real classes. 
+As we have seen, <code class="highlighter-rouge">expression_type</code> is a <code class="highlighter-rouge">matrix_matrix_binary</code> class and this class has one <code class="highlighter-rouge">operator ()</code> which accepts two <code class="highlighter-rouge">matrix_expression</code> type.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>matrix_matrix_binary (const expression1_type &amp;e1, const expression2_type &amp;e2): 
+    e1_ (e1), e2_ (e2) {}
+</code></pre>
+</div>
+<p>This two copy assignment operator will not actually do the copy work, their evaluation happens when assigned to the left hand side <code class="highlighter-rouge">matrix</code>.</p>
+
+<h3 id="heading-3-from-binaryunary-class-to-matrix-class">3. from binary/unary class to matrix class</h3>
+<p>This function will do the rest part:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;class AE&gt;
+BOOST_UBLAS_INLINE
+matrix (const matrix_expression&lt;AE&gt; &amp;ae):
+    size1_ (ae ().size1 ()), size2_ (ae ().size2 ()), data_ (ae ().size1 () * ae ().size2 ()) { 
+    matrix_assign&lt;scalar_assign&lt;value_type, BOOST_UBLAS_TYPENAME AE::value_type&gt; &gt; () (*this, ae);
+}
+</code></pre>
+</div>
+<p>After copying all the data from the expression, it calls one <code class="highlighter-rouge">matrix_assign</code> function. We have seen this before and the rest comes easily:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>// Dispatcher
+template&lt;class M, class E&gt;
+BOOST_UBLAS_INLINE
+void operator () (M &amp;m, const matrix_expression&lt;E&gt; &amp;e) {
+    typedef typename matrix_assign_traits&lt;BOOST_UBLAS_TYPENAME M::storage_category,
+      assign_category,
+      BOOST_UBLAS_TYPENAME E::const_iterator1::iterator_category,
+      BOOST_UBLAS_TYPENAME E::const_iterator2::iterator_category&gt;::storage_category storage_category;
+    // FIXME: can't we improve the dispatch here?
+    // typedef typename E::orientation_category orientation_category;
+    typedef typename M::orientation_category orientation_category;
+#ifndef BOOST_UBLAS_ENABLE_SPECIALIZED_ASSIGN
+    operator () (m, e, storage_category (), orientation_category ());
+#else
+    evaluate_matrix_assign (functor_type (), m, e, storage_category (), orientation_category ());
+#endif
+}
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">evaluate_matrix_assign</code> did most of the work and transfer to <code class="highlighter-rouge">index_matrix_assign</code> or <code class="highlighter-rouge">iterating_matrix_assign</code>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>void evaluate_matrix_assign (const F &amp;f, M &amp;m, const matrix_expression&lt;E&gt; &amp;e, dense_proxy_tag, C c) {
+    typedef F functor_type;
+    typedef C orientation_category;
+#ifdef BOOST_UBLAS_USE_INDEXING
+    indexing_matrix_assign (functor_type (), m, e, orientation_category ());
+#elif BOOST_UBLAS_USE_ITERATING
+    iterating_matrix_assign (functor_type (), m, e, orientation_category ());
+#else
+    typedef typename M::difference_type difference_type;
+    difference_type size1 (BOOST_UBLAS_SAME (m.size1 (), e ().size1 ()));
+    difference_type size2 (BOOST_UBLAS_SAME (m.size2 (), e ().size2 ()));
+    if (size1 &gt;= BOOST_UBLAS_ITERATOR_THRESHOLD &amp;&amp;
+        size2 &gt;= BOOST_UBLAS_ITERATOR_THRESHOLD)
+        iterating_matrix_assign (functor_type (), m, e, orientation_category ());
+    else
+        indexing_matrix_assign (functor_type (), m, e, orientation_category ());
+#endif
+}
+</code></pre>
+</div>
+<p>And inside its loop, this function will call <code class="highlighter-rouge">functor_type () (m (i, j), e () (i, j));</code>
+This fnction resides in <code class="highlighter-rouge">matrix_matirx_binary</code> class.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>BOOST_UBLAS_INLINE
+const_reference operator () (size_type i, size_type j) const { 
+    return functor_type () (e1_, e2_, i, j);
+}
+</code></pre>
+</div>
+
+<h3 id="heading-4-from-matrix_class-to-functor">4. from matrix_class to functor</h3>
+<p>The last part is the evlaution of functor class. 
+With <code class="highlighter-rouge">matrix_matrix_prob</code> type, we will call its <code class="highlighter-rouge">operator ()</code>:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;class E1, class E2&gt;
+BOOST_UBLAS_INLINE
+result_type operator () (const matrix_expression&lt;E1&gt; &amp;e1,
+     const matrix_expression&lt;E2&gt; &amp;e2,
+     size_type i, size_type j) const {
+    size_type size = BOOST_UBLAS_SAME (e1 ().size2 (), e2 ().size1 ());
+    result_type t (0);
+#ifndef BOOST_UBLAS_USE_DUFF_DEVICE
+    for (size_type k = 0; k &lt; size; ++ k)
+        t += e1 () (i, k) * e2 () (k, j);
+#else
+    size_type k (0);
+    DD (size, 4, r, (t += e1 () (i, k) * e2 () (k, j), ++ k));
+#endif
+    return t;
+}
+</code></pre>
+</div>
+<p>This function will access each element in <code class="highlighter-rouge">e1</code> and <code class="highlighter-rouge">e2</code>, and sum them up to get one element. This is slow and I believe I can think of method to solve this performance bottleneck with GPU.</p>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/23/matrix_expression_template/" title=" 'The Annotated uBLAS Sources 4 Matrix Expression Template'"> ← The Annotated uBLAS Sources 4 Matrix Expression Template</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/25/Fibonacci_Heap/" title="Next Post 'Fibonacci Heap Implementation'">Fibonacci Heap Implementation → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

@@ -1,292 +1,684 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2017-09-14T10:50:40+08:00</updated><id>http://localhost:4000/</id><title type="html">Aperjump's Playground</title><subtitle>Embrace your inner geek.</subtitle><author><name>Wang Wei</name></author><entry><title type="html">A quick demo of Simple Texture theme's code highlighting features</title><link href="http://localhost:4000/blog/2017/05/27/code-highlighting/" rel="alternate" type="text/html" title="A quick demo of Simple Texture theme's code highlighting features" /><published>2017-05-27T00:00:00+08:00</published><updated>2017-05-27T00:00:00+08:00</updated><id>http://localhost:4000/blog/2017/05/27/code-highlighting</id><content type="html" xml:base="http://localhost:4000/blog/2017/05/27/code-highlighting/">&lt;blockquote&gt;
-  &lt;p&gt;This is code blocks and highlighting test page for &lt;a href=&quot;https://github.com/yizeng/jekyll-theme-simple-texture&quot;&gt;Simple Texture&lt;/a&gt; theme.&lt;/p&gt;
-&lt;/blockquote&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2018-05-10T14:15:33-07:00</updated><id>http://localhost:4000/</id><title type="html">Aperjump's Playground</title><subtitle>Embrace your inner geek.</subtitle><author><name>Wang Wei</name></author><entry><title type="html">Lexical Analysis</title><link href="http://localhost:4000/blog/2018/05/10/Lexical-Analysis/" rel="alternate" type="text/html" title="Lexical Analysis " /><published>2018-05-10T00:00:00-07:00</published><updated>2018-05-10T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/05/10/Lexical%20Analysis</id><content type="html" xml:base="http://localhost:4000/blog/2018/05/10/Lexical-Analysis/">&lt;h2 id=&quot;heading-lexical-analysis&quot;&gt;Lexical Analysis&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;goal&lt;/strong&gt;: identify each lexeme and return information on token&lt;/p&gt;
+&lt;h3 id=&quot;heading-1-lexical-analyzer-role&quot;&gt;1 Lexical Analyzer Role&lt;/h3&gt;
+&lt;p&gt;(1) read input characters, group them into lexemes, and produce output a sequence of tokens&lt;/p&gt;
 
-&lt;ul class=&quot;toc&quot; id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#heading-code-spans&quot; id=&quot;markdown-toc-heading-code-spans&quot;&gt;Code Spans&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#heading-fenced-code-blocks&quot; id=&quot;markdown-toc-heading-fenced-code-blocks&quot;&gt;Fenced Code Blocks&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#heading-simple-codeblock-with-long-lines&quot; id=&quot;markdown-toc-heading-simple-codeblock-with-long-lines&quot;&gt;Simple codeblock with long lines&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#heading-language-of-code-blocks&quot; id=&quot;markdown-toc-heading-language-of-code-blocks&quot;&gt;Language of Code Blocks&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#heading-highlighted&quot; id=&quot;markdown-toc-heading-highlighted&quot;&gt;Highlighted&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-external-gist&quot; id=&quot;markdown-toc-heading-external-gist&quot;&gt;External Gist&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-simple-highlight&quot; id=&quot;markdown-toc-heading-simple-highlight&quot;&gt;Simple Highlight&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-highlight-with-long-lines&quot; id=&quot;markdown-toc-heading-highlight-with-long-lines&quot;&gt;Highlight with long lines&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-highlight-with-line-numbers-and-long-lines&quot; id=&quot;markdown-toc-heading-highlight-with-line-numbers-and-long-lines&quot;&gt;Highlight with line numbers and long lines&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;(2) When the lexical analyzer discovers a lexeme constituting an identifier, it needs to enter that lexeme into the symbol table.&lt;/p&gt;
 
-&lt;h1 id=&quot;heading-code-spans&quot;&gt;Code Spans&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525905998501.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;This is a test for inline codeblocks like &lt;code class=&quot;highlighter-rouge&quot;&gt;C:/Ruby23-x64&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;SELECT  &quot;offices&quot;.* FROM &quot;offices&quot; &lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;The figure suggests, parser will call lexical analyzer, and lexical analyzer read characters until find next token. 
+lexical analyzer will also do some additional jobs:&lt;/p&gt;
 
-&lt;p&gt;Here is a literal &lt;code class=&quot;highlighter-rouge&quot;&gt;`&lt;/code&gt; backtick.
-And here is a Ruby code fragment &lt;code class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;new&lt;/span&gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;(1) strip whitespace&lt;/p&gt;
 
-&lt;h1 id=&quot;heading-fenced-code-blocks&quot;&gt;Fenced Code Blocks&lt;/h1&gt;
+&lt;p&gt;(2) record line number for error message&lt;/p&gt;
+&lt;h4 id=&quot;heading-311-basic-concepts&quot;&gt;3.1.1 Basic Concepts&lt;/h4&gt;
+&lt;p&gt;(1) A &lt;strong&gt;token&lt;/strong&gt; is a pair consisting of a token name and an optional attribute value. The token name is an abstract symbol representing a kind of lexical unit.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;~~~~~~~
-code with tildes
-~~~~~~~~
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;p&gt;(2) A &lt;strong&gt;pattern&lt;/strong&gt; is a description of the form that the lexemes of a token may take. 
+the sequence of character which can form keywords&lt;/p&gt;
 
-&lt;h1 id=&quot;heading-simple-codeblock-with-long-lines&quot;&gt;Simple codeblock with long lines&lt;/h1&gt;
+&lt;p&gt;(3) A &lt;strong&gt;lexeme&lt;/strong&gt; is a sequence of characters in the source program that matches the pattern for a token and is identified by the lexical analyzer as an instance of the token.&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;function myFunction() {
-    alert(&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&quot;);
+&lt;p&gt;In most programming languages, the following classes cover most or all of the tokens:&lt;/p&gt;
+
+&lt;p&gt;(1) One token for each keyword. The pattern for a keyword is the same as the keyword itself.&lt;/p&gt;
+
+&lt;p&gt;(2) Tokens for the operators&lt;/p&gt;
+
+&lt;p&gt;(3) One token representing all identifiers.&lt;/p&gt;
+
+&lt;p&gt;(4) One or more tokens representing constants&lt;/p&gt;
+
+&lt;p&gt;(5) To kens for each punctuation symbol, such as left and right parentheses, comma, and semicolon.&lt;/p&gt;
+
+&lt;p&gt;Sometimes, token can have different matches, for example, 0 and 1 both match for &lt;strong&gt;number&lt;/strong&gt;. So we not only need token names, we also need token attributes. The token name influences parsing decisions, while the attribute value influences translation of tokens after the parse. 
+The appropriate attribute value for an identifier is a pointer to the symbol table entry for that identifier.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Lexical Errors&lt;/strong&gt; suppose a situation arises in which the lexical analyzer is unable to proceed because none of the patterns for tokens matches any prefix of the remaining input. The simplest recovery strategy is &quot;panic mode&quot; recovery. We delete successive characters from the remaining input, until the lexical analyzer can find a well-formed token at the beginning of what input is left. This recovery technique may confuse the parser, but in an interactive computing environment it may be quite adequate.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-2-input-buffer&quot;&gt;2 Input Buffer&lt;/h3&gt;
+&lt;p&gt;There are many situations where we need to look at least one additional character ahead. 
+&lt;img src=&quot;/assets/images/1525925908025.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We can use a buffer pair to resolve the problem. Each buffer is of the same size N, which is usually the size of a disk block. Using one system read command we can read N characters into a buffer, rather than using one system call per character.&lt;/p&gt;
+
+&lt;p&gt;In the buffer, two pointers are maintained.&lt;/p&gt;
+
+&lt;p&gt;(1) Pointer lexemeBegin, marks the beginning of the current lexeme, whose extent we are attempting to determine.&lt;/p&gt;
+
+&lt;p&gt;(2) Pointer forward scans ahead until a pattern match is found; the exact strategy whereby this determination is made will be covered in the balance of this chapter.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525926047058.png&quot; alt=&quot;image&quot; /&gt;
+We can add &lt;strong&gt;sentinels&lt;/strong&gt; at the end of each buffer.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;switch (*forward++) {
+	case eof: 
+		if (forward is at end of first buffer) {
+			reload second buffer;
+			forward = beginning of second buffer;
+		}
+		else if (forward is at the end of second buffer) {
+			reload first buffer;
+			forward = beginning of first buffer;
+		}
+		else 
+			terminate lexical analysis
+		break;
+	case for other characters;
 }
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+&lt;h3 id=&quot;heading-3-token-specification&quot;&gt;3 Token Specification&lt;/h3&gt;
+&lt;p&gt;An &lt;strong&gt;alphabet&lt;/strong&gt; is any finite set of symbols. 
+A &lt;strong&gt;string&lt;/strong&gt; over an alphabet is a finite sequence o symbols drawn from the alphabet. 
+A &lt;strong&gt;language&lt;/strong&gt; is any countable set of strings over some fixed alphabet.&lt;/p&gt;
 
-&lt;h1 id=&quot;heading-language-of-code-blocks&quot;&gt;Language of Code Blocks&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;operations on language&lt;/strong&gt;
+&lt;img src=&quot;/assets/images/1525926320045.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;heading-31-regular-expression&quot;&gt;3.1 Regular Expression&lt;/h4&gt;
+&lt;p&gt;We are able to describe identifiers by giving names to sets of letters and digits and using the language operators union, concatenation, and closure. This process is so useful that a notation called &lt;strong&gt;regular expression&lt;/strong&gt; has come into common use for describing all the language that can be built from these operators applied to the symbols of some alphabet.&lt;br /&gt;
+Here are the rules that define the regular expressions over some alphabet $\Sigma$ and the languages that those expressions denote. 
+There are two rules that form the basis:&lt;/p&gt;
 
-&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;what?&lt;/span&gt;
-  &lt;span class=&quot;mi&quot;&gt;42&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;p&gt;(1) $\epsilon$ is a regular expression, and $L(\epsilon)$ is ${\epsilon}$, that is, the language whose sole member is empty string.&lt;/p&gt;
+
+&lt;p&gt;(2) If $a$ is a symbol in $\Sigma$, then $a$ is a regular expression, and $L(a) = {a}$, that is, the language with one string, of length one, with $a$ in its one position.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525926883438.png&quot; alt=&quot;image&quot; /&gt;
+&lt;img src=&quot;/assets/images/1525926900662.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+&lt;h4 id=&quot;heading-32-extensions-of-regular-expressions&quot;&gt;3.2 Extensions of Regular Expressions&lt;/h4&gt;
+&lt;p&gt;(1) One or more instances. &lt;code class=&quot;highlighter-rouge&quot;&gt;(r)+&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;(2) Zero or one instance. &lt;code class=&quot;highlighter-rouge&quot;&gt;r?&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;(3) Character classes &lt;code class=&quot;highlighter-rouge&quot;&gt;[abc]&lt;/code&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-4-recognition-of-tokens&quot;&gt;4 Recognition of Tokens&lt;/h3&gt;
+&lt;p&gt;Here is our example:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;stmt -&amp;gt; if expr then stmt
+	 | if expr then stmt else stmt
+	 |  $\epsilon$
+expr -&amp;gt; term relop term
+	 | term
+term -&amp;gt; id
+	 | number 
+ws -&amp;gt; (blank | tab | newline)+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525928409876.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+&lt;h3 id=&quot;heading-5-finite-automata&quot;&gt;5 Finite Automata&lt;/h3&gt;
+&lt;p&gt;The heart of transition is the formalism known as &lt;strong&gt;finite automata&lt;/strong&gt;. 
+Finite automata come in two flavors:&lt;/p&gt;
+
+&lt;p&gt;(1) &lt;strong&gt;Nondeterministic finite automata&lt;/strong&gt;(NFA) have no restrictions on the labels of their edges. A symbol can label several edges out of the same state, and $\epsilon$, the empty string, is a possible label.&lt;/p&gt;
+
+&lt;p&gt;(2) &lt;strong&gt;Deterministic finite automata&lt;/strong&gt; (DFA) have, for each state, and for each symbol of its input alphabet exactly one edge with that symbol leaving the state.&lt;/p&gt;
+
+&lt;p&gt;Both deterministic and nondeterministic finite automata are capable of recognizing the same language. In fact these language are exactly the same language, called the &lt;strong&gt;regular language&lt;/strong&gt;, that regular expressions can describe.&lt;/p&gt;
+&lt;h4 id=&quot;heading-51-nfa&quot;&gt;5.1 NFA&lt;/h4&gt;
+&lt;p&gt;NFA consists of :
+(1) A finite set of states $S$&lt;/p&gt;
+
+&lt;p&gt;(2) A set of input symbols $\Sigma$, the input alphabet. We assume that $\epsilon$, which stands for the empty string, is never a member of $\Sigma$&lt;/p&gt;
+
+&lt;p&gt;(3) A transition function that gives, for each state, and for each symbol in $\Sigma \cup{\epsilon}$ a set of next states.&lt;/p&gt;
+
+&lt;p&gt;(4) A state $s_0$ from $S$ that is distinguished as the start state(or initial state)&lt;/p&gt;
+
+&lt;p&gt;(5) A set of states $F$, a subset of $S$, that is distinguished as the accepting states(or final states)&lt;/p&gt;
+
+&lt;p&gt;An NFA &lt;strong&gt;accepts&lt;/strong&gt; input string $x$ iff there is some path in the transition graph from the start state to one of the &lt;strong&gt;accepting states&lt;/strong&gt;, such that the symbols along the path spell out $x$.&lt;/p&gt;
+&lt;h4 id=&quot;heading-52-dfa&quot;&gt;5.2 DFA&lt;/h4&gt;
+&lt;p&gt;A deterministic finite automata is a special case of an NFA where&lt;/p&gt;
+
+&lt;p&gt;(1) There are no moves on input $\epsilon$&lt;/p&gt;
+
+&lt;p&gt;(2) For each state $s$ and input symbol $a$, there is exactly one edge out of $s$ labeled $a$.&lt;/p&gt;
+
+&lt;p&gt;Every regular expression and every NFA can be converted to a DFA accepting the same language, because it is the DFA that we really implement or simulate when building lexical analyzers.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# Simulate a DFA
+s = s_0;
+c = nextChar();
+while (c != eof) {
+	s = move(s, c);
+	c = nextChar();
+}
+if (s in Final_state) return &quot;yes&quot;;
+else return &quot;no&quot;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h3 id=&quot;heading-6-regular-expression---automata&quot;&gt;6 Regular Expression -&amp;gt; Automata&lt;/h3&gt;
+&lt;h4 id=&quot;heading-61-nfa-dfa&quot;&gt;6.1 NFA-&amp;gt;DFA&lt;/h4&gt;
+&lt;p&gt;The general idea behind the subset construction is that each state of the constructed DFA corresponds to a set of NFA states. After reading input $a_1a_2…a_n$, the DFA is in that state which corresponds to the set of states that NFA can reach, from its start state, following paths labeled $a_1a_2…a_n$. 
+&lt;img src=&quot;/assets/images/1525974027615.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Before reading the first input symbol, N can be in any of the states of $\epsilon-closure(s_0)$. For induction, suppose N can be in set of states $T$ after reading input string $x$. If it next reads input $a$, then $N$ can immediately go to any of the states in $move(T,a)$. However, after reading $a$, it may also make $\epsilon$ transitions. Thus $N$ could be in any state of $\epsilon-closure(move(T,a))$ after reading input $xa$. 
+How to construct the set of $D$'s states, $Dstates$, and its transition function $Dtran$. 
+Initially, $\epsilon-closure(s_0)$ is the only state in $Dstates$ and it is unmarked.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# construct Dstates and Dtran
+while (there is an unmarked state T in Dstates) {
+	mark T;
+	for (each input symbol a) {
+		U  = epsilon-closure(move(T, a));
+		if (U is not in Dstates)
+			add U as an unmarked state to Dstates;
+		Dtran[T,a] = U;
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# compute epsilon closure for T
+push all states of T onto stack;
+initialize epsilon-closure(T) to T;
+while (stack is not empty) {
+	pop t off the stack;
+	for (each state u with an edge from t to u labeled epsilon) {
+		if (u is not in epsilon-closure(T)) {
+			add u to epsilon-closure(T);
+			push u onto stack;
+		}
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525975686530.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;For line 1 and line 4 we can implement a function &lt;code class=&quot;highlighter-rouge&quot;&gt;addState(s)&lt;/code&gt;. This function pushes state $s$ onto &lt;code class=&quot;highlighter-rouge&quot;&gt;newStates&lt;/code&gt;, sets &lt;code class=&quot;highlighter-rouge&quot;&gt;alreadyOn[s]&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;TRUE&lt;/code&gt;, and calls itself recursively on the states in &lt;code class=&quot;highlighter-rouge&quot;&gt;move[s,epsilon]&lt;/code&gt; in order to further the computation of $\epsilon-closure(s)$&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;addState(s) {
+	push s onto newStates;
+	alreadyOn[s] = True;
+	for (t on move[s, epsilon])
+		if (!alreadyOn(t))
+			addState(t);
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;For line 4&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;for (s on oldStates) {
+	for (t on move[s,c]) 
+		if (!alreadyOn[t])
+			addState(t);
+	pop s from oldStates;
+}
+for (s on newStates) {
+	pop s from newStates;
+	push s onto oldStates;
+	alreadOn[s] = FALSE;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id=&quot;heading-62-regular-expression---nfa&quot;&gt;6.2 Regular Expression -&amp;gt; NFA&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525976909215.png&quot; alt=&quot;image&quot; /&gt;
+&lt;img src=&quot;/assets/images/1525977147532.png&quot; alt=&quot;image&quot; /&gt;
+&lt;img src=&quot;/assets/images/1525977159550.png&quot; alt=&quot;image&quot; /&gt;
+&lt;img src=&quot;/assets/images/1525977172727.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;NFA properties:
+(1) $N(r)$ has at most twice as many states as there are operators and operands in $r$. This bound follows the fact that each step of the algorithm creates at most two new states&lt;/p&gt;
+
+&lt;p&gt;(2) $N(r)$ has one start state and one accepting state. The accepting state has no outgoing transitions, and the start has no incoming transitions.&lt;/p&gt;
+
+&lt;p&gt;(3) Each state of $N(r)$ other than the accepting state has either one outgoing transition on a symbol in $\Sigma$ or two outgoing transitions, both on $\epsilon$.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-7-design-for-a-lexical-generator&quot;&gt;7. Design for a Lexical Generator&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1525981672518.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The program that serves as the lexical analyzer includes a fixed program that simulates an automaton. We need a single automation that will recognize lexemes matching any of the patterns in the program, so we combine  all the NFA's into one by introducing a new start state with $\epsilon$-transitions to each of the start states of the NFA's $N_i$.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">Lexical Analysis goal: identify each lexeme and return information on token 1 Lexical Analyzer Role (1) read input characters, group them into lexemes, and produce output a sequence of tokens</summary></entry><entry><title type="html">overview for compiler</title><link href="http://localhost:4000/blog/2018/05/09/overview-for-compiler/" rel="alternate" type="text/html" title="overview for compiler " /><published>2018-05-09T00:00:00-07:00</published><updated>2018-05-09T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/05/09/overview%20for%20compiler</id><content type="html" xml:base="http://localhost:4000/blog/2018/05/09/overview-for-compiler/">&lt;h2 id=&quot;heading-overview-for-compiler&quot;&gt;overview for compiler&lt;/h2&gt;
+
+&lt;p&gt;analysis part: breaks the source program into constituent pieces and impose a grammatical structure on them and create symbol table  —&amp;gt; &lt;strong&gt;front end&lt;/strong&gt;
+synthesis part: constructs the desired target program from the intermediate representation and the information in the symbol table.  –&amp;gt; &lt;strong&gt;back end&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-part-1-lexical-analysis--scanning&quot;&gt;part 1. lexical analysis / scanning&lt;/h3&gt;
+&lt;p&gt;scanner reads the character streams making up the source program and groups the characters into meaningful sequences called &lt;strong&gt;lexemes&lt;/strong&gt;. 
+For each lexeme, the lexical analyzer produces a &lt;strong&gt;token&lt;/strong&gt; of the form&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&amp;lt;token-name, attribute-value&amp;gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;variable names become &lt;strong&gt;id&lt;/strong&gt;–&amp;gt; create symbol table&lt;/p&gt;
+&lt;h3 id=&quot;heading-part-2-syntax-analysis&quot;&gt;part 2. syntax analysis&lt;/h3&gt;
+&lt;p&gt;This phase is called &lt;strong&gt;syntax analysis&lt;/strong&gt; or &lt;strong&gt;parsing&lt;/strong&gt;. The parser uses the first components of the tokens produced by the lexical analyzer to create a tree-like intermediate representation that depicts the grammatical structure of the token stream.  –&amp;gt; &lt;strong&gt;syntax tree&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-part-3-semantic-analysis&quot;&gt;part 3. semantic analysis&lt;/h3&gt;
+&lt;p&gt;The semantic analyzer use the syntax tree and symbol table to check the source program for semantic consistency with the language definition. It also gathers type information and saves it in either the syntax tree or the symbol table, for subsequent use during intermediate-code generation phase. 
+&lt;strong&gt;type checking&lt;/strong&gt; happens in this phase.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-part-4-intermediate-code-generation&quot;&gt;part 4. intermediate code generation&lt;/h3&gt;
+&lt;p&gt;use syntax tree to create an explicit low-level or machine-like intermediate representation. &lt;strong&gt;three-address code&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-part-5-code-optimization&quot;&gt;part 5. code optimization&lt;/h3&gt;
+&lt;p&gt;The machine-independent code-optimization phase attempts to improve the intermediate code so that better target code will result.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-part-6-code-generation&quot;&gt;part 6. code generation&lt;/h3&gt;
+&lt;p&gt;The code generator takes intermediate code as input and maps it into the target language. The intermediate instructions are translated into sequence of machine instructions that perform the same task.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">overview for compiler</summary></entry><entry><title type="html">Syntax Directed Translator</title><link href="http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/" rel="alternate" type="text/html" title="Syntax Directed Translator" /><published>2018-04-22T00:00:00-07:00</published><updated>2018-04-22T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/04/22/Syntax-Directed%20Translator</id><content type="html" xml:base="http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/">&lt;h2 id=&quot;heading-syntax-directed-translator&quot;&gt;Syntax-Directed Translator&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;syntax&lt;/strong&gt;: the proper form of its program -&amp;gt; context-free grammar or BNF(Backus-Naur Form)
+&lt;strong&gt;semantic&lt;/strong&gt;: meaning of the program&lt;/p&gt;
+
+&lt;p&gt;goal: syntax-directed translation of infix expressions to postfix form. 
+&lt;img src=&quot;/assets/images/1523682572902.png&quot; alt=&quot;image&quot; /&gt;
+&lt;img src=&quot;/assets/images/1523682697277.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;These are two intermediate representation forms.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-syntax-definition&quot;&gt;Syntax Definition&lt;/h3&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;stmt -&amp;gt; if (expr) stmt else stmt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;This is one &lt;strong&gt;production&lt;/strong&gt;. In a production, lexical elements like the keyword &lt;strong&gt;if&lt;/strong&gt; and the parentheses are called &lt;strong&gt;terminals&lt;/strong&gt;. Variables like &lt;strong&gt;expr&lt;/strong&gt; and &lt;strong&gt;stmt&lt;/strong&gt; represent sequences of terminals and are called &lt;strong&gt;nonterminals&lt;/strong&gt;. 
+&lt;strong&gt;context-free grammar elements&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;ol&gt;
+    &lt;li&gt;A set of terminal symbols(refered as tokens)&lt;/li&gt;
+    &lt;li&gt;A set of nonterminals, sometimes called &lt;strong&gt;syntactic variables&lt;/strong&gt;&lt;/li&gt;
+    &lt;li&gt;A set of productions, where each production consists of a nonterminal, called the head or left side of the production, an arrow, and a sequence of terminals and/or nonterminals , called the body or right side of the production&lt;/li&gt;
+    &lt;li&gt;A designation of one of the nonterminals as the &lt;strong&gt;start&lt;/strong&gt; symbol.&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;h4 id=&quot;heading-derivations&quot;&gt;Derivations&lt;/h4&gt;
+&lt;p&gt;A grammar derives strings by beginning with the start symbol and repeatedly replacing a &lt;strong&gt;nonterminal&lt;/strong&gt; by the body of a production for that nonterminal.
+example for function call:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;call -&amp;gt; id(optparams)
+optparams -&amp;gt; params | epsilon
+params -&amp;gt; params, param | param
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;epsilon&lt;/code&gt; represents empty string of symbols.&lt;/p&gt;
+&lt;h3 id=&quot;heading-parse-trees&quot;&gt;Parse Trees&lt;/h3&gt;
+&lt;p&gt;Parsing is the problem of taking a string of terminals and figuring out how to derive it from the start symbol of the grammar.
+ &lt;img src=&quot;/assets/images/1523683797606.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From left to right , the leaves of a parse tree form the &lt;strong&gt;yield&lt;/strong&gt; of the tree, which is the string &lt;strong&gt;derived&lt;/strong&gt; from the nonterminal at the root of the parse tree.&lt;/p&gt;
+&lt;h3 id=&quot;heading-ambiguity&quot;&gt;Ambiguity&lt;/h3&gt;
+&lt;p&gt;A grammar can have more than one parse tree generating a given string of terminals. Such a grammar is said to be &lt;strong&gt;ambiguous&lt;/strong&gt;.&lt;/p&gt;
+&lt;h4 id=&quot;heading-operator-assocaitivity&quot;&gt;Operator Assocaitivity&lt;/h4&gt;
+&lt;p&gt;Like &lt;code class=&quot;highlighter-rouge&quot;&gt;9 + 5 + 2&lt;/code&gt;, this expression can be evaluated as &lt;code class=&quot;highlighter-rouge&quot;&gt;( 9 + 5 ) + 2&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;9 + (5 + 2)&lt;/code&gt;. We
+say that the operator + associates to the left, because an operand with plus signs on both sides of it belongs to the operator to its left.
+&lt;strong&gt;left-associative&lt;/strong&gt;: addition, subtraction, multiplication, division
+&lt;strong&gt;right-associative&lt;/strong&gt;: equal, exponentiation 
+strings like &lt;code class=&quot;highlighter-rouge&quot;&gt;a = b = c&lt;/code&gt; can be generated by rules like&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;right -&amp;gt; letter = right | letter
+letter -&amp;gt; a | b | ... | z
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;h4 id=&quot;heading-operator-precedence&quot;&gt;Operator Precedence&lt;/h4&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;*&lt;/code&gt; has higher priority than &lt;code class=&quot;highlighter-rouge&quot;&gt;+&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;term -&amp;gt; term * factor
+		 | term / factor
+		 | factor
+expr -&amp;gt; expr + term
+		| expr - term
+		| term
+factor -&amp;gt; digit | (expr)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;factors are expression which cannot be &quot;torn apart“ by any operator. 
+Terms is an expression that can be &quot;torn apart&quot; by operators of the higher precedence, but not by the lower precedence operators. 
+&lt;img src=&quot;/assets/images/1523684714372.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-syntax-directed-translation&quot;&gt;Syntax-Directed Translation&lt;/h3&gt;
+&lt;p&gt;Syntax-directed translation is done by attaching rules or program fragments to productions in a grammar.
+&lt;strong&gt;Attributes&lt;/strong&gt; An attribute is any quantity associated with a programming construct. 
+Examples of attributes are data types of expressions, the number of instructions in the generated code, or the location of the first instruction in the generated code for a construct , among many other possibilities.
+&lt;strong&gt;translation schemes&lt;/strong&gt; A translation scheme is a notation for attaching program fragments to the productions of a grammar. The program fragments are executed when the production is used during syntax analysis.&lt;/p&gt;
+&lt;h4 id=&quot;heading-synthesized-attributes&quot;&gt;Synthesized Attributes&lt;/h4&gt;
+&lt;p&gt;The idea of associating quantities with programming constructs – for example, values and types with expressions –  can be expressed in terms of grammars. 
+A &lt;strong&gt;syntax-directed definition&lt;/strong&gt; associates:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;With each grammar symbol, a set of attributes, and&lt;/li&gt;
+  &lt;li&gt;With each production, a set of &lt;strong&gt;semantic rules&lt;/strong&gt; for computing the values of the attributes associated with the symbols appearing in the production.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/1523687837245.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/1523688227467.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The string representing the translation of the nonterminal at the head of each production is the concatenation of the translations of the nonterminals in the production body, in the same order as in the production, with some optional additional strings interleaved.
+&lt;img src=&quot;/assets/images/1523816009378.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Tree traversals&lt;/strong&gt; will be used for describing attribute evaluation and for specifying the execution of code fragments in a translation scheme.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DFS
+procedure visit(N) {
+	for (each child of N, from left to right) {
+		visit(child);
+	}
+	evaluate rule at N;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;If the action is done when we first visit a node, then we may refer to the traversal as a preorder traversal. Similarly, if the action is done just before we leave a node for the last time, then we say it is a postorder traversal of the tree.
+A &lt;strong&gt;syntax-directed translation&lt;/strong&gt;  scheme is a notation for specifying a translation by attaching program fragments to productions in a grammar.
+&lt;strong&gt;the order of evaluation of the semantic rules is explicitly specified&lt;/strong&gt;
+Program fragments embedded within production bodies are called &lt;strong&gt;semantic actions&lt;/strong&gt;. The position at which an action is to be executed is shown by enclosing it between curly braces and writing it within the production body&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rest -&amp;gt; + term {print('+') } rest1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1523817208488.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-parsing&quot;&gt;Parsing&lt;/h3&gt;
+&lt;p&gt;Parsing is the process of determining how a string of terminals can be generated by a grammar. 
+Parsing techniques : &quot;top-down&quot;, &quot;bottom-up&quot;&lt;/p&gt;
+&lt;h4 id=&quot;heading-top-down-parsing&quot;&gt;Top-Down Parsing&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1523817869025.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;At node N, labeled with nonterminal A, select one of the productions for A and construct children at N for the symbols in the production body.&lt;/li&gt;
+  &lt;li&gt;Find the next node at which a subtree is to be constructed, typically the leftmost unexpanded nonterminal of the tree.
+This method requires trail and error, and backtracking. May not be a good candidate
+    &lt;h4 id=&quot;heading-predictive-parsing&quot;&gt;Predictive Parsing&lt;/h4&gt;
+    &lt;p&gt;&lt;strong&gt;recursive-descent parsing&lt;/strong&gt; is a top-down approach. Here we consider one simple version–predictive parsing:&lt;/p&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;The sequence of procedure calls during the analysis of an input string implicitly defines a parse tree for the input&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void stmt () {
+	switch ( lookahead ) {
+	case expr:
+		match (expr) ; match (' ; ') ; break;
+	case if:
+		match (if) ; match (' C'); match (expr) ; match (' ) ') ; stmt O ;
+		break;
+	case for:
+		match (for) ; match (' C');
+		optexpr O ; match (' ; ') ; optexprO ; match (' ; ') ; optexprO ;
+		match (' ) ') ; stmt O ; break;
+	case other;
+		match (other) ; break;
+	default:
+		report ( &quot; syntax error &quot; );
+}
+void optexpr() {
+	if ( lookahead = = expr ) match (expr) ;
+}
+void match (terminal t) {
+	if ( lookahead = = t ) lookahead = nextTerminal;
+	else report ( &quot; syntax error &quot; );
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;Predictive parsing relies on information about the first symbols that can be generated by a production body. Our predictive parser uses an E-production as a default when no other production
+can be used.&lt;/p&gt;
+
+&lt;p&gt;let $\alpha$ be a string of grammar symbols (terminals and/or nonterminals). We define First($\alpha$) to be the set of terminals that appear as the first symbols of one or more strings of terminal generated from $\alpha$.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;FIRST ( stmt) = { expr, if, for, other}
+FIRST( expr ; ) = {expr}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;A predictive parser is a program consisting of a procedure for every nonterminal. The procedure fot nonterminal A does two things:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;It decides which A-production to use by examining the lookahead symbol. The production with body $\alpha$is used if the lookahead symbol is in FIRST ($\alpha$) .&lt;/li&gt;
+  &lt;li&gt;The procedure then mimics the body of the chosen production.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;heading-left-recursion&quot;&gt;Left-recursion&lt;/h4&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;expr -&amp;gt; expr + term
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;It's possible for a recursive-descent parser to loop forever if the leftmost symbol is the same as head. Since the lookahead symbol changes only when a terminal in the body is matched, no change to the input took place between recursive calls of &lt;code class=&quot;highlighter-rouge&quot;&gt;expr&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;A -&amp;gt; A$\alpha$ | $\beta$
+can be replaced by 
+A -&amp;gt; $\beta$R
+R -&amp;gt; $\alpha$R | $\epsilon$&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The first one is left-recursive, the second is right-recursive. But right recursive makes it hard to translate left-associate operators. 
+&lt;img src=&quot;/assets/images/1523820504263.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">Syntax-Directed Translator syntax: the proper form of its program -&amp;gt; context-free grammar or BNF(Backus-Naur Form) semantic: meaning of the program</summary></entry><entry><title type="html">Tech Diary_03_08_2018</title><link href="http://localhost:4000/blog/2018/03/03/technical_diary_03_08/" rel="alternate" type="text/html" title="Tech Diary_03_08_2018" /><published>2018-03-03T00:00:00-08:00</published><updated>2018-03-03T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/03/03/technical_diary_03_08</id><content type="html" xml:base="http://localhost:4000/blog/2018/03/03/technical_diary_03_08/">&lt;h2 id=&quot;heading-neural-network&quot;&gt;neural network&lt;/h2&gt;
+
+&lt;p&gt;deep.ai by andrew&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-deep-learning-book&quot;&gt;deep learning book&lt;/h2&gt;
+
+&lt;p&gt;chapter 6&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-probability&quot;&gt;probability&lt;/h2&gt;
+&lt;p&gt;doubly expectation&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-cmu-10-601&quot;&gt;cmu 10-601&lt;/h2&gt;
+&lt;p&gt;cluster algo
+pca&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Tech Diary" /><summary type="html">neural network</summary></entry><entry><title type="html">Tech Diary_03_07_2018</title><link href="http://localhost:4000/blog/2018/03/03/technical_diary_03_07/" rel="alternate" type="text/html" title="Tech Diary_03_07_2018" /><published>2018-03-03T00:00:00-08:00</published><updated>2018-03-03T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/03/03/technical_diary_03_07</id><content type="html" xml:base="http://localhost:4000/blog/2018/03/03/technical_diary_03_07/">&lt;h2 id=&quot;heading-have-an-exam&quot;&gt;have an exam&lt;/h2&gt;
+
+&lt;h2 id=&quot;heading-read-numpy-package&quot;&gt;read numpy package&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;https://github.com/numpy/numpy&quot; alt=&quot;numpy&quot; /&gt;
+A lot of things to learn from python&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-doctest&quot;&gt;doctest&lt;/h2&gt;
+&lt;p&gt;great tool&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Tech Diary" /><summary type="html">have an exam</summary></entry><entry><title type="html">Tech Diary_03_03_2018</title><link href="http://localhost:4000/blog/2018/03/03/technical_diary_03_03/" rel="alternate" type="text/html" title="Tech Diary_03_03_2018" /><published>2018-03-03T00:00:00-08:00</published><updated>2018-03-03T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/03/03/technical_diary_03_03</id><content type="html" xml:base="http://localhost:4000/blog/2018/03/03/technical_diary_03_03/">&lt;h2 id=&quot;heading-convex-optimization&quot;&gt;Convex optimization&lt;/h2&gt;
+&lt;p&gt;CS229 course &lt;img src=&quot;http://cs229.stanford.edu/syllabus.html&quot; alt=&quot;notes&quot; /&gt; (Convex optimization part1, part2)&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-kernel-methods&quot;&gt;Kernel Methods&lt;/h2&gt;
+&lt;p&gt;CMU 10-601 2018 &lt;img src=&quot;http://www.cs.cmu.edu/~mgormley/courses/10601-s18/schedule.html&quot; alt=&quot;kernel method&quot; /&gt;
+A shallow intro for kernel method&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-kernel-method2&quot;&gt;Kernel Method2&lt;/h2&gt;
+&lt;p&gt;Pattern recognition and machine learning chapter 6 kernel methods&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-future-plan&quot;&gt;Future plan&lt;/h2&gt;
+&lt;p&gt;Finish compiler course (stanford version)
+In spring break finish &lt;img src=&quot;https://www.coursera.org/learn/nand2tetris2/home/welcome&quot; alt=&quot;OS&quot; /&gt;&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Tech Diary" /><summary type="html">Convex optimization CS229 course (Convex optimization part1, part2)</summary></entry><entry><title type="html">Tech Diary_03_02_2018</title><link href="http://localhost:4000/blog/2018/03/03/technical_diary_03_02/" rel="alternate" type="text/html" title="Tech Diary_03_02_2018" /><published>2018-03-03T00:00:00-08:00</published><updated>2018-03-03T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/03/03/technical_diary_03_02</id><content type="html" xml:base="http://localhost:4000/blog/2018/03/03/technical_diary_03_02/">&lt;h2 id=&quot;heading-svm&quot;&gt;SVM&lt;/h2&gt;
+&lt;p&gt;stanford &lt;img src=&quot;https://www.youtube.com/watch?v=tojaGtMPo5U&quot; alt=&quot;cs229&quot; /&gt; lecture 7, 8
+read &lt;img src=&quot;http://cs229.stanford.edu/syllabus.html&quot; alt=&quot;notes&quot; /&gt; on SVM&lt;/p&gt;
+
+&lt;h2 id=&quot;heading-finish-course-exam&quot;&gt;finish course exam&lt;/h2&gt;
+&lt;p&gt;ML4T
+python, machine learning&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Tech Diary" /><summary type="html">SVM stanford lecture 7, 8 read on SVM</summary></entry><entry><title type="html">Explanation on VC Dimension</title><link href="http://localhost:4000/blog/2018/02/15/VC-dimension/" rel="alternate" type="text/html" title="Explanation on VC Dimension" /><published>2018-02-15T00:00:00-08:00</published><updated>2018-02-15T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/02/15/VC%20dimension</id><content type="html" xml:base="http://localhost:4000/blog/2018/02/15/VC-dimension/">&lt;h2 id=&quot;heading-vc-dimension-intro&quot;&gt;VC Dimension Intro&lt;/h2&gt;
+&lt;p&gt;VC theory is probably the first hard concept we encountered in Machine Learning theory, so I'd like to make a one user-friendly introduction for this topic.
+There are two main issues in machine learning:
+(1) Algorithm design: how we generate rules to interpret data 
+(2) Genralization : how to guarantee model performance on data we haven't see
+VC Dimension is in the second category, its' not one specific algorithm but some high-level rule for algorithm design. 
+After you find some data and use whatever algorithm learned in class, there must be one question you want to ask: will my model still work for future data?&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Machine Learning" /><summary type="html">VC Dimension Intro VC theory is probably the first hard concept we encountered in Machine Learning theory, so I'd like to make a one user-friendly introduction for this topic. There are two main issues in machine learning: (1) Algorithm design: how we generate rules to interpret data (2) Genralization : how to guarantee model performance on data we haven't see VC Dimension is in the second category, its' not one specific algorithm but some high-level rule for algorithm design. After you find some data and use whatever algorithm learned in class, there must be one question you want to ask: will my model still work for future data?</summary></entry><entry><title type="html">Greedy Algorithm</title><link href="http://localhost:4000/blog/2018/02/05/Greedy_Algorithm/" rel="alternate" type="text/html" title="Greedy Algorithm" /><published>2018-02-05T00:00:00-08:00</published><updated>2018-02-05T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/02/05/Greedy_Algorithm</id><content type="html" xml:base="http://localhost:4000/blog/2018/02/05/Greedy_Algorithm/">&lt;h2 id=&quot;heading-1-greedy-algorithm-proofs&quot;&gt;1. Greedy Algorithm Proofs&lt;/h2&gt;
+
+&lt;h3 id=&quot;heading-11-the-greedy-algorithm-stays-ahead&quot;&gt;1.1 The Greedy Algorithm Stays Ahead&lt;/h3&gt;
+&lt;p&gt;Scheduling Problem: 
+Suppose there are &lt;code class=&quot;highlighter-rouge&quot;&gt;n&lt;/code&gt; requests, each has its &lt;code class=&quot;highlighter-rouge&quot;&gt;s(i)&lt;/code&gt; start time and &lt;code class=&quot;highlighter-rouge&quot;&gt;f(i)&lt;/code&gt; end time, we need to come up with an algo to accept the most requests.
+The greedy rule which can work out this problem is to choose the earliest finish request in each iteration.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;// copy from book algorithm design
+Initially get R to be the set of all requests, and let A be empty
+while (!R.isempty())
+	choose a request `i` that has the smallest finishing time.
+	A.append(i)
+	delete all requests from R that are not compatible with request i
+end
+return A
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Proof&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Let $O$ be the optimal set of intervals, and we compare $|A|$ and $|O|$, since there may be multiple optimal solutions. 
+This compare means the requests in set $A$ is as much as elements in $O$.&lt;/p&gt;
+
+&lt;p&gt;The core idea of the proof is to show that for each step, our choice can be better than solution $O$.(We call this &lt;strong&gt;step ahead&lt;/strong&gt;)&lt;/p&gt;
+
+&lt;p&gt;Let $i_1, …, i_k$ be the set of requests in $A$, and $j_1, …, j_m$ in set $O$. 
+We want to show that each of intervals in $A$ finishes at least as soon as the corresponding interval in the set $O$.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 1: for all indices $r \leq k$, we have $f(i_r) \leq f(j_r)$&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Proof&lt;/strong&gt;: mathematical induction
+(1) for $r = 1$ holds
+(2) suppose $f(i_{r-1}) \leq f(j_{r-1})$, since $f(j_{r-1}) \leq s(j_r)$, so $f(i_{r-1}) \leq s(j_r)$. Thus the interval $j_r$ is in the set of available intervals. 
+And the algo selects the smallest finish time, thus $f(i_r) \leq f(j_r)$.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 2: the greedy algorithm returns an optimal set $A$&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Proof&lt;/strong&gt;: contradiction
+If $A$ is not optimal, then an optimal set $O$ must have more requests, and $m &amp;gt; k$, since we already have $f(i_k) \leq f(j_k)$, there is another request $j_{k+1}$ in $O$.&lt;/p&gt;
+
+&lt;p&gt;But this request finish after $f(i_k)$, thus our algorithm can still pick this request, thus contractdicts $m&amp;gt;k$. 
+A related problem: if we have many identical resources available and we wish to schedule all the requests using as few resources as possible.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-02-05-Greedy_Algorithm/greedy_1.PNG&quot; alt=&quot;greedy_1&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Suppose we define the &lt;strong&gt;depth&lt;/strong&gt; of a set of the interval to be the maximum number that pass over any single point on the time-line, we can calim:&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;In any instance of Interval Partitioning, the number of resources needed is at least the depth of the set of intervals&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We can now design a greedy algo that schedules all intervals using a number of resources equal to depth.&lt;/p&gt;
+
+&lt;p&gt;The analysis of our algo will illustrate another general approach to proving optimallity: 
+one finds a simple, &quot;structural&quot; bound asserting that every possible solution must have at least a certain value, and then one shows that the algorith under consideration always achieves this bound. 
+algo:
+Let $d$ be the depth of the set of intervals.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Sort the intervals by start time
+Let I_1, I_2, ..., I_n denote the intervals in this order
+for j = 1:n
+    for each interval I_t that p
+    recedes I_j in sorted order and overlaps it 
+        exclude the label of I_t from consideration for I_j
+    if there is any label that has not been excluded then assign it to label I_j
+    else 
+        leave I_j unlabled
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 1: no interval ends up unlabeled&lt;/strong&gt;
+Consider one interval $I_j$, and suppose there are t intervals earlier in the sorted order that overlap it. 
+These t intervals with $I_j$ form a set of $t+1$ intervals that all pass over a common point in time, which is bounded by $t+1 \leq d$.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 2: no two overlapping intervals are assigned to the same label&lt;/strong&gt;
+If two are the same, during iteration, this label will be excluded.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;heading-12-exchange-argument&quot;&gt;1.2 Exchange Argument&lt;/h3&gt;
+&lt;p&gt;A list of requests, each only has a dealine $d_i$, and requires a contiguous time interval $t_i$, but it is willing to be scheduled at any time before the deadline. 
+we can find following relationship:
+&lt;script type=&quot;math/tex&quot;&gt;f(i) = s(i) + t_i&lt;/script&gt;, and we can define &lt;em&gt;lateness&lt;/em&gt; as $l_i = f(i) - d_i$.&lt;/p&gt;
+
+&lt;p&gt;Our goal in this optimization problem will be to schedule all requests, using nonoverlapping intervals to minimize the maximum latemness, $L = max_il_i$&lt;/p&gt;
+
+&lt;p&gt;We can sort the jobs in increasing order of their deadlines $d_i$.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Order the jobs in order of their deadlines
+Assume for simplicity of notation that d_1 &amp;lt;= ... &amp;lt;= d_n
+Initially, f = s
+Consider the jobs i = 1, ..., n in this order
+Assign job j to the time interval from s(i) = f to f(i) = f + t_i
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;h1 id=&quot;heading-highlighted&quot;&gt;Highlighted&lt;/h1&gt;
-
-&lt;h2 id=&quot;heading-external-gist&quot;&gt;External Gist&lt;/h2&gt;
-
-&lt;script src=&quot;https://gist.github.com/yizeng/9b871ad619e6dcdcc0545cac3101f361.js&quot;&gt;&lt;/script&gt;
-
-&lt;h2 id=&quot;heading-simple-highlight&quot;&gt;Simple Highlight&lt;/h2&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;foo&lt;/span&gt;
-  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;'foo'&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;heading-highlight-with-long-lines&quot;&gt;Highlight with long lines&lt;/h2&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c#&quot; data-lang=&quot;c#&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Hello&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;h2 id=&quot;heading-highlight-with-line-numbers-and-long-lines&quot;&gt;Highlight with line numbers and long lines&lt;/h2&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;table style=&quot;border-spacing: 0&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot; style=&quot;text-align: right&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-3&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myFunction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;nx&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
-&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;</content><author><name>Wang Wei</name></author><category term="demo" /><category term="jekyll" /><summary type="html">This is code blocks and highlighting test page for Simple Texture theme.</summary></entry><entry><title type="html">Quick kramdown demo</title><link href="http://localhost:4000/blog/2017/05/25/quick-kramdown-demo/" rel="alternate" type="text/html" title="Quick kramdown demo" /><published>2017-05-25T00:00:00+08:00</published><updated>2017-05-25T00:00:00+08:00</updated><id>http://localhost:4000/blog/2017/05/25/quick-kramdown-demo</id><content type="html" xml:base="http://localhost:4000/blog/2017/05/25/quick-kramdown-demo/">&lt;blockquote&gt;
-  &lt;p&gt;This is &lt;a href=&quot;https://kramdown.gettalong.org/&quot;&gt;kramdown&lt;/a&gt; formatting test page for &lt;a href=&quot;https://github.com/yizeng/jekyll-theme-simple-texture&quot;&gt;Simple Texture&lt;/a&gt; theme.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 1&lt;/strong&gt;: There is an optimal schedule with no idle time&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;ul class=&quot;toc&quot; id=&quot;markdown-toc&quot;&gt;
-  &lt;li&gt;&lt;a href=&quot;#heading-general-usage&quot; id=&quot;markdown-toc-heading-general-usage&quot;&gt;General Usage&lt;/a&gt;    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-blockquotes&quot; id=&quot;markdown-toc-heading-blockquotes&quot;&gt;Blockquotes&lt;/a&gt;        &lt;ul&gt;
-          &lt;li&gt;&lt;a href=&quot;#heading-nested&quot; id=&quot;markdown-toc-heading-nested&quot;&gt;Nested&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#heading-lists-inside&quot; id=&quot;markdown-toc-heading-lists-inside&quot;&gt;Lists inside&lt;/a&gt;&lt;/li&gt;
-          &lt;li&gt;&lt;a href=&quot;#heading-long-lines&quot; id=&quot;markdown-toc-heading-long-lines&quot;&gt;Long lines&lt;/a&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-lists&quot; id=&quot;markdown-toc-heading-lists&quot;&gt;Lists&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-tables&quot; id=&quot;markdown-toc-heading-tables&quot;&gt;Tables&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-horizontal-rules&quot; id=&quot;markdown-toc-heading-horizontal-rules&quot;&gt;Horizontal Rules&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#heading-images&quot; id=&quot;markdown-toc-heading-images&quot;&gt;Images&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h1 id=&quot;heading-general-usage&quot;&gt;General Usage&lt;/h1&gt;
-
-&lt;p&gt;This is a normal paragraph.&lt;/p&gt;
-
-&lt;p&gt;This is &lt;a href=&quot;http://yizeng.me&quot;&gt;a link&lt;/a&gt; to my homepage.
-A &lt;a href=&quot;http://yizeng.me/blog&quot; title=&quot;Yi Zeng's Blog&quot;&gt;link&lt;/a&gt; can also have a title.&lt;/p&gt;
-
-&lt;p&gt;This is a &lt;strong&gt;&lt;em&gt;text with light and strong emphasis&lt;/em&gt;&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;This &lt;strong&gt;is &lt;em&gt;emphasized&lt;/em&gt; as well&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;This &lt;em&gt;does _not_ work&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;This &lt;strong&gt;does __not__ work either&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;This is a footnote&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;.&lt;/p&gt;
-
-&lt;p&gt;This scarcely known tag emulates &lt;kbd&gt;keyboard text&lt;/kbd&gt;, which is usually styled like the &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;code&amp;gt;&lt;/code&gt; tag.&lt;/p&gt;
-
-&lt;p&gt;This tag should denote &lt;ins&gt;inserted&lt;/ins&gt; text.&lt;/p&gt;
-
-&lt;p&gt;The emphasize tag should &lt;em&gt;italicize&lt;/em&gt; text.&lt;/p&gt;
-
-&lt;p&gt;This tag will let you &lt;strike&gt;strikeout text&lt;/strike&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;heading-blockquotes&quot;&gt;Blockquotes&lt;/h2&gt;
+&lt;p&gt;Our plan here is to gradually modify $O$, preserving its optimality at each step but eventually transforming it into a schedule that is identical to the schedule $A$ found by the greedy algorithm. 
+This approach we call it &lt;strong&gt;exchange argument&lt;/strong&gt;
+We say that a schedule $A'$ has an nversion if a job $i$ with deadline $d_i$ is scheduled before another job $j$ with earlier deadline $d_j \leq d_j$.&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;ruby -v&lt;/p&gt;
-
-  &lt;p&gt;tsc -v&lt;/p&gt;
+  &lt;p&gt;&lt;strong&gt;statement 2&lt;/strong&gt;: All schedules with no inversions and no idle time have the same maximum lateness.&lt;/p&gt;
 &lt;/blockquote&gt;
-
-&lt;h3 id=&quot;heading-nested&quot;&gt;Nested&lt;/h3&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;This is a paragraph in blockquote.&lt;/p&gt;
-
-  &lt;blockquote&gt;
-    &lt;p&gt;A nested blockquote.&lt;/p&gt;
-  &lt;/blockquote&gt;
-
+  &lt;p&gt;&lt;strong&gt;statement 3&lt;/strong&gt; There is an optimal schedule that has no inversions and no idle time.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&quot;heading-lists-inside&quot;&gt;Lists inside&lt;/h3&gt;
+&lt;p&gt;If $O$ has an inversion, then there is a pair of jobs $i$ and $j$ such that $j$ is $d_j &amp;lt; d_i$
+If this exists, we can swap $i$ and $j$, and after swap this solution has a maximum lateness no larger than $O$.&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;Unordered List&lt;/p&gt;
-  &lt;ul&gt;
-    &lt;li&gt;lists one&lt;/li&gt;
-    &lt;li&gt;lists two&lt;/li&gt;
-    &lt;li&gt;lists three&lt;/li&gt;
-  &lt;/ul&gt;
-
-  &lt;p&gt;Ordered List&lt;/p&gt;
-  &lt;ol&gt;
-    &lt;li&gt;lists one&lt;/li&gt;
-    &lt;li&gt;lists two&lt;/li&gt;
-    &lt;li&gt;lists three&lt;/li&gt;
-  &lt;/ol&gt;
+  &lt;p&gt;&lt;strong&gt;statement 4&lt;/strong&gt; The schedule A produced by the greedy algo has optimal maximum lateness L.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h3 id=&quot;heading-long-lines&quot;&gt;Long lines&lt;/h3&gt;
+&lt;h3 id=&quot;heading-13-optimal-caching&quot;&gt;1.3 Optimal Caching&lt;/h3&gt;
+&lt;p&gt;Consider a set of $U$ of $n$ pieces of data stored in main memory, we also have a cache that can hold $k&amp;lt;n$ pieces of data at any one time. Assuming that cache initially holds some set of $k$ items. A sequence of data items $D=d_1, d_2, …, d_m$ drawn from U is presented to us.&lt;/p&gt;
+
+&lt;p&gt;When item $d_i$ is presented, we can access it very quickly if it is already in the cache, otherwise, we are required to bring it from main memory into cache and if the cache is full, to evict some other piece of data that is currently in the cache to make room for $d_i$.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;When d_i needs to be brough into the cache,
+    evict the item that is needed the farthest into the future
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;When it is time to evict item, choose the one that will be used as late as possible. 
+If d item is not the cache, bring it in step $i$, if there is a request for it.&lt;strong&gt;schedule reduced&lt;/strong&gt;
+One can imagine an algo that produced schedules which are not reduced, by bringring initems in steps when they are not requested.&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;Jekyll is a simple, blog-aware, static site generator perfect for personal, project, or organization sites. Think of it like a file-based CMS, without all the complexity. Jekyll takes your content, renders Markdown and Liquid templates, and spits out a complete, static website ready to be served by Apache, Nginx or another web server. Jekyll is the engine behind GitHub Pages, which you can use to host sites right from your GitHub repositories.&lt;/p&gt;
+  &lt;p&gt;&lt;strong&gt;statement 1&lt;/strong&gt; $\bar{S}$ is a reduced schedule that brings in at most as many items as the schedule $S$&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;h2 id=&quot;heading-lists&quot;&gt;Lists&lt;/h2&gt;
+&lt;p&gt;Consider an arbitrart seq $D$ of memory references, let $S_{FF}$ denote the schedule produced by farthest in future, let $S^*$ denote a schedule that incurs the minimum possible number of misses.&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 2&lt;/strong&gt; : Let $S$ be a reduced schedule that makes the same eviction decisions as $S_{FF}$ through the first $j$ items in the sequence, for a number $j$. Then there is a reduced schedule $S'$ that makes the same eviction decisions as $S_{FF}$ through the first $j+1$ items, and incurs no more misses than $S$ does.&lt;/p&gt;
+&lt;/blockquote&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;list 1 item 1
-    &lt;ul&gt;
-      &lt;li&gt;nested list item 1&lt;/li&gt;
-      &lt;li&gt;nested list item 2&lt;/li&gt;
-      &lt;li&gt;nested list item 3 with blockquote
-        &lt;blockquote&gt;
-          &lt;p&gt;ruby -v&lt;/p&gt;
+&lt;p&gt;This proof is verbose in book &lt;strong&gt;Algorithm Design&lt;/strong&gt;, so I will omit it here.&lt;/p&gt;
+&lt;h3 id=&quot;heading-14-shorted-path-in-a-graph&quot;&gt;1.4 Shorted Path in a Graph&lt;/h3&gt;
+&lt;p&gt;We have a directed graph $G=(V,E)$, with a designated start node $s$, and we asssume $s$ has a path to every node in $G$. Each edge $e$ has a length $l_e \geq 0$. For a path $P$, the length of $P$ -denoted $l(P)$ is the sum of the lengths of all edges in $P$. Our goal is to determine the shortest ath from s to every other node in the graqph.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Dijkstra's Algo(G, l)
+Let S be the set of explored nodes
+    For each $u \in S$, we explore a distance $d(u)$
+Initially $S = {s}$, $d(s) = 0$
+While $S\neq V$
+    Select a node $v \in S$ with at least one eduge from $S$ for which $d'(v) = min_{e = (u,v);u \in S}(d(u) + l_e)$ is as small as possible
+    Add $v$ to $S$ and define $d(v) = d'(v)$
+EndWhile
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;Proof&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 1&lt;/strong&gt;: Consider the set S at any point in the algorithm's execution. For each $u \in S$, the path $P_u$ is a shortest $s-u$ path.&lt;/p&gt;
+&lt;/blockquote&gt;
 
-          &lt;p&gt;tsc -v&lt;/p&gt;
-        &lt;/blockquote&gt;
-      &lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;list 1 item 2&lt;/li&gt;
-  &lt;li&gt;list 1 item 3&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;Proof by induction:
+When $|S| = 1$ is easy, suppose $|S| = k$, and we add new points $v$. Let $(u,v)$ be the final edge on our $P_v$. Consider another $s-v$ path, there must be some point $y$ not in set $S$, let $x$ be the node just before leave $S$. At iteration $k+1$, algo must consider adding $y$ to $S$ and reject $v$. This eans that there is no path from $s$ to $y$ through $x$ which is shorter than $(s,u) + (u,v)$&lt;/p&gt;
 
-&lt;h2 id=&quot;heading-tables&quot;&gt;Tables&lt;/h2&gt;
+&lt;p&gt;Using a priority queue, Dijkstra's Algo can be implementented on a graph with n nodes and m edges to run in $O(m)$ time, plus the time for $n$ &lt;code class=&quot;highlighter-rouge&quot;&gt;ExtractMin&lt;/code&gt; and $m$ &lt;code class=&quot;highlighter-rouge&quot;&gt;ChangeKey&lt;/code&gt; operations.&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Table 1&lt;/p&gt;
+&lt;h3 id=&quot;heading-16-minimum-spanning-tree&quot;&gt;1.6 Minimum Spanning Tree&lt;/h3&gt;
+&lt;p&gt;We have a set of locations $V = {v_1, v_2, … , v_n}$, for certain pairs$(v_i,v_j)$, we may build a direct link between $v_i$ and $v_j$ for a certain cost $c(v_i,v_j) &amp;gt; 0$. The problem is to find a subset of edges so that the graph is connected, and the total cost is as small as possible. We call a subset $T \subseteq E$ a spanning tree of $G$ if $(V, T)$ is a tree.&lt;/p&gt;
 
-    &lt;table&gt;
-      &lt;thead&gt;
-        &lt;tr&gt;
-          &lt;th&gt;Default aligned&lt;/th&gt;
-          &lt;th style=&quot;text-align: left&quot;&gt;Left aligned&lt;/th&gt;
-          &lt;th style=&quot;text-align: center&quot;&gt;Center aligned&lt;/th&gt;
-          &lt;th style=&quot;text-align: right&quot;&gt;Right aligned&lt;/th&gt;
-        &lt;/tr&gt;
-      &lt;/thead&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;First body part&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt;Second cell&lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt;Third cell&lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt;fourth cell&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;Second line&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt;foo&lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;strong&lt;/strong&gt;&lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt;baz&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;Third line&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt;quux&lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt;baz&lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt;bar&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;Footer row&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt; &lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt; &lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt; &lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Table 2&lt;/p&gt;
+&lt;p&gt;(1) Kruskal's Algorithm:
+Insert edges from E in order of increasing cost, if we meet a cycle discard that edge and move on.&lt;/p&gt;
 
-    &lt;table&gt;
-      &lt;thead&gt;
-        &lt;tr&gt;
-          &lt;th&gt;Default aligned&lt;/th&gt;
-          &lt;th style=&quot;text-align: left&quot;&gt;Left aligned&lt;/th&gt;
-          &lt;th style=&quot;text-align: center&quot;&gt;Center aligned&lt;/th&gt;
-          &lt;th style=&quot;text-align: right&quot;&gt;Right aligned&lt;/th&gt;
-        &lt;/tr&gt;
-      &lt;/thead&gt;
-      &lt;tbody&gt;
-        &lt;tr&gt;
-          &lt;td&gt;First body part&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt;Second cell&lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt;Third cell&lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt;fourth cell&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;Second line&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt;foo&lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt;&lt;strong&gt;strong&lt;/strong&gt;&lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt;baz&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;Third line&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt;quux&lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt;baz&lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt;bar&lt;/td&gt;
-        &lt;/tr&gt;
-        &lt;tr&gt;
-          &lt;td&gt;Footer row&lt;/td&gt;
-          &lt;td style=&quot;text-align: left&quot;&gt; &lt;/td&gt;
-          &lt;td style=&quot;text-align: center&quot;&gt; &lt;/td&gt;
-          &lt;td style=&quot;text-align: right&quot;&gt; &lt;/td&gt;
-        &lt;/tr&gt;
-      &lt;/tbody&gt;
-    &lt;/table&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;(2) Prim's Algorithm: 
+Mainatin a set $S \subseteq V$ on which a spanning tree has been constructed so far. In each iteration, we grow $S$ by one node, adding the node that minimize the cost $min_{e = (u,v):u \in S}C_e$ and include the edge $e = (u,v)$ in the spanning tree.&lt;/p&gt;
 
-&lt;h2 id=&quot;heading-horizontal-rules&quot;&gt;Horizontal Rules&lt;/h2&gt;
+&lt;p&gt;(3) Reverse Delete Algorithm:
+Start with the full graph $(V,E)$ and begin deleting edges in order of decreasing cost. As we get to each edge $e$, we delete it as long as doing so would not actually disconnect the graph we currently have.&lt;/p&gt;
 
-&lt;hr /&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 1&lt;/strong&gt; Assume that all edge costs are distinct. Let $S$ be any subset of nodes that is neither empty nor equal to all of $V$, and let edge $e = (v,w)$ be the minimum cost edge with one end in $S$ and the other in $V-S$. Then every minimum spanning tree contains the edge $e$.&lt;/p&gt;
+&lt;/blockquote&gt;
 
-&lt;hr /&gt;
+&lt;p&gt;&lt;strong&gt;Proof&lt;/strong&gt;: We can find another edge $e'$ satisfies the same property but $e' \geq e$, and we can swap $e$ for $e'$, and this time the overall connecting cost decreases. 
+The difficulty is to prove the new tree is still connected(the two vertice in the set is connected)&lt;/p&gt;
 
-&lt;hr /&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;statement 2&lt;/strong&gt; Kruskal's Algo produces a minimum spanning tree of $G$&lt;/p&gt;
+&lt;/blockquote&gt;
 
-&lt;hr /&gt;
+&lt;p&gt;Consider any edge $e = (v,w)$ added by Krukal's Algo, and let $S$ be the set of all nodes to which $v$ has a path at the moment just before $e$ is added. Clearly $v \in S$, but $w \notin S$, since adding $e$ does not create a cycle. Moreover, no edge from $S$ TO $V-S$ has been encountered, this $e$ satisfy the following property.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Algorithm" /><summary type="html">1. Greedy Algorithm Proofs</summary></entry><entry><title type="html">Macro usage</title><link href="http://localhost:4000/blog/2018/02/03/Macro/" rel="alternate" type="text/html" title="Macro usage" /><published>2018-02-03T00:00:00-08:00</published><updated>2018-02-03T00:00:00-08:00</updated><id>http://localhost:4000/blog/2018/02/03/Macro</id><content type="html" xml:base="http://localhost:4000/blog/2018/02/03/Macro/">&lt;h2 id=&quot;heading-macros&quot;&gt;Macros&lt;/h2&gt;
+&lt;p&gt;Macros are directives for &lt;strong&gt;preprocessor&lt;/strong&gt;. The preprocessor examines code before compilation stage.&lt;/p&gt;
 
-&lt;h2 id=&quot;heading-images&quot;&gt;Images&lt;/h2&gt;
-
-&lt;p&gt;Here comes an image!&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://kramdown.gettalong.org/overview.png&quot; alt=&quot;smiley&quot; /&gt;&lt;/p&gt;
-
-&lt;div class=&quot;footnotes&quot;&gt;
-  &lt;ol&gt;
-    &lt;li id=&quot;fn:1&quot;&gt;
-      &lt;p&gt;This is a footnote. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
-    &lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/div&gt;</content><author><name>Wang Wei</name></author><category term="demo" /><category term="jekyll" /><summary type="html">This is kramdown formatting test page for Simple Texture theme.</summary></entry><entry><title type="html">Hello World!</title><link href="http://localhost:4000/blog/2013/04/22/hello-world/" rel="alternate" type="text/html" title="Hello World!" /><published>2013-04-22T00:00:00+08:00</published><updated>2013-04-22T00:00:00+08:00</updated><id>http://localhost:4000/blog/2013/04/22/hello-world</id><content type="html" xml:base="http://localhost:4000/blog/2013/04/22/hello-world/">&lt;p&gt;Hello World! This is the beginning of this theme.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="random" /><category term="jekyll" /><summary type="html">Hello World! This is the beginning of this theme.</summary></entry></feed>
+&lt;h3 id=&quot;heading-11-basic-usage&quot;&gt;1.1 Basic usage&lt;/h3&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;#define SIZE 100&lt;/code&gt; it will replace all occurance of &lt;code class=&quot;highlighter-rouge&quot;&gt;SIZE&lt;/code&gt; to 100. And this &lt;code class=&quot;highlighter-rouge&quot;&gt;#define&lt;/code&gt; syntax can also define small functions:
+&lt;code class=&quot;highlighter-rouge&quot;&gt;#define max(a,b) a&amp;gt;b ? a:b&lt;/code&gt;
+Other directives allow to include or discard part of the code of a program if a certain condition is met.
+&lt;code class=&quot;highlighter-rouge&quot;&gt;#ifdef&lt;/code&gt; allows a section of a program to compile iff the macro has defined. It often group with &lt;code class=&quot;highlighter-rouge&quot;&gt;#endif&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#if TABLE_SIZE&amp;gt;200
+#undef TABLE_SIZE
+#define TABLE_SIZE 200
+ 
+#elif TABLE_SIZE&amp;lt;50
+#undef TABLE_SIZE
+#define TABLE_SIZE 50
+ 
+#else
+#undef TABLE_SIZE
+#define TABLE_SIZE 100
+#endif
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;http://blog.chinaunix.net/uid-23254875-id-341055.html
+https://www.cnblogs.com/Anker/p/3418792.html
+https://gcc.gnu.org/onlinedocs/cpp/Macros.html&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="C++" /><summary type="html">Macros Macros are directives for preprocessor. The preprocessor examines code before compilation stage.</summary></entry></feed>

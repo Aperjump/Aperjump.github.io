@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Lexical Analysis | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="Lexical Analysis" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Lexical Analysis" />
+<meta property="og:description" content="Lexical Analysis" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/05/10/Lexical-Analysis/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/05/10/Lexical-Analysis/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-05-10T00:00:00-07:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/05/10/Lexical-Analysis/"},"url":"http://localhost:4000/blog/2018/05/10/Lexical-Analysis/","author":{"@type":"Person","name":"Wang Wei"},"description":"Lexical Analysis","headline":"Lexical Analysis","dateModified":"2018-05-10T00:00:00-07:00","@type":"BlogPosting","datePublished":"2018-05-10T00:00:00-07:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="Compiler" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">Lexical Analysis </h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-05-10T00:00:00-07:00" datetime="2018-05-10T00:00:00-07:00">May 10, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#Compiler" title="Compiler">
+            Compiler <span>3</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#Compiler" title="Compiler">Compiler <span>3</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-lexical-analysis">Lexical Analysis</h2>
+<p><strong>goal</strong>: identify each lexeme and return information on token</p>
+<h3 id="heading-1-lexical-analyzer-role">1 Lexical Analyzer Role</h3>
+<p>(1) read input characters, group them into lexemes, and produce output a sequence of tokens</p>
+
+<p>(2) When the lexical analyzer discovers a lexeme constituting an identifier, it needs to enter that lexeme into the symbol table.</p>
+
+<p><img src="/assets/images/1525905998501.png" alt="image" /></p>
+
+<p>The figure suggests, parser will call lexical analyzer, and lexical analyzer read characters until find next token. 
+lexical analyzer will also do some additional jobs:</p>
+
+<p>(1) strip whitespace</p>
+
+<p>(2) record line number for error message</p>
+<h4 id="heading-311-basic-concepts">3.1.1 Basic Concepts</h4>
+<p>(1) A <strong>token</strong> is a pair consisting of a token name and an optional attribute value. The token name is an abstract symbol representing a kind of lexical unit.</p>
+
+<p>(2) A <strong>pattern</strong> is a description of the form that the lexemes of a token may take. 
+the sequence of character which can form keywords</p>
+
+<p>(3) A <strong>lexeme</strong> is a sequence of characters in the source program that matches the pattern for a token and is identified by the lexical analyzer as an instance of the token.</p>
+
+<p>In most programming languages, the following classes cover most or all of the tokens:</p>
+
+<p>(1) One token for each keyword. The pattern for a keyword is the same as the keyword itself.</p>
+
+<p>(2) Tokens for the operators</p>
+
+<p>(3) One token representing all identifiers.</p>
+
+<p>(4) One or more tokens representing constants</p>
+
+<p>(5) To kens for each punctuation symbol, such as left and right parentheses, comma, and semicolon.</p>
+
+<p>Sometimes, token can have different matches, for example, 0 and 1 both match for <strong>number</strong>. So we not only need token names, we also need token attributes. The token name influences parsing decisions, while the attribute value influences translation of tokens after the parse. 
+The appropriate attribute value for an identifier is a pointer to the symbol table entry for that identifier.</p>
+
+<p><strong>Lexical Errors</strong> suppose a situation arises in which the lexical analyzer is unable to proceed because none of the patterns for tokens matches any prefix of the remaining input. The simplest recovery strategy is "panic mode" recovery. We delete successive characters from the remaining input, until the lexical analyzer can find a well-formed token at the beginning of what input is left. This recovery technique may confuse the parser, but in an interactive computing environment it may be quite adequate.</p>
+
+<h3 id="heading-2-input-buffer">2 Input Buffer</h3>
+<p>There are many situations where we need to look at least one additional character ahead. 
+<img src="/assets/images/1525925908025.png" alt="image" /></p>
+
+<p>We can use a buffer pair to resolve the problem. Each buffer is of the same size N, which is usually the size of a disk block. Using one system read command we can read N characters into a buffer, rather than using one system call per character.</p>
+
+<p>In the buffer, two pointers are maintained.</p>
+
+<p>(1) Pointer lexemeBegin, marks the beginning of the current lexeme, whose extent we are attempting to determine.</p>
+
+<p>(2) Pointer forward scans ahead until a pattern match is found; the exact strategy whereby this determination is made will be covered in the balance of this chapter.</p>
+
+<p><img src="/assets/images/1525926047058.png" alt="image" />
+We can add <strong>sentinels</strong> at the end of each buffer.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>switch (*forward++) {
+	case eof: 
+		if (forward is at end of first buffer) {
+			reload second buffer;
+			forward = beginning of second buffer;
+		}
+		else if (forward is at the end of second buffer) {
+			reload first buffer;
+			forward = beginning of first buffer;
+		}
+		else 
+			terminate lexical analysis
+		break;
+	case for other characters;
+}
+</code></pre>
+</div>
+<h3 id="heading-3-token-specification">3 Token Specification</h3>
+<p>An <strong>alphabet</strong> is any finite set of symbols. 
+A <strong>string</strong> over an alphabet is a finite sequence o symbols drawn from the alphabet. 
+A <strong>language</strong> is any countable set of strings over some fixed alphabet.</p>
+
+<p><strong>operations on language</strong>
+<img src="/assets/images/1525926320045.png" alt="image" /></p>
+<h4 id="heading-31-regular-expression">3.1 Regular Expression</h4>
+<p>We are able to describe identifiers by giving names to sets of letters and digits and using the language operators union, concatenation, and closure. This process is so useful that a notation called <strong>regular expression</strong> has come into common use for describing all the language that can be built from these operators applied to the symbols of some alphabet.<br />
+Here are the rules that define the regular expressions over some alphabet $\Sigma$ and the languages that those expressions denote. 
+There are two rules that form the basis:</p>
+
+<p>(1) $\epsilon$ is a regular expression, and $L(\epsilon)$ is ${\epsilon}$, that is, the language whose sole member is empty string.</p>
+
+<p>(2) If $a$ is a symbol in $\Sigma$, then $a$ is a regular expression, and $L(a) = {a}$, that is, the language with one string, of length one, with $a$ in its one position.</p>
+
+<p><img src="/assets/images/1525926883438.png" alt="image" />
+<img src="/assets/images/1525926900662.png" alt="image" /></p>
+<h4 id="heading-32-extensions-of-regular-expressions">3.2 Extensions of Regular Expressions</h4>
+<p>(1) One or more instances. <code class="highlighter-rouge">(r)+</code></p>
+
+<p>(2) Zero or one instance. <code class="highlighter-rouge">r?</code></p>
+
+<p>(3) Character classes <code class="highlighter-rouge">[abc]</code></p>
+
+<h3 id="heading-4-recognition-of-tokens">4 Recognition of Tokens</h3>
+<p>Here is our example:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>stmt -&gt; if expr then stmt
+	 | if expr then stmt else stmt
+	 |  $\epsilon$
+expr -&gt; term relop term
+	 | term
+term -&gt; id
+	 | number 
+ws -&gt; (blank | tab | newline)+
+</code></pre>
+</div>
+<p><img src="/assets/images/1525928409876.png" alt="image" /></p>
+<h3 id="heading-5-finite-automata">5 Finite Automata</h3>
+<p>The heart of transition is the formalism known as <strong>finite automata</strong>. 
+Finite automata come in two flavors:</p>
+
+<p>(1) <strong>Nondeterministic finite automata</strong>(NFA) have no restrictions on the labels of their edges. A symbol can label several edges out of the same state, and $\epsilon$, the empty string, is a possible label.</p>
+
+<p>(2) <strong>Deterministic finite automata</strong> (DFA) have, for each state, and for each symbol of its input alphabet exactly one edge with that symbol leaving the state.</p>
+
+<p>Both deterministic and nondeterministic finite automata are capable of recognizing the same language. In fact these language are exactly the same language, called the <strong>regular language</strong>, that regular expressions can describe.</p>
+<h4 id="heading-51-nfa">5.1 NFA</h4>
+<p>NFA consists of :
+(1) A finite set of states $S$</p>
+
+<p>(2) A set of input symbols $\Sigma$, the input alphabet. We assume that $\epsilon$, which stands for the empty string, is never a member of $\Sigma$</p>
+
+<p>(3) A transition function that gives, for each state, and for each symbol in $\Sigma \cup{\epsilon}$ a set of next states.</p>
+
+<p>(4) A state $s_0$ from $S$ that is distinguished as the start state(or initial state)</p>
+
+<p>(5) A set of states $F$, a subset of $S$, that is distinguished as the accepting states(or final states)</p>
+
+<p>An NFA <strong>accepts</strong> input string $x$ iff there is some path in the transition graph from the start state to one of the <strong>accepting states</strong>, such that the symbols along the path spell out $x$.</p>
+<h4 id="heading-52-dfa">5.2 DFA</h4>
+<p>A deterministic finite automata is a special case of an NFA where</p>
+
+<p>(1) There are no moves on input $\epsilon$</p>
+
+<p>(2) For each state $s$ and input symbol $a$, there is exactly one edge out of $s$ labeled $a$.</p>
+
+<p>Every regular expression and every NFA can be converted to a DFA accepting the same language, because it is the DFA that we really implement or simulate when building lexical analyzers.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code># Simulate a DFA
+s = s_0;
+c = nextChar();
+while (c != eof) {
+	s = move(s, c);
+	c = nextChar();
+}
+if (s in Final_state) return "yes";
+else return "no";
+</code></pre>
+</div>
+<h3 id="heading-6-regular-expression---automata">6 Regular Expression -&gt; Automata</h3>
+<h4 id="heading-61-nfa-dfa">6.1 NFA-&gt;DFA</h4>
+<p>The general idea behind the subset construction is that each state of the constructed DFA corresponds to a set of NFA states. After reading input $a_1a_2…a_n$, the DFA is in that state which corresponds to the set of states that NFA can reach, from its start state, following paths labeled $a_1a_2…a_n$. 
+<img src="/assets/images/1525974027615.png" alt="image" /></p>
+
+<p>Before reading the first input symbol, N can be in any of the states of $\epsilon-closure(s_0)$. For induction, suppose N can be in set of states $T$ after reading input string $x$. If it next reads input $a$, then $N$ can immediately go to any of the states in $move(T,a)$. However, after reading $a$, it may also make $\epsilon$ transitions. Thus $N$ could be in any state of $\epsilon-closure(move(T,a))$ after reading input $xa$. 
+How to construct the set of $D$'s states, $Dstates$, and its transition function $Dtran$. 
+Initially, $\epsilon-closure(s_0)$ is the only state in $Dstates$ and it is unmarked.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># construct Dstates and Dtran
+while (there is an unmarked state T in Dstates) {
+	mark T;
+	for (each input symbol a) {
+		U  = epsilon-closure(move(T, a));
+		if (U is not in Dstates)
+			add U as an unmarked state to Dstates;
+		Dtran[T,a] = U;
+	}
+}
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code># compute epsilon closure for T
+push all states of T onto stack;
+initialize epsilon-closure(T) to T;
+while (stack is not empty) {
+	pop t off the stack;
+	for (each state u with an edge from t to u labeled epsilon) {
+		if (u is not in epsilon-closure(T)) {
+			add u to epsilon-closure(T);
+			push u onto stack;
+		}
+	}
+}
+</code></pre>
+</div>
+<p><img src="/assets/images/1525975686530.png" alt="image" /></p>
+
+<p>For line 1 and line 4 we can implement a function <code class="highlighter-rouge">addState(s)</code>. This function pushes state $s$ onto <code class="highlighter-rouge">newStates</code>, sets <code class="highlighter-rouge">alreadyOn[s]</code> to <code class="highlighter-rouge">TRUE</code>, and calls itself recursively on the states in <code class="highlighter-rouge">move[s,epsilon]</code> in order to further the computation of $\epsilon-closure(s)$</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>addState(s) {
+	push s onto newStates;
+	alreadyOn[s] = True;
+	for (t on move[s, epsilon])
+		if (!alreadyOn(t))
+			addState(t);
+}
+</code></pre>
+</div>
+<p>For line 4</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>for (s on oldStates) {
+	for (t on move[s,c]) 
+		if (!alreadyOn[t])
+			addState(t);
+	pop s from oldStates;
+}
+for (s on newStates) {
+	pop s from newStates;
+	push s onto oldStates;
+	alreadOn[s] = FALSE;
+}
+</code></pre>
+</div>
+<h4 id="heading-62-regular-expression---nfa">6.2 Regular Expression -&gt; NFA</h4>
+<p><img src="/assets/images/1525976909215.png" alt="image" />
+<img src="/assets/images/1525977147532.png" alt="image" />
+<img src="/assets/images/1525977159550.png" alt="image" />
+<img src="/assets/images/1525977172727.png" alt="image" /></p>
+
+<p>NFA properties:
+(1) $N(r)$ has at most twice as many states as there are operators and operands in $r$. This bound follows the fact that each step of the algorithm creates at most two new states</p>
+
+<p>(2) $N(r)$ has one start state and one accepting state. The accepting state has no outgoing transitions, and the start has no incoming transitions.</p>
+
+<p>(3) Each state of $N(r)$ other than the accepting state has either one outgoing transition on a symbol in $\Sigma$ or two outgoing transitions, both on $\epsilon$.</p>
+
+<h3 id="heading-7-design-for-a-lexical-generator">7. Design for a Lexical Generator</h3>
+<p><img src="/assets/images/1525981672518.png" alt="image" /></p>
+
+<p>The program that serves as the lexical analyzer includes a fixed program that simulates an automaton. We need a single automation that will recognize lexemes matching any of the patterns in the program, so we combine  all the NFA's into one by introducing a new start state with $\epsilon$-transitions to each of the start states of the NFA's $N_i$.</p>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/05/09/overview-for-compiler/" title=" 'overview for compiler '"> ← overview for compiler </a>
+                        
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

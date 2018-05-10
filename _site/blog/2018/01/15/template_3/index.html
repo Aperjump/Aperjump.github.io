@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Notes on C++ Templates 3 | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="Notes on C++ Templates 3" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="C++ Templates notes series" />
+<meta property="og:description" content="C++ Templates notes series" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/15/template_3/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/15/template_3/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-15T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/15/template_3/"},"url":"http://localhost:4000/blog/2018/01/15/template_3/","author":{"@type":"Person","name":"Wang Wei"},"description":"C++ Templates notes series","headline":"Notes on C++ Templates 3","dateModified":"2018-01-15T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-15T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="C++,Template" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">Notes on C++ Templates 3</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-15T00:00:00-08:00" datetime="2018-01-15T00:00:00-08:00">January 15, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#C++" title="C++">
+            C++ <span>24</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#C++" title="C++">C++ <span>21</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#Template" title="Template">Template <span>19</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h3 id="heading-1-inclusion-model">1. Inclusion Model</h3>
+<p>模板的定义和声明都要写在同一个头文件中。或者在头文件的最后包含一个
+<code class="highlighter-rouge">#include "myfirst.cpp"</code>
+这种代码的组织形式被称为<code class="highlighter-rouge">inclusion model</code></p>
+<ul>
+  <li>缺点：增加了头文件的开销
+模板的主要开销不是模板本身定义的大小，而是模板定义中所要包含的头文件的大小，如<code class="highlighter-rouge">&lt;iostream&gt;</code>等。
+<strong>非内联函数模板在调用的位置不会被扩展，只有在进行实例化之后，才会产生一份基于该类型的函数拷贝</strong></li>
+</ul>
+
+<h3 id="heading-2-显式实例化">2. 显式实例化</h3>
+<p>每次在调用模板的时候指出需要实例化的类型，但是注意在一个程序中最多只能有一个显式实例化体，不能出现两次<code class="highlighter-rouge">print&lt;int&gt;</code></p>
+<h3 id="heading-3-分离模型">3. 分离模型</h3>
+<p>可以使用关键字<code class="highlighter-rouge">export</code>加在模板定义前面：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>    //basic/first.hpp
+    #ifndef MYFIRST_HPP
+    #define MYFIRST_HPP
+    
+    export 
+    template&lt;typename T&gt;
+    void print_typeof(T const&amp;);
+    #endif
+</code></pre>
+</div>
+<p>这样，使用模板的位置和模板的定义位置可以在两个不同的编译单元里。<strong>我们只需要在第一个的声明前面加上<code class="highlighter-rouge">export</code>就可以，后面的定义中会隐式的保留这个特性</strong>。但是在定义中提供一个<code class="highlighter-rouge">export</code>也是可取的，这样可以提高代码的可读性。</p>
+
+<p>当<code class="highlighter-rouge">export</code>用于类模板时，意味着每个可导出的类成员都被看作可到处实体，但类模板本身没有导出（类模板定义仍然要出现在头文件）但内联函数不可导出。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>export template &lt;typename T&gt;
+class Myclass {
+    public:
+        void memfunc1(); // exported
+        void memfunc2() { 
+        // 隐式inline 不可导出
+            ...
+        } 
+        void memfunc3(); // 显式inline不可导出
+};
+template &lt;typename T&gt;
+inline void MyClass&lt;T&gt;::memfunc3() 
+{
+    ...
+}
+</code></pre>
+</div>
+<p>在分离模型和include模型之间切换的方法：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>#ifndef MYFIRST_HPP
+#define MYFIRST_HPP
+
+// 如果定义了USE_EXPORT，用export
+#if defined(USE_EXPORT)
+#define EXPORT export
+#else
+#define EXPORT 
+#endif 
+EXPORT template&lt;typename T&gt;
+void print_typeof(T const&amp;);
+// 如果没有定义USE_EXPORT则使用包含模型
+#if !defined(USE_EXPORT)
+#include "myfirst.cpp"
+#endif 
+#endif
+</code></pre>
+</div>
+
+<h3 id="heading-4-template-and-inline">4. template and inline</h3>
+<p><code class="highlighter-rouge">inline</code>修饰符的作用实在函数的调用出用函数体直接进行替换，效率优于普通的调用机制，但是编译器并不强制这种行为。
+但是模板默认不是<code class="highlighter-rouge">inline</code>的。</p>
+
+<h3 id="heading-5-预编译头文件">5. 预编译头文件</h3>
+<p>预编译机制：可以用某种方式组织代码，他们前面的代码都是相同的。如果每个需要编译的文件前N行代码相同，我们可以先编译这N行，记录下这个状态，然后其他文件在此基础上增加目标码内容。
+这个过程中，文件必须以相同的<code class="highlighter-rouge">#include</code>指示符开始，因此当包含众多头文件时，要保证他们顺序相同。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>#include &lt;vector&gt;
+#include &lt;list&gt;
+---------------------
+#include &lt;list&gt;
+#include &lt;vector&gt;
+</code></pre>
+</div>
+<p>这两个无法使用预编译头文件。
+有些程序员认为：在使用预编译头文件的时候，允许<code class="highlighter-rouge">#include</code>一部分额外无用的头文件，要比只选择游泳的头文件有更好的编译速度。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>\usr\home\std.hpp
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#Include &lt;deque&gt;
+</code></pre>
+</div>
+<p>然后其他文件可以<code class="highlighter-rouge">#include "std.hpp"</code></p>
+
+<p>###6. 模板调试
+模板参数存在约束：</p>
+<ul>
+  <li>syntactic constraint(语法约束）–》是否包含<code class="highlighter-rouge">opeartor&lt;</code></li>
+  <li>semantic constraint(语义约束）</li>
+</ul>
+
+<p><code class="highlighter-rouge">concept</code>这个术语表示，<strong>在模板库中重复需求的约束集合。</strong>
+C++标准库就依赖于random access iterator和default constructible这样的concept,concept还可以形成各种体系，如random access iterator就是concept bidirectional iterator的细化。
+这样调试模板的主要工作就是看模板定义中那些concept被违反了。</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;typename T&gt;
+void clear(T const&amp; p)
+{
+    *p = 0;
+}
+template&lt;typename T&gt;
+void core(T const&amp; p)
+{
+    clear(p);
+}
+template&lt;typename T&gt;
+void middle(typename T::Index p)
+{
+    core(p);
+}
+void shell(T const&amp; env)
+{
+    typenae T::Index i;
+    middle&lt;T&gt;(i);
+}
+class Client {
+    public:
+        typedef int Index;
+};
+Client main_client;
+int main()
+{
+    shell(main_client);
+}
+</code></pre>
+</div>
+<p>当<code class="highlighter-rouge">core</code>试图对<code class="highlighter-rouge">int</code>dereference的时候就会报错，此使我们可以使用一种叫做<strong>浅实例化</strong>的技巧：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template &lt;typename T&gt;
+inline void ignore(T const&amp;)
+{
+    
+}
+template &lt;typename T&gt;
+void shell (T const&amp; env)
+{
+    class ShallowChecks {
+        void deref(T::index ptr) {
+            ignore(*ptr);
+        }
+    };
+    typename T::Index T;
+    middle(i);
+}
+</code></pre>
+</div>
+<p><strong>查看Boost库中的Concept Check Library</strong></p>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/15/template_2/" title=" 'Notes on C++ Templates 2'"> ← Notes on C++ Templates 2</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/15/template_4/" title="Next Post 'Notes on C++ Templates 4'">Notes on C++ Templates 4 → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OpenCL notes_2 data transfer and parition | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="OpenCL notes_2 data transfer and parition" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="OpenCL notes_2 data transfer and parition" />
+<meta property="og:description" content="OpenCL notes_2 data transfer and parition" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/17/OpenCL_2/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/17/OpenCL_2/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-17T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/17/OpenCL_2/"},"url":"http://localhost:4000/blog/2018/01/17/OpenCL_2/","author":{"@type":"Person","name":"Wang Wei"},"description":"OpenCL notes_2 data transfer and parition","headline":"OpenCL notes_2 data transfer and parition","dateModified":"2018-01-17T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-17T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="parallel,OpenCL" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">OpenCL notes_2 data transfer and parition</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-17T00:00:00-08:00" datetime="2018-01-17T00:00:00-08:00">January 17, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#OpenCL" title="OpenCL">
+            OpenCL <span>8</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#OpenCL" title="OpenCL">OpenCL <span>8</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#parallel" title="parallel">parallel <span>8</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-kernel-args">1. Kernel Args</h2>
+<p>If you wnat a device to perform a nontrivial computing task, you have to provide at least three pieces of information: the instructios to be executed, a buffer containng data to be processed, and a buffer where processed data should be stored.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clSetKernelArg ( cl_kernel kernel,
+  cl_uint arg_index,
+  size_t arg_size,
+  const void *arg_value)
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">index</code> is the position of argument in <code class="highlighter-rouge">__kernel</code> function. <code class="highlighter-rouge">arg_value</code> is the corresponding value. The argument data pointed to by <code class="highlighter-rouge">arg_value</code> is copied and the <code class="highlighter-rouge">arg_value</code> pointer can be reused by the application. 
+If the argument is a memory object(complex data), the arg_value entry will be a pointer to the appropriate buffer, pipe, image or image array object. The memory object must be created with the context associated with the kernel object.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clSetKernelArg(proc, 0, sizeof(num), &amp;num);
+clSetKernelArg(proc, 0, sizeof(mem_obj), &amp;mem_obj);
+</code></pre>
+</div>
+<p>In OpenCL, memory objects are represented by <code class="highlighter-rouge">cl_mem</code> data structure, and they come in two types: <strong>buffer objects</strong> and <strong>image objects</strong>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>input_buffer = clCreateBuffer(context, CL_MEE_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(input_vector), input_vector, &amp;error);
+output_buffer = clCreateBuffer(context, CL_MEM_WRITE_ONLY, 
+  sizeof(input_vector), &amp;error);
+clSetKernelArg(kernel, 0, sizeof(cl_mem), &amp;input_buffer);
+clSetKernelArg(kernel, 1, sizeof(cl_mem), &amp;output_buffer);
+</code></pre>
+</div>
+
+<h2 id="heading-2-buffer-objects">2. Buffer Objects</h2>
+<p>Buffer objects package any type of data that doesn't involve images.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_mem clCreateBuffer ( cl_context context,
+  cl_mem_flags flags,
+  size_t size,
+  void *host_ptr,
+  cl_int *errcode_ret)
+</code></pre>
+</div>
+<p>This returns a <code class="highlighter-rouge">cl_mem</code> that wraps around the data identified by the <code class="highlighter-rouge">host_ptr</code> argument. 
+-<strong>Accessibility</strong>: <code class="highlighter-rouge">CL_MEM_READ_WRITE</code>, <code class="highlighter-rouge">CL_MEM_WRITE_ONLY</code>, <code class="highlighter-rouge">CL_MEM_READ_ONLY</code>
+-<strong>Memory_Allocation</strong>: <code class="highlighter-rouge">CL_MEM_USE_HOST_PTR</code>, <code class="highlighter-rouge">CL_MEM_ALLOC_HOST_PTR</code>, <code class="highlighter-rouge">CL_MEM_COPY_HOST_PTR</code>, <code class="highlighter-rouge">CL_MEM_HOST_WRITE_ONLY</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>vec_buff = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR), sizeof(float) * 32, vec, &amp;error);
+</code></pre>
+</div>
+<p>If you're running host applications on a memory-limited system or on the same device that you're using to process kernels, set the <code class="highlighter-rouge">CL_MEM_USE_HOST_PTR</code> flag. 
+If low memory isn't an issue but reliable data transfer is, set <code class="highlighter-rouge">CL_MEM_COPY_HOST_PTR</code>.</p>
+
+<h3 id="heading-21-subbuffer">2.1 Subbuffer</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_mem clCreateSubBuffer (  cl_mem buffer,
+  cl_mem_flags flags,
+  cl_buffer_create_type buffer_create_type,
+  const void *buffer_create_info,
+  cl_int *errcode_ret)
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">buffer_create_type</code> must by <code class="highlighter-rouge">CL_BUFFER_CREATE_TYPE_REGION</code>, and the fourth arg expects a pointer to a <code class="highlighter-rouge">_cl_buffer_region</code> structure.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>typedef struct _cl_buffer_region {
+    size_t origin;
+    size_t size;
+} cl_buffer_region;
+</code></pre>
+</div>
+<p>The <code class="highlighter-rouge">origin</code> field specifies the start of the subbuffer's data inside the buffer. The <code class="highlighter-rouge">size</code> field defines the size of the buffer.</p>
+
+<h2 id="heading-3-image-objects">3. Image Objects</h2>
+<p>OpenCL provides a specific type of memory object for holding pixel data. The standard refers to them as <strong>image objects</strong>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_mem clCreateImage (  cl_context context,
+  cl_mem_flags flags,
+  const cl_image_format *image_format,
+  const cl_image_desc *image_desc,
+  void *host_ptr,
+  cl_int *errcode_ret)
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>typedef struct _cl_image_format {
+          cl_channel_order image_channel_order;
+          cl_channel_type  image_channel_data_type;
+} cl_image_format;
+</code></pre>
+</div>
+
+<h2 id="heading-4-info-on-buffer-objects">4. Info on Buffer Objects</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clGetMemObjectInfo ( cl_mem  memobj ,
+  cl_mem_info  param_name ,
+  size_t  param_value_size ,
+  void  *param_value ,
+  size_t  *param_value_size_ret )
+</code></pre>
+</div>
+<p>The first three arguments provide input: the memory object, a name that identifies the type of data you're requesting, and the amount of data you're requesting. The last two arguments are output arguments, in which the function returns the data you're requesting and the size of the returned data.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>float main_data[100];
+cl_mem main_buffer, sub_buffer;
+void *main_buffer_mem = NULL, *sub_buffer_mem = NULL;
+size_t main_buffer_size, sub_buffer_size;
+cl_buffer_region region;
+...
+main_buffer = clCreateBuffer(context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, sizeof(main_data), main_data, &amp;err);
+if (err &lt; 0) {
+    perror("Couldn't create a buffer\n");
+    exit(1);
+}
+region.origin = 30 * sizeof(float);
+region.size = 20 * sizeof(float);
+sub_buffer = clCreateSubBuffer(main_buffer, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR, &amp;region, &amp;err);
+if (err &lt; 0) {
+    perror("Couldn't create a sub-buffer\n");
+    exit(1);
+}
+clGetMemObjectInfo(main_buffer, CL_MEM_SIZE, 
+    sizeof(main_buffer_size), &amp;main_buffer_size, NULL);
+clGetMemObjectInfo(sub_buffer, CL_MEM_SIZE, 
+    sizeof(sub_buffer_size), &amp;sub_buffer_size, NULL);
+</code></pre>
+</div>
+<h2 id="heading-5-memory-object-transfer">5. Memory Object Transfer</h2>
+<h3 id="heading-51-readwrite">5.1 Read/Write</h3>
+<p>To read a buffer object from a device to the host, we can simply call <code class="highlighter-rouge">clEnqueueReadBuffer</code>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clEnqueueReadBuffer(cl_command_queue queue, cl_mem buffer, cl_bool blocking, size_t offset, size_t data_size, void* ptr, cl_uint num_events, const cl_event* wait_list, cl_event* event);
+clEnqueueWriteBuffer(cl_command_queue queue, cl_mem buffer, cl_bool blocking, size_t offset, size_t data_size, void* ptr, cl_uint num_events, const cl_event* wait_list, cl_event* event);
+</code></pre>
+</div>
+<p>Each of these functions also have a boolean argument called <code class="highlighter-rouge">blocking</code>. If this is set to <code class="highlighter-rouge">CL_TRUE</code>, the function won't return until the read/write operation is finished.</p>
+<h3 id="heading-52-mapping-memory-objects">5.2 Mapping memory objects</h3>
+<p>When a regular C/C++ application needs to access a file, it's common to place the file's content in memory and read or modify it using memory operations. This is referred to as <strong>memory-mapping</strong> the file. You can also map a memory object on a device to a memory region on the host.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>void * clEnqueueMapBuffer (	cl_command_queue command_queue,
+ 	cl_mem buffer,
+ 	cl_bool blocking_map,
+ 	cl_map_flags map_flags,
+ 	size_t offset,
+ 	size_t size,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event,
+ 	cl_int *errcode_ret);
+ 
+void * clEnqueueMapImage (	cl_command_queue  command_queue ,
+ 	cl_mem  image ,
+ 	cl_bool  blocking_map ,
+ 	cl_map_flags  map_flags ,
+ 	const size_t  * origin ,
+ 	const size_t  * region ,
+ 	size_t  *image_row_pitch ,
+ 	size_t  *image_slice_pitch ,
+ 	cl_uint  num_events_in_wait_list ,
+ 	const cl_event  *event_wait_list ,
+ 	cl_event  *event ,
+ 	cl_int  *errcode_ret )
+</code></pre>
+</div>
+<p>The return pointer identifies the start of mapped memory on the host. 
+Memory mapping provides a significant improvement in performance over regular read/write operation.</p>
+
+<h3 id="heading-53-memory-copy">5.3 Memory copy</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clEnqueueCopyBuffer (	cl_command_queue command_queue,
+ 	cl_mem src_buffer,
+ 	cl_mem dst_buffer,
+ 	size_t src_offset,
+ 	size_t dst_offset,
+ 	size_t size,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+
+cl_int clEnqueueCopyImage (	cl_command_queue command_queue,
+ 	cl_mem src_image,
+ 	cl_mem dst_image,
+ 	const size_t *src_origin,
+ 	const size_t *dst_origin,
+ 	const size_t *region,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+
+cl_int clEnqueueCopyImage (	cl_command_queue command_queue,
+ 	cl_mem src_image,
+ 	cl_mem dst_image,
+ 	const size_t *src_origin,
+ 	const size_t *dst_origin,
+ 	const size_t *region,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+
+cl_int clEnqueueCopyImageToBuffer (	cl_command_queue command_queue,
+ 	cl_mem src_image,
+ 	cl_mem  dst_buffer,
+ 	const size_t *src_origin,
+ 	const size_t *region,
+ 	size_t dst_offset,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+
+cl_int clEnqueueCopyBufferToImage (	cl_command_queue command_queue,
+ 	cl_mem src_buffer,
+ 	cl_mem  dst_image,
+ 	size_t src_offset,
+ 	const size_t *dst_origin,
+ 	const size_t *region,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+
+cl_int clEnqueueCopyBufferRect (	cl_command_queue command_queue,
+ 	cl_mem src_buffer,
+ 	cl_mem dst_buffer,
+ 	const size_t *src_origin,
+ 	const size_t *dst_origin,
+ 	const size_t *region,
+ 	size_t src_row_pitch,
+ 	size_t src_slice_pitch,
+ 	size_t dst_row_pitch,
+ 	size_t dst_slice_pitch,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+</code></pre>
+</div>
+
+<h2 id="heading-6-data-partitioning">6. Data Partitioning</h2>
+<p>The better you distribute the processing load, the sonner your computational tasks will be finished.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_int clEnqueueNDRangeKernel (	cl_command_queue command_queue,
+ 	cl_kernel kernel,
+ 	cl_uint work_dim,
+ 	const size_t *global_work_offset,
+ 	const size_t *global_work_size,
+ 	const size_t *local_work_size,
+ 	cl_uint num_events_in_wait_list,
+ 	const cl_event *event_wait_list,
+ 	cl_event *event)
+</code></pre>
+</div>
+<ul>
+  <li>work_dims: the number of dimensions in the data</li>
+  <li>global_work_offset: the global ID offsets in each dimension</li>
+  <li>global_work_size: the number of work-items in each dimension</li>
+  <li>local_work_size: the number of work-items in a work-group, in each dimension</li>
+</ul>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>for (i = 0; i &lt; Z; i++) {
+    for (j = 0; j &lt; Y; j++) {
+        for (k = 0; k &lt; X; k++) {
+            process(point[i][j][k]);
+        }
+    }
+}
+</code></pre>
+</div>
+<p>Kernel only executes code that would lie inside the innermost loop-&gt;<strong>work_item</strong>
+The array<code class="highlighter-rouge"><span class="p">{</span><span class="err">i,j,k</span><span class="p">}</span></code> are called <strong>global ID</strong>.The number of elements in a global ID is referred to as the data's <strong>dimensionality</strong>. <code class="highlighter-rouge">clEnqueueNDRangeKernel</code>
+A <strong>work-group</strong> is a combination of work-items that access the same processing resources. When it comes to programming, work-groups have two main advantages:
+(1): Work-items in a work-group can access the same block of high-speed memory called local memory.
+(2): Work-items in a work-group can be synchronized using fences and barriers.</p>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/17/OpenCL_1/" title=" 'OpenCL notes_1 host programming'"> ← OpenCL notes_1 host programming</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/17/template_6/" title="Next Post 'Notes on C++ Templates 6'">Notes on C++ Templates 6 → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

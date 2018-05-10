@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Fibonacci Heap Implementation | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="Fibonacci Heap Implementation" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="mFibonacci Heap Implementation" />
+<meta property="og:description" content="mFibonacci Heap Implementation" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/25/Fibonacci_Heap/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/25/Fibonacci_Heap/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-25T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/25/Fibonacci_Heap/"},"url":"http://localhost:4000/blog/2018/01/25/Fibonacci_Heap/","author":{"@type":"Person","name":"Wang Wei"},"description":"mFibonacci Heap Implementation","headline":"Fibonacci Heap Implementation","dateModified":"2018-01-25T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-25T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="C++,Algorithm" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">Fibonacci Heap Implementation</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-25T00:00:00-08:00" datetime="2018-01-25T00:00:00-08:00">January 25, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#C++" title="C++">
+            C++ <span>24</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#Algorithm" title="Algorithm">Algorithm <span>2</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#C++" title="C++">C++ <span>21</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-supporting-operations">1. Supporting Operations</h2>
+<p>Fibonacci heap supports following operations(min-heap):</p>
+
+<ul>
+  <li><code class="highlighter-rouge">new_heap()</code> constructor</li>
+  <li><code class="highlighter-rouge">insert(x)</code> insert element <code class="highlighter-rouge">x</code> into heap</li>
+  <li><code class="highlighter-rouge">union(H)</code> create one new heap combining <code class="highlighter-rouge">*this</code> and <code class="highlighter-rouge">H</code></li>
+  <li><code class="highlighter-rouge">root()</code> return a pointer to min/max pointer on root</li>
+  <li><code class="highlighter-rouge">extract()</code> delete min node, and return its pointer</li>
+  <li><code class="highlighter-rouge">destroy(&amp;Node)</code> delete element x from heap, note: x needs to be a pointer</li>
+  <li><code class="highlighter-rouge">search(x)</code> search element one by one, if use the <code class="highlighter-rouge">destory(x)</code> needs to find the element first</li>
+  <li><code class="highlighter-rouge">degrade_key(&amp;Node, k)</code> degrade key value, first argument needs to be pointer</li>
+</ul>
+
+<p>Fibonacci heap has very desirable amortized cost: except <code class="highlighter-rouge">extract()</code>, <code class="highlighter-rouge">destroy(&amp;Node)</code> have <code class="highlighter-rouge">O(lgn)</code> complexity, <code class="highlighter-rouge">search()</code> has <code class="highlighter-rouge">O(n)</code> complexity, others all maintain an <code class="highlighter-rouge">O(1)</code> complexity.</p>
+
+<h2 id="heading-2-implementation">2. Implementation</h2>
+<p>Fibonacci heap has a collection of min-heap ordered trees.</p>
+
+<p><img src="https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci1.PNG" alt="Fibonacci1" /></p>
+
+<p>As we can see, each node should have a pointer pointing to parent and a pointer to child node. Each child node should link a circle using double linked list.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>ttemplate&lt;typename K, typename V&gt;
+class Node {
+public:
+  typedef V value_type;
+  typedef K key_type;
+  typedef Node&lt;key_type, value_type&gt;* pointer;
+  Node() : val(), key(), left_child(NULL), right_child(NULL),
+    parent(NULL), child(NULL), degree(1), mark(false) { }
+  Node(key_type key, value_type val) : key(key), val(val), left_child(NULL), 
+    right_child(NULL),parent(NULL), child(NULL), degree(1), mark(false) { }
+  // When copy construct from another Node, I think it inappropriate 
+  // to copy Node pointers, if you really need to full copy Node, use 
+  // deep_copy method explicitly
+  template&lt;typename K, typename V&gt;
+  Node(Node&lt;K,V&gt;&amp; node) : val(node.val), key(node.key), left_child(NULL),
+    right_child(NULL), parent(NULL), child(NULL),
+    degree(1), mark(false) { }
+  pointer operator=(pointer other)
+  {
+    if (other == NULL)
+    {
+      val = 0;
+      key = 0; 
+      left_child = NULL;
+      right_child = NULL; 
+      parent = NULL; 
+      child = NULL;
+      degree = 1;
+      mark = false;
+    }
+    else {
+      copy(*other);
+    }
+    return this;
+  }
+  key_type get_key() {
+    return key;
+  }
+  value_type get_val() {
+    return val;
+  }
+  void copy(Node node);
+  void deep_copy(Node node);
+
+  value_type val;
+  key_type key;
+  pointer left_child;
+  pointer right_child;
+  pointer parent;
+  pointer child; // pointer to any of the child
+  int degree; // number of child
+  bool mark; // whether lost a child
+};
+</code></pre>
+</div>
+<p>I tried to separate <code class="highlighter-rouge">key_type</code> and <code class="highlighter-rouge">val_type</code>, since I think it a common practice for <code class="highlighter-rouge">key-value</code> pairs. And I distinguish two copies, one only copies the value, and the other copyies both value and pointer(but seems no use though).</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;typename K, typename V, typename func = min_heap&lt;K&gt; &gt;
+class Fibonacci_heap_min : public Fibonacci_heap&lt;K, V, func&gt; {
+public:
+  Fibonacci_heap_min() : _root(NULL), num(0) { }
+  // copy constructor treat the node as root
+  Fibonacci_heap_min(Fibonacci_heap&lt;K, V, func&gt;::node_type* node) : _root(node), num(1) { }
+  void min() { return root(); }
+private:
+  Fibonacci_heap&lt;K, V, func&gt;::node_type* _root;
+  int num;
+};
+template&lt;typename K, typename V, typename func = max_heap&lt;K&gt; &gt;
+class Fibonacci_heap_max : public Fibonacci_heap&lt;K, V, func&gt; {
+public:
+  Fibonacci_heap_max() : _root(NULL), num(0) { }
+  // copy constructor treat the node as root
+  Fibonacci_heap_max(Fibonacci_heap&lt;K, V, func&gt;::node_type* node) : _root(node), num(1) { }
+  void max() { return root(); }
+private:
+  Fibonacci_heap&lt;K, V, func&gt;::node_type* _root;
+  int num;
+};
+</code></pre>
+</div>
+<p>Next, I created two <code class="highlighter-rouge">Fibonacci_heap</code> refinements, and their only use is to pass that functor prameters. And two functors are simple:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;typename T&gt;
+class min_heap {
+public:
+  bool operator() (T left, T right) { return left &lt; right; }
+};
+template&lt;typename T&gt;
+class max_heap {
+public:
+  bool operator() (T left, T right) { return left &gt; right; }
+};
+</code></pre>
+</div>
+<p>Finally, this is Fibonacci heap:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>template&lt;typename K, typename V, typename func&gt;
+class Fibonacci_heap {
+public:
+  typedef V value_type;
+  typedef K key_type;
+  typedef func functor_type;
+  typedef Node&lt;key_type, value_type&gt; node_type;
+  Fibonacci_heap() : _root(NULL), num(0), maxdegree(0) { }
+  // copy constructor treat the node as root
+  Fibonacci_heap(node_type* node) : _root(node), num(1), maxdegree(1) { }
+  void insert(node_type* x) {
+    if (_root == NULL)
+      _root = x;
+    else {
+      connect(_root, x);
+      if (func()(x-&gt;get_key(), _root-&gt;get_key()))
+        _root = x;
+    }
+    num++;
+  }
+  // root will return min/max value determined by functor
+  node_type* root() { return _root; }
+  // combine two root, compare key, add num
+  template&lt;typename K, typename V, typename funct&gt;
+  int combine(Fibonacci_heap&lt;K, V, funct&gt;* right) {
+    connect_circle(_root, right-&gt;_root);
+      if (func()(right-&gt;_root-&gt;get_key(), _root-&gt;get_key()))
+        _root = right-&gt;_root;
+    num += right-&gt;num;
+    _root-&gt;degree++;
+    maxdegree = (_root-&gt;degree &gt; maxdegree ? _root-&gt;degree: maxdegree);
+    return num;
+  }
+  node_type* extract() {
+    node_type* ret_root = (node_type*)malloc(sizeof(node_type));
+    ret_root-&gt;key = _root-&gt;key;
+    ret_root-&gt;val = _root-&gt;val;
+    if (_root != NULL) {
+      for (node_type* begin = _root-&gt;child;
+        begin != _root-&gt;child; begin = begin-&gt;right_child)
+        connect(_root, begin);
+      remove(_root);
+      // Now the node isn't min/max
+      constructroot();
+      num--;
+    }
+    return ret_root;
+  }
+private:
+
+  void connect(node_type* left, node_type* right)
+  {
+    if (left-&gt;left_child == NULL)
+    {
+      left-&gt;left_child = right;
+      left-&gt;right_child = right;
+      right-&gt;left_child = left;
+      right-&gt;right_child = left;
+    }
+    else {
+      left-&gt;left_child-&gt;right_child = right;
+      right-&gt;left_child = left-&gt;left_child;
+      left-&gt;left_child = right;
+      right-&gt;right_child = left;
+    }
+  }
+  void connect_circle(node_type* left, node_type* right)
+  {
+    if (left == NULL || right == NULL)
+    {
+      perror("left or right hand side is NULL, combine error\n");
+      exit(1);
+    }
+    else {
+      left-&gt;left_child-&gt;right_child = right-&gt;left_child;
+      right-&gt;left_child-&gt;right_child = left-&gt;left_child;
+      left-&gt;left_child = right;
+      right-&gt;left_child = left;
+    }
+  }
+  void remove(node_type* point)
+  {
+    point-&gt;left_child-&gt;right_child = point-&gt;right_child;
+    point-&gt;right_child-&gt;left_child = point-&gt;left_child;
+    if (point-&gt;left_child == point-&gt;right_child)
+      _root = point;
+    if (point-&gt;left_child == NULL)
+      _root = NULL;
+    _root = point-&gt;right_child;
+    point-&gt;right_child = NULL;
+    point-&gt;left_child = NULL;
+  }
+  void constructroot()
+  {
+    node_type* tmpheap = (node_type *)malloc(sizeof(node_type) * (maxdegree + 1));
+    for (node_type* iter = _root;
+      iter != _root; iter = iter-&gt;right_child)
+    {
+      int current_degree = iter-&gt;degree;
+      while  (&amp;tmpheap[current_degree] != NULL)
+      {
+        if (func()(iter-&gt;key, (&amp;tmpheap[current_degree])-&gt;key))
+          linknode(iter, &amp;tmpheap[current_degree]);
+        else 
+          linknode(&amp;tmpheap[current_degree], iter);
+        tmpheap[current_degree] = (node_type*)NULL;
+        current_degree++;
+      }
+      tmpheap[iter-&gt;degree] = *iter;
+    }
+    for (int i = 0; i &lt; maxdegree + 1; i++)
+    {
+      if (func()(_root-&gt;get_key(), (&amp;tmpheap[i])-&gt;get_key()))
+        _root = &amp;tmpheap[i];
+    }
+  }
+  void linknode(node_type* left, node_type* right)
+  {
+    left-&gt;child = right;
+    right-&gt;parent = left;
+    right-&gt;left_child = NULL;
+    right-&gt;right_child = NULL;
+  }
+  node_type* _root;
+  int num;
+  int maxheapnum;
+  int maxdegree;
+};
+</code></pre>
+</div>
+<p>Its main difficulties is the <code class="highlighter-rouge">extract()</code> function. This picture can briefly summarize its operation:
+<img src="https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci2.PNG" alt="Fibonacci2" />
+<img src="https://raw.githubusercontent.com/Aperjump/Aperjump.github.io/master/_picture/2018-01-25-Fibonacci_Heap/Fibonacci3.PNG" alt="Fibonacci2" /></p>
+
+<p>And this is my test code:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>#include &lt;iostream&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include "Fibo.h"
+int main() {
+  using namespace std;
+  Node&lt;int, int&gt; Node_1(3, 4);
+  printf("Node1 is (%d, %d)\n", Node_1.get_key(), Node_1.get_val());
+  Node&lt;int, int&gt; Node_2{ 2, 7 };
+  printf("Node2 is (%d, %d)\n", Node_2.get_key(), Node_2.get_val());
+  Node&lt;int, int&gt; Nodetest[] = { {1,3}, {4,5}, {7,8}, {7, 9}, {8, 3} };
+  Node&lt;int, int&gt; Nodetest_2[] = { {2,4}, {3,5}, {7,9}, {1,10} };
+  printf("Nodelist is (%d, %d)\n", Nodetest[2].get_key(), Nodetest[2].get_val());
+  Fibonacci_heap&lt;int,int, min_heap&lt;int&gt; &gt; fibo(&amp;Node_1);
+  fibo.insert(&amp;Node_2);
+  for (int i = 0; i &lt; 5; i++)
+  {
+    fibo.insert(&amp;Nodetest[i]);
+  }
+  printf("root of fibo is (%d,%d)\n", fibo.root()-&gt;get_key(), fibo.root()-&gt;get_val());
+  Fibonacci_heap&lt;int, int, min_heap&lt;int&gt; &gt; fibo2(&amp;Node_1);
+  for (int i = 0; i &lt; 4; i++)
+  {
+    fibo2.insert(&amp;Nodetest_2[i]);
+  }
+  printf("root of fibo2 is (%d,%d)\n", fibo2.root()-&gt;get_key(), fibo2.root()-&gt;get_val());
+  fibo.combine(&amp;fibo2);
+  printf("root of fibo is (%d,%d)\n", fibo.root()-&gt;get_key(), fibo.root()-&gt;get_val());
+  Node&lt;int, int&gt;* new_point = fibo.extract();
+  printf("new_point is (%d, %d)\n", new_point-&gt;get_key(), new_point-&gt;get_val());
+  Node&lt;int, int&gt;* new_point2 = fibo.extract();
+  printf("new_point is (%d, %d)\n", new_point2-&gt;get_key(), new_point2-&gt;get_val());
+  Fibonacci_heap_min&lt;int, int&gt; a(&amp;Node_1);
+  a.insert(&amp;Node_2);
+  for (int i = 0; i &lt; 5; i++)
+  {
+    a.insert(&amp;Nodetest[i]);
+  }
+  printf("root of a is (%d,%d)\n", a.root()-&gt;get_key(), a.root()-&gt;get_val());
+  Node&lt;int, int&gt;* new_point3 = a.extract();
+  printf("new_point3 is (%d, %d)\n", new_point3-&gt;get_key(), new_point3-&gt;get_val());
+
+}
+/*
+Node1 is(3, 4)
+Node2 is(2, 7)
+Nodelist is(7, 8)
+root of fibo is(1, 3)
+root of fibo2 is(1, 10)
+root of fibo is(1, 3)
+new_point is(1, 3)
+new_point is(2, 7)
+root of a is(1, 3)
+new_point3 is(1, 3)
+*/
+</code></pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/24/matrix_prod/" title=" 'The Annotated uBLAS Sources 5 Matrix_Prod'"> ← The Annotated uBLAS Sources 5 Matrix_Prod</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/26/OpenCL_5/" title="Next Post 'OpenCL notes_5 Event, Profiling, and Synchronization'">OpenCL notes_5 Event, Profiling, and Synchronization → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

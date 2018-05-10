@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>Syntax Directed Translator | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="Syntax Directed Translator" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Syntax Directed Translator" />
+<meta property="og:description" content="Syntax Directed Translator" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-04-22T00:00:00-07:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/"},"url":"http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/","author":{"@type":"Person","name":"Wang Wei"},"description":"Syntax Directed Translator","headline":"Syntax Directed Translator","dateModified":"2018-04-22T00:00:00-07:00","@type":"BlogPosting","datePublished":"2018-04-22T00:00:00-07:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="Compiler" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">Syntax Directed Translator</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-04-22T00:00:00-07:00" datetime="2018-04-22T00:00:00-07:00">April 22, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#Compiler" title="Compiler">
+            Compiler <span>3</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#Compiler" title="Compiler">Compiler <span>3</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-syntax-directed-translator">Syntax-Directed Translator</h2>
+<p><strong>syntax</strong>: the proper form of its program -&gt; context-free grammar or BNF(Backus-Naur Form)
+<strong>semantic</strong>: meaning of the program</p>
+
+<p>goal: syntax-directed translation of infix expressions to postfix form. 
+<img src="/assets/images/1523682572902.png" alt="image" />
+<img src="/assets/images/1523682697277.png" alt="image" /></p>
+
+<p>These are two intermediate representation forms.</p>
+
+<h3 id="heading-syntax-definition">Syntax Definition</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>stmt -&gt; if (expr) stmt else stmt
+</code></pre>
+</div>
+<p>This is one <strong>production</strong>. In a production, lexical elements like the keyword <strong>if</strong> and the parentheses are called <strong>terminals</strong>. Variables like <strong>expr</strong> and <strong>stmt</strong> represent sequences of terminals and are called <strong>nonterminals</strong>. 
+<strong>context-free grammar elements</strong></p>
+<blockquote>
+  <ol>
+    <li>A set of terminal symbols(refered as tokens)</li>
+    <li>A set of nonterminals, sometimes called <strong>syntactic variables</strong></li>
+    <li>A set of productions, where each production consists of a nonterminal, called the head or left side of the production, an arrow, and a sequence of terminals and/or nonterminals , called the body or right side of the production</li>
+    <li>A designation of one of the nonterminals as the <strong>start</strong> symbol.</li>
+  </ol>
+</blockquote>
+
+<h4 id="heading-derivations">Derivations</h4>
+<p>A grammar derives strings by beginning with the start symbol and repeatedly replacing a <strong>nonterminal</strong> by the body of a production for that nonterminal.
+example for function call:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>call -&gt; id(optparams)
+optparams -&gt; params | epsilon
+params -&gt; params, param | param
+</code></pre>
+</div>
+<p><code class="highlighter-rouge">epsilon</code> represents empty string of symbols.</p>
+<h3 id="heading-parse-trees">Parse Trees</h3>
+<p>Parsing is the problem of taking a string of terminals and figuring out how to derive it from the start symbol of the grammar.
+ <img src="/assets/images/1523683797606.png" alt="image" /></p>
+
+<p>From left to right , the leaves of a parse tree form the <strong>yield</strong> of the tree, which is the string <strong>derived</strong> from the nonterminal at the root of the parse tree.</p>
+<h3 id="heading-ambiguity">Ambiguity</h3>
+<p>A grammar can have more than one parse tree generating a given string of terminals. Such a grammar is said to be <strong>ambiguous</strong>.</p>
+<h4 id="heading-operator-assocaitivity">Operator Assocaitivity</h4>
+<p>Like <code class="highlighter-rouge">9 + 5 + 2</code>, this expression can be evaluated as <code class="highlighter-rouge">( 9 + 5 ) + 2</code> or <code class="highlighter-rouge">9 + (5 + 2)</code>. We
+say that the operator + associates to the left, because an operand with plus signs on both sides of it belongs to the operator to its left.
+<strong>left-associative</strong>: addition, subtraction, multiplication, division
+<strong>right-associative</strong>: equal, exponentiation 
+strings like <code class="highlighter-rouge">a = b = c</code> can be generated by rules like</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>right -&gt; letter = right | letter
+letter -&gt; a | b | ... | z
+</code></pre>
+</div>
+<h4 id="heading-operator-precedence">Operator Precedence</h4>
+<p><code class="highlighter-rouge">*</code> has higher priority than <code class="highlighter-rouge">+</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>term -&gt; term * factor
+		 | term / factor
+		 | factor
+expr -&gt; expr + term
+		| expr - term
+		| term
+factor -&gt; digit | (expr)
+</code></pre>
+</div>
+<p>factors are expression which cannot be "torn apart“ by any operator. 
+Terms is an expression that can be "torn apart" by operators of the higher precedence, but not by the lower precedence operators. 
+<img src="/assets/images/1523684714372.png" alt="image" /></p>
+
+<h3 id="heading-syntax-directed-translation">Syntax-Directed Translation</h3>
+<p>Syntax-directed translation is done by attaching rules or program fragments to productions in a grammar.
+<strong>Attributes</strong> An attribute is any quantity associated with a programming construct. 
+Examples of attributes are data types of expressions, the number of instructions in the generated code, or the location of the first instruction in the generated code for a construct , among many other possibilities.
+<strong>translation schemes</strong> A translation scheme is a notation for attaching program fragments to the productions of a grammar. The program fragments are executed when the production is used during syntax analysis.</p>
+<h4 id="heading-synthesized-attributes">Synthesized Attributes</h4>
+<p>The idea of associating quantities with programming constructs – for example, values and types with expressions –  can be expressed in terms of grammars. 
+A <strong>syntax-directed definition</strong> associates:</p>
+<ol>
+  <li>With each grammar symbol, a set of attributes, and</li>
+  <li>With each production, a set of <strong>semantic rules</strong> for computing the values of the attributes associated with the symbols appearing in the production.</li>
+</ol>
+
+<p><img src="/assets/images/1523687837245.png" alt="image" /></p>
+
+<p><img src="/assets/images/1523688227467.png" alt="image" /></p>
+
+<p>The string representing the translation of the nonterminal at the head of each production is the concatenation of the translations of the nonterminals in the production body, in the same order as in the production, with some optional additional strings interleaved.
+<img src="/assets/images/1523816009378.png" alt="image" /></p>
+
+<p><strong>Tree traversals</strong> will be used for describing attribute evaluation and for specifying the execution of code fragments in a translation scheme.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>DFS
+procedure visit(N) {
+	for (each child of N, from left to right) {
+		visit(child);
+	}
+	evaluate rule at N;
+}
+</code></pre>
+</div>
+<p>If the action is done when we first visit a node, then we may refer to the traversal as a preorder traversal. Similarly, if the action is done just before we leave a node for the last time, then we say it is a postorder traversal of the tree.
+A <strong>syntax-directed translation</strong>  scheme is a notation for specifying a translation by attaching program fragments to productions in a grammar.
+<strong>the order of evaluation of the semantic rules is explicitly specified</strong>
+Program fragments embedded within production bodies are called <strong>semantic actions</strong>. The position at which an action is to be executed is shown by enclosing it between curly braces and writing it within the production body</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>rest -&gt; + term {print('+') } rest1
+</code></pre>
+</div>
+<p><img src="/assets/images/1523817208488.png" alt="image" /></p>
+
+<h3 id="heading-parsing">Parsing</h3>
+<p>Parsing is the process of determining how a string of terminals can be generated by a grammar. 
+Parsing techniques : "top-down", "bottom-up"</p>
+<h4 id="heading-top-down-parsing">Top-Down Parsing</h4>
+<p><img src="/assets/images/1523817869025.png" alt="image" /></p>
+
+<ol>
+  <li>At node N, labeled with nonterminal A, select one of the productions for A and construct children at N for the symbols in the production body.</li>
+  <li>Find the next node at which a subtree is to be constructed, typically the leftmost unexpanded nonterminal of the tree.
+This method requires trail and error, and backtracking. May not be a good candidate
+    <h4 id="heading-predictive-parsing">Predictive Parsing</h4>
+    <p><strong>recursive-descent parsing</strong> is a top-down approach. Here we consider one simple version–predictive parsing:</p>
+    <blockquote>
+      <p>The sequence of procedure calls during the analysis of an input string implicitly defines a parse tree for the input</p>
+    </blockquote>
+  </li>
+</ol>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>void stmt () {
+	switch ( lookahead ) {
+	case expr:
+		match (expr) ; match (' ; ') ; break;
+	case if:
+		match (if) ; match (' C'); match (expr) ; match (' ) ') ; stmt O ;
+		break;
+	case for:
+		match (for) ; match (' C');
+		optexpr O ; match (' ; ') ; optexprO ; match (' ; ') ; optexprO ;
+		match (' ) ') ; stmt O ; break;
+	case other;
+		match (other) ; break;
+	default:
+		report ( " syntax error " );
+}
+void optexpr() {
+	if ( lookahead = = expr ) match (expr) ;
+}
+void match (terminal t) {
+	if ( lookahead = = t ) lookahead = nextTerminal;
+	else report ( " syntax error " );
+}
+</code></pre>
+</div>
+<p>Predictive parsing relies on information about the first symbols that can be generated by a production body. Our predictive parser uses an E-production as a default when no other production
+can be used.</p>
+
+<p>let $\alpha$ be a string of grammar symbols (terminals and/or nonterminals). We define First($\alpha$) to be the set of terminals that appear as the first symbols of one or more strings of terminal generated from $\alpha$.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>FIRST ( stmt) = { expr, if, for, other}
+FIRST( expr ; ) = {expr}
+</code></pre>
+</div>
+<p>A predictive parser is a program consisting of a procedure for every nonterminal. The procedure fot nonterminal A does two things:</p>
+<ol>
+  <li>It decides which A-production to use by examining the lookahead symbol. The production with body $\alpha$is used if the lookahead symbol is in FIRST ($\alpha$) .</li>
+  <li>The procedure then mimics the body of the chosen production.</li>
+</ol>
+
+<h4 id="heading-left-recursion">Left-recursion</h4>
+<div class="highlighter-rouge"><pre class="highlight"><code>expr -&gt; expr + term
+</code></pre>
+</div>
+<p>It's possible for a recursive-descent parser to loop forever if the leftmost symbol is the same as head. Since the lookahead symbol changes only when a terminal in the body is matched, no change to the input took place between recursive calls of <code class="highlighter-rouge">expr</code>.</p>
+<blockquote>
+  <p>A -&gt; A$\alpha$ | $\beta$
+can be replaced by 
+A -&gt; $\beta$R
+R -&gt; $\alpha$R | $\epsilon$</p>
+</blockquote>
+
+<p>The first one is left-recursive, the second is right-recursive. But right recursive makes it hard to translate left-associate operators. 
+<img src="/assets/images/1523820504263.png" alt="image" /></p>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/03/03/technical_diary_03_08/" title=" 'Tech Diary_03_08_2018'"> ← Tech Diary_03_08_2018</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/05/09/overview-for-compiler/" title="Next Post 'overview for compiler '">overview for compiler  → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>

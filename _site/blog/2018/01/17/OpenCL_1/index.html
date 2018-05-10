@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.4.0 -->
+<title>OpenCL notes_1 host programming | Aperjump&#39;s Playground</title>
+<meta name="generator" content="Jekyll v3.4.5" />
+<meta property="og:title" content="OpenCL notes_1 host programming" />
+<meta name="author" content="Wang Wei" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="OpenCL notes_1 host programming" />
+<meta property="og:description" content="OpenCL notes_1 host programming" />
+<link rel="canonical" href="http://localhost:4000/blog/2018/01/17/OpenCL_1/" />
+<meta property="og:url" content="http://localhost:4000/blog/2018/01/17/OpenCL_1/" />
+<meta property="og:site_name" content="Aperjump&#39;s Playground" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-01-17T00:00:00-08:00" />
+<script type="application/ld+json">
+{"mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/blog/2018/01/17/OpenCL_1/"},"url":"http://localhost:4000/blog/2018/01/17/OpenCL_1/","author":{"@type":"Person","name":"Wang Wei"},"description":"OpenCL notes_1 host programming","headline":"OpenCL notes_1 host programming","dateModified":"2018-01-17T00:00:00-08:00","@type":"BlogPosting","datePublished":"2018-01-17T00:00:00-08:00","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<meta name="keywords" content="parallel,OpenCL" />
+
+
+
+
+
+<link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" title="Aperjump's Playground" />
+    <link href='/assets/stylesheets/blog.css' rel="stylesheet" type="text/css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<script>window.Modernizr || document.write('<script src="/assets/javascripts/modernizr-2.8.3.min.js"><\/script>')</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    window.jQuery || document.write('<script src="/assets/javascripts/jquery-3.2.1.min.js"><\/script>')
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+<script>
+    window.Pace || document.write('<script src="/assets/javascripts/pace.min.js"><\/script>')
+</script>
+
+
+</head>
+
+<body>
+    <!--[if IE]>
+    <p class="site-notice">You are using an outdated browser. Please <a href="http://browsehappy.com/" target="_blank">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true" target="_blank">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+<noscript>
+    <p class="site-notice">This site requires JavaScript. Here are the instructions <a href="http://www.enable-javascript.com/" target="_blank">how to enable JavaScript in your web browser</a>.</p>
+</noscript>
+
+    <div class="nav-wrapper overlay-wrapper">
+    <div class="nav-form overlay-form">
+        <span class="overlay-header menu">Menu</span>
+        <a class="btn-close">Close</a>
+        <div class="results">
+            <ul>
+                <li><a href="/blog/categories/">Categories</a></li>
+                <li><a href="/blog/tags/">Tags</a></li>
+                <li><a href="/">About</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="search-wrapper overlay-wrapper">
+    <div class="search-form overlay-form">
+        <input type="text" class="overlay-header search-field" placeholder="Search...">
+        <a class="btn-close">Close</a>
+        <ul class="results"></ul>
+    </div>
+</div>
+
+
+    <div id="page" class="hentry">
+        <header class="the-header">
+    <div class="unit-head">
+        <div class="unit-inner unit-head-inner">
+            <nav class="nav-global">
+                <ul>
+                    <li class="logo nav-link">
+                        <button class="btn-menu" title="Menu"></button>
+                        <a href="/blog/">Aperjump's Playground</a>
+                        <!--[if !IE]> -->
+                        <button class="btn-search" title="Search"></button>
+                        <!-- <![endif]-->
+                    </li>
+                    <li class="nav-link"><a title="Categories" href="/blog/categories/">Categories</a></li>
+                    <li class="nav-link"><a title="Tags" href="/blog/tags/">Tags</a></li>
+                    <!--[if !IE]> -->
+                    <li class="nav-link"><a title="Search" class="btn-search" href="#">Search</a></li>
+                    <!-- <![endif]-->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript"
+   src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+        <div class="body animated fadeInDown" role="main">
+            <div class="unit-body">
+                <div class="unit-inner unit-body-inner">
+                    <div class="entry-content">
+                        <article class="unit-article layout-post">
+    <div class="unit-inner unit-article-inner">
+        <div itemscope itemtype="http://schema.org/Article" class="content">
+            <header>
+                <div class="unit-head">
+                    <div class="unit-inner unit-head-inner">
+                        <h1 class="entry-title" itemprop="name">OpenCL notes_1 host programming</h1>
+                    </div>
+                </div>
+            </header>
+            <div class="bd article-content">
+                <div class="entry-content">
+                    <div class="meta">
+                        <p class="date-publish">
+                            Published:
+                            <time itemprop="datePublished" class="date-pub updated"
+                                title="2018-01-17T00:00:00-08:00" datetime="2018-01-17T00:00:00-08:00">January 17, 2018 </time>
+                            by
+                            <a class="author" href="/" rel="author" title="Show Author">
+                                <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                    <span itemprop="name"></span>
+                                </span>
+                            </a>
+                            
+                            
+                        </p>
+                        <ul class="list-category list-linear">
+                            <li class="list-head">Categories: </li>
+                             
+     
+        <li>
+            <a href="/blog/categories/#OpenCL" title="OpenCL">
+            OpenCL <span>8</span></a>
+        </li>
+    
+
+
+
+                        </ul>
+                        <ul class="list-tag list-linear">
+                            <li class="list-head">Tags: </li>
+                             
+    
+        
+        <li>
+            <a href="/blog/tags/#OpenCL" title="OpenCL">OpenCL <span>8</span></a>
+        </li>
+    
+        
+        <li>
+            <a href="/blog/tags/#parallel" title="parallel">parallel <span>8</span></a>
+        </li>
+    
+
+
+
+
+                        </ul>
+                    </div>
+                    <div itemprop="articleBody">
+                        <h2 id="heading-1-host-programming">1. Host programming</h2>
+<p>My working device is Nvidia 1060 GPU, and I use CUDA v9.0. The test environment is Visual Studio 2017. Before starting talking about host programming, we need to congifure the development environment. 
+Need to add three components:
+(1) include path: <code class="highlighter-rouge">C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\include</code>
+(2) <code class="highlighter-rouge">OpenCL.lib</code> : <code class="highlighter-rouge">C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\lib</code>
+(3) <code class="highlighter-rouge">OpenCL.dll</code> : <code class="highlighter-rouge">C:\Program Files\NVIDIA Corporation\OpenCL</code></p>
+<h3 id="heading-11-primitive-types">1.1 Primitive types</h3>
+<div class="highlighter-rouge"><pre class="highlight"><code>\\CL\cl_platform.h
+/* scalar types  */
+typedef signed   __int8         cl_char;
+typedef unsigned __int8         cl_uchar;
+typedef signed   __int16        cl_short;
+typedef unsigned __int16        cl_ushort;
+typedef signed   __int32        cl_int;
+typedef unsigned __int32        cl_uint;
+typedef signed   __int64        cl_long;
+typedef unsigned __int64        cl_ulong;
+
+typedef unsigned __int16        cl_half;
+typedef float                   cl_float;
+typedef double                  cl_double;
+</code></pre>
+</div>
+<p>Once you begin writing OpenCL code, the first thing is to initialize <code class="highlighter-rouge">cl_platform_id</code> data structure. Each <code class="highlighter-rouge">cl_platform_id</code> represents an OpenCL platform on the host. If you have one NVIDIA GPU and one AMD GPU, then you install two separate SDKs, then, you will get two different <code class="highlighter-rouge">cl_platform_id</code>. Reading the source code, this structure is only a 8-bytes pointer(x64).</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>\\CL\cl.h
+typedef struct _cl_platform_id *    cl_platform_id;
+typedef struct _cl_device_id *      cl_device_id;
+typedef struct _cl_context *        cl_context;
+typedef struct _cl_command_queue *  cl_command_queue;
+</code></pre>
+</div>
+<h3 id="heading-2-find-host">2 Find Host</h3>
+<p>To initialize this structure, you need to call <code class="highlighter-rouge">cl_int clGetPlatformIDs(cl_unit, num_entries, cl_platform_id* platform, cl_uint* num_platforms)</code>
+If return value is negative, this function fails.
+<code class="highlighter-rouge">num_entries</code> is the maximum number of <code class="highlighter-rouge">cl_platform_id</code> which will be placed in <code class="highlighter-rouge">platform</code> array.
+One good practice:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_platform_id* platforms;
+cl_uint num_platforms;
+clGetPlatformIDs(5, NULL, &amp;num_platforms);
+platforms = (cl_platform_id*) malloc(sizeof(cl_platform_id) * num_platforms);
+clGetPlatformIDs(5, platforms, &amp;num_platforms);
+</code></pre>
+</div>
+<p>To get platform information, call</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>extern CL_API_ENTRY cl_int CL_API_CALL 
+clGetPlatformInfo(cl_platform_id   /* platform */, 
+                  cl_platform_info /* param_name */,
+                  size_t           /* param_value_size */, 
+                  void *           /* param_value */,
+                  size_t *         /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0;
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>char pform_vendor[40];
+clGetPlatformInfo(platforms[0], CL_PLATFORM_VENDOR, sizeof(pform_vendor), &amp;pform_vendor, NULL);
+</code></pre>
+</div>
+<h2 id="heading-3-find-devices">3. Find devices</h2>
+<div class="highlighter-rouge"><pre class="highlight"><code>/* Device APIs */
+extern CL_API_ENTRY cl_int CL_API_CALL
+clGetDeviceIDs(cl_platform_id   /* platform */,
+               cl_device_type   /* device_type */, 
+               cl_uint          /* num_entries */, 
+               cl_device_id *   /* devices */, 
+               cl_uint *        /* num_devices */) CL_API_SUFFIX__VERSION_1_0;
+
+extern CL_API_ENTRY cl_int CL_API_CALL
+clGetDeviceInfo(cl_device_id    /* device */,
+                cl_device_info  /* param_name */, 
+                size_t          /* param_value_size */, 
+                void *          /* param_value */,
+                size_t *        /* param_value_size_ret */) CL_API_SUFFIX__VERSION_1_0;
+</code></pre>
+</div>
+
+<h2 id="heading-4-device-management">4. Device Management</h2>
+<p>In OpenCL, a <strong>context</strong> identifies a set of devices through <strong>command queue</strong>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>cl_context clCreateContext(const cl_context_properties* properties, cl_unit num_devices, const cl_device_id* devices, 
+(void CL_CALLBACK* notify_func)(...), void* user_data, cl_int* error);
+cl_context clCreateContextFromType(const cl_context_properties* properties, cl_device_type device_type, 
+(void CL_CALLBACK *notify_func)(...), void* user_data, cl_int* error);
+</code></pre>
+</div>
+<p>The <code class="highlighter-rouge">user_data</code> is accessed by the callback function when an error occurs.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>clGetContextInfo(cl_context context, cl_context_info param_name, size_t param_value_size, void* param_value, size_t* param_value_size_ret)
+</code></pre>
+</div>
+
+<h2 id="heading-5-storing-device-code-in-programs">5. Storing Device Code in Programs</h2>
+<p>A kernel represents a single function to be executed on a device. In OpenCL, a program is represented by a <code class="highlighter-rouge">cl_program</code> data structure.
+OpenCL provides two functions to create new programs:
+<code class="highlighter-rouge">clCreateProgramWithSource</code> and <code class="highlighter-rouge">clCreateProgramWithBinary</code>.
+<code class="highlighter-rouge">clCreateProgramWithSource</code> function expects the buffer contain code in text form.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>extern CL_API_ENTRY cl_program CL_API_CALL
+clCreateProgramWithSource(cl_context        /* context */,
+                          cl_uint           /* count */,
+                          const char **     /* strings */,
+                          const size_t *    /* lengths */,
+                          cl_int *          /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0;
+
+extern CL_API_ENTRY cl_program CL_API_CALL
+clCreateProgramWithBinary(cl_context                     /* context */,
+                          cl_uint                        /* num_devices */,
+                          const cl_device_id *           /* device_list */,
+                          const size_t *                 /* lengths */,
+                          const unsigned char **         /* binaries */,
+                          cl_int *                       /* binary_status */,
+                          cl_int *                       /* errcode_ret */) CL_API_SUFFIX__VERSION_1_0;
+</code></pre>
+</div>
+<p>To create a program from multiple text files, the content of each file must be placed in an array of strings(<code class="highlighter-rouge">char**</code>). The <code class="highlighter-rouge">src_num</code> parameter tells the function how many strings to expect, the <code class="highlighter-rouge">src_sizes</code> identifies the size of each string.
+You can create one separate text file (<code class="highlighter-rouge">*.cl</code>).</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>program_handle = fopen("kernel.cl", "r");
+fseek(program_handle, 0, SEEK_END);
+program_size = ftell(program_handle);
+rewind(program_handle);
+
+program_buffer = (char*)malloc(program_size + 1);
+program_buffer[program_size] = '\0';
+fread(program_buffer, sizeof(char), program_size, program_handle);
+program = clCreateProgramWithSource(context, 1, (const char**)program_buffer, program_size, &amp;err);
+</code></pre>
+</div>
+
+<h2 id="heading-6-compile">6. Compile</h2>
+<p>Every compiler must be accessible through <code class="highlighter-rouge">clBuildProgram</code>. This function compiles and links a <code class="highlighter-rouge">cl_program</code> for devices associated with the platform.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>extern CL_API_ENTRY cl_int CL_API_CALL
+clBuildProgram(cl_program           /* program */,
+               cl_uint              /* num_devices */,
+               const cl_device_id * /* device_list */,
+               const char *         /* options */, 
+               void (CL_CALLBACK *  /* pfn_notify */)(cl_program /* program */, void * /* user_data */),
+               void *               /* user_data */) CL_API_SUFFIX__VERSION_1_0;
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>const char options[] = "-cl-std=CL1.1 -cl-mad-enable -Werror";
+clBuildProgram(program, 1, &amp;device, options, NULL, NULL);
+</code></pre>
+</div>
+<div class="highlighter-rouge"><pre class="highlight"><code>
+   /* Access the first GPU/CPU */
+   err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 1, &amp;device, NULL);
+   if(err == CL_DEVICE_NOT_FOUND) {
+      err = clGetDeviceIDs(platform, CL_DEVICE_TYPE_CPU, 1, &amp;device, NULL);
+   }
+   if(err &lt; 0) {
+      perror("Couldn't find any devices");
+      exit(1);
+   }
+
+   /* Create a context */
+   context = clCreateContext(NULL, 1, &amp;device, NULL, NULL, &amp;err);
+   if(err &lt; 0) {
+      perror("Couldn't create a context");
+      exit(1);   
+   }
+
+   /* Read each program file and place content into buffer array */
+   for(i=0; i&lt;NUM_FILES; i++) {
+
+      program_handle = fopen(file_name[i], "r");
+      if(program_handle == NULL) {
+         perror("Couldn't find the program file");
+         exit(1);   
+      }
+      fseek(program_handle, 0, SEEK_END);
+      program_size[i] = ftell(program_handle);
+      rewind(program_handle);
+      program_buffer[i] = (char*)malloc(program_size[i]+1);
+      program_buffer[i][program_size[i]] = '\0';
+      fread(program_buffer[i], sizeof(char), program_size[i], 
+            program_handle);
+      fclose(program_handle);
+   }
+
+   /* Create a program containing all program content */
+   program = clCreateProgramWithSource(context, NUM_FILES, 			
+         (const char**)program_buffer, program_size, &amp;err);				
+   if(err &lt; 0) {
+      perror("Couldn't create the program");
+      exit(1);   
+   }
+
+   /* Build program */
+   err = clBuildProgram(program, 1, &amp;device, options, NULL, NULL);		
+   if(err &lt; 0) {
+
+      /* Find size of log and print to std output */
+      clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 
+            0, NULL, &amp;log_size);
+      program_log = (char*) malloc(log_size+1);
+      program_log[log_size] = '\0';
+      clGetProgramBuildInfo(program, device, CL_PROGRAM_BUILD_LOG, 
+            log_size+1, program_log, NULL);
+      printf("%s\n", program_log);
+      free(program_log);
+      exit(1);
+   }
+   
+   /* Deallocate resources */
+   for(i=0; i&lt;NUM_FILES; i++) {
+      free(program_buffer[i]);
+   }
+</code></pre>
+</div>
+
+<h2 id="heading-7-kernel">7. Kernel</h2>
+<p>kernels are deployable structure. They can be packed to a command queue and send to a device. <code class="highlighter-rouge">cl_kernel</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clCreateKernelsInProgram(cl_program program, cl_uint num_kernels, cl_kernel* kernels, cl_uint* num_kernels_ret);
+</code></pre>
+</div>
+<p>If you'd rather create a single kernel, you can use the <code class="highlighter-rouge">clCreateKernel</code> function. This function requires that you know the name of the function from which the kernel is to be created.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clCreateKernel(cl_program program, const char* kernel_name, cl_int* error);
+</code></pre>
+</div>
+<p>Once you've created a <code class="highlighter-rouge">cl_kernel</code>, you may want to know which function it represents and which program it belongs to.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clGetKernelInfo(cl_kernel kernel, cl_kernel_info para_name, size_t param_value_size, void* param_value, size_t* param_value_size_ret);
+</code></pre>
+</div>
+<h2 id="heading-8-command-queue">8. Command queue</h2>
+<p>When you create a kernel, you don't have to identify a target device – it can be sent to any device in the context. Instead, you identify the target device when you create a command queue. Then when you deploy kernels to the queue, they will be sent to the device assocaited with the queue. 
+<strong>A command is a message sent from the host that tells a device to perform an operation.</strong> Besides kernel execution, many OpenCL command operations involve data transfer: reading from the device to the host, writing data from the host to the device. 
+By default, command queues process commands in the order in which they're received, but you can change this defualt. 
+<code class="highlighter-rouge">cl_command_queue</code></p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clCreateCommandQueue(cl_context context, cl_device_id device, cl_command_queue_properties properties, cl_int *err).
+</code></pre>
+</div>
+<p>This returns a <code class="highlighter-rouge">cl_command_queue</code> whose reference count can be incremented with <code class="highlighter-rouge">clRetainCommandQueue</code> and decremented with <code class="highlighter-rouge">clReleaseCommandQueue</code>.</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>clEnqueueTask(cl_command_queue queue, cl_kernel kernel, cl_uint num_events, const cl_event* wait_list, cl_event* event)
+</code></pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+            <footer class="unit-foot">
+                <div class="unit-inner unit-foot-inner">
+                    <div class="post-buttons">
+                        <a class="internal gotop" href="#page" title="Back to Top">Back to Top</a>
+                        
+                    </div>
+                    <nav class="pagination">
+                        
+                            <a class="internal" rel="prev" href="/blog/2018/01/16/template_5/" title=" 'Notes on C++ Templates 5'"> ← Notes on C++ Templates 5</a>
+                        
+                        
+                            <a class="internal" rel="next" href="/blog/2018/01/17/OpenCL_2/" title="Next Post 'OpenCL notes_2 data transfer and parition'">OpenCL notes_2 data transfer and parition → </a>
+                        
+                    </nav>
+                </div>
+            </footer>
+            <div class="misc-content">
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="the-footer">
+    <div class="unit-foot">
+        <div class="unit-inner unit-foot-inner">
+            <div class="misc vcard">
+                <div class="about">
+                    <h4><a href="/">About</a></h4>
+                    
+                        <p>A gem-based responsive simple texture styled Jekyll theme.</p>
+                    
+                    <p><small>Theme <a href="https://github.com/yizeng/jekyll-theme-simple-texture" target="_blank">Simple Texture</a> developed by <a href="http://yizeng.me" target="_blank">Yi Zeng</a>, powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a>.</small></p>
+                </div>
+                <div class="social-links">
+                    
+                    <a class="ico-rss" href="/feed.xml" rel="me" target="_blank" title="feed"></a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="internal back-to-top">Back to Top</a>
+</footer>
+
+    </div>
+
+    <script>
+$(document).ready(function () {
+    var offset = 50,
+        duration = 500,
+        width = 960;
+    $(window).scroll(function () {
+        if ($(window).width() > width) {
+            if ($(this).scrollTop() > offset) {
+                $('footer').css('top', '20px');
+                $('footer .back-to-top').fadeIn(duration);
+            } else {
+                $('footer').css('top', 'auto');
+                $('footer .back-to-top').fadeOut(duration);
+            }
+        }
+    });
+    $(window).resize(function () {
+        if ($(window).width() < width) {
+            $('footer').css('top', 'auto');
+            $('footer .back-to-top').fadeOut(duration);
+        }
+        if ($(window).width() >= width && $(this).scrollTop() > offset) {
+            $('footer').css('top', '20px');
+            $('footer .back-to-top').fadeIn(duration);
+        }
+    });
+
+    $('footer .back-to-top, .gotop').on('click', function (event) {
+        sendGaEvent('Blog', 'Back to Top', event.currentTarget);
+        event.preventDefault();
+        $('html, body').animate({
+            scrollTop: 0
+        }, duration);
+        return false;
+    });
+
+    $('.show-hidden').on('click', function () {
+        sendGaEvent('Post', 'Show Hidden', event.currentTarget);
+        $(this).parent().next().toggleClass("hidden");
+        $(this).toggleClass("hidden");
+    });
+});
+</script>
+
+<!-- Google Analytics Event tracking -->
+
+
+<!-- Show menu overlay + Jekyll Simple Search option -->
+<script src="/assets/javascripts/jekyll-search.jquery.js"></script>
+<script>
+$(document).ready(function () {
+    $('.search-field').simpleJekyllSearch({
+      jsonFile: '/search.json',
+      template: '<li><a href="{url}">{title} <span class="entry-date"><time datetime="{date}">{shortdate}</time></span></a></li>',
+      searchResults: '.search-wrapper .results',
+      searchResultsTitle: '<h4>Search results</h4>',
+      noResults: '<p>Oh shucks<br/><small>Nothing found :(</small></p>'
+    });
+});
+
+(function ($, window, undefined) {
+    var closeOverlay = function () {
+        $('.nav-wrapper, .search-wrapper').removeAttr('style');
+        $(".nav-form, .search-form").removeClass('active');
+        $("body").removeClass('nav-overlay search-overlay');
+    };
+
+    $('.nav-global .btn-search').on('click', function () {
+        $('.search-wrapper').css({display: "block"});
+        $(".search-form").addClass('active');
+        $(".search-form").find('input').focus();
+        $("body").addClass('search-overlay');
+    });
+
+    $('.nav-global .btn-menu').on('click', function () {
+        $('.nav-wrapper').css({display: "block"});
+        $(".nav-form").addClass('active');
+        $(".nav-form .search-field").prop('disabled', true);
+        $("body").addClass('nav-overlay');
+    });
+
+    $('.nav-wrapper .btn-close, .search-wrapper .btn-close').on('click', function () {
+        closeOverlay();
+    });
+
+    $(document).on('keyup', function (e) {
+        if (e.keyCode === 27) {
+            closeOverlay();
+        }
+    });
+})(jQuery, window);
+</script>
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.js'></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-buttons.min.js'></script>
+<script src="/assets/javascripts/unveil/jquery.unveil.min.js"></script>
+
+<script>
+    window.jQuery.fancybox || document.write('<script src="/assets/javascripts/fancybox/jquery.fancybox.pack.js?v=2.1.4"><\/script>')
+    window.jQuery.fancybox.helpers.buttons || document.write('<script src="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.js?v=1.0.5"><\/script>')
+</script>
+
+<script>
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/jquery.fancybox.css?v=2.1.4" type="text/css" />');
+    $("head").append('<link rel="stylesheet" href="/assets/javascripts/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" type="text/css" />');
+    $(".post-image").fancybox({
+        prevEffect: 'none',
+        nextEffect: 'none',
+        closeBtn: true,
+        helpers: {
+            title: {
+                type: 'float'
+            }
+        }
+    });
+    $(document).ready(function () {
+        $(".post-image > img").unveil(450);
+    });
+</script>
+
+</body>
+
+</html>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
