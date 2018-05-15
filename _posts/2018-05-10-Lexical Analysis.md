@@ -49,6 +49,10 @@ The appropriate attribute value for an identifier is a pointer to the symbol tab
 **Lexical Errors** suppose a situation arises in which the lexical analyzer is unable to proceed because none of the patterns for tokens matches any prefix of the remaining input. The simplest recovery strategy is "panic mode" recovery. We delete successive characters from the remaining input, until the lexical analyzer can find a well-formed token at the beginning of what input is left. This recovery technique may confuse the parser, but in an interactive computing environment it may be quite adequate.
 
 ### 2 Input Buffer
+In Dragon book, we can see the example of Fortran language, which justifies the need to look ahead to help tokenize strings. 
+1. The goal is to partition the string. This is implemented by reading left-to-right, recognizing one token at a time. 
+2. "Lookahead" may be required to decide where one token ends and the next token begins. 
+
 There are many situations where we need to look at least one additional character ahead. 
 ![image](/assets/images/1525925908025.png)
 
