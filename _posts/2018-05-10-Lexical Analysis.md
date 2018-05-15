@@ -51,7 +51,7 @@ The appropriate attribute value for an identifier is a pointer to the symbol tab
 ### 2 Input Buffer
 In Dragon book, we can see the example of Fortran language, which justifies the need to look ahead to help tokenize strings. 
 1. The goal is to partition the string. This is implemented by reading left-to-right, recognizing one token at a time. 
-2. "Lookahead" may be required to decide where one token ends and the next token begins. 
+2. "Lookahead" may be required to decide where one token ends and the next token begins. (we want to minimize look ahead)
 
 There are many situations where we need to look at least one additional character ahead. 
 ![image](/assets/images/1525925908025.png)
@@ -84,9 +84,13 @@ switch (*forward++) {
 }
 ```
 ### 3 Token Specification
+We can say lexical structure is a set of token classes. And thus we must say what set of strings is in a token class--> use regular language. 
+
 An **alphabet** is any finite set of symbols. 
 A **string** over an alphabet is a finite sequence o symbols drawn from the alphabet. 
 A **language** is any countable set of strings over some fixed alphabet. 
+meaning function $L$ maps syntax to semantics. 
+meaning is many to one. 
 
 **operations on language**
 ![image](/assets/images/1525926320045.png)
