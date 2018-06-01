@@ -7,6 +7,7 @@ tags: [Vim]
 redirect_from:
   - /2018/05/26/
 ---
+
 Vim has its own scripting language, most standard dynamic-language features
 ```
 :vmap <expr> aa Select_Entire_File()
