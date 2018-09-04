@@ -1,6 +1,48 @@
 [
   
     {
+      "title"      : "Dynamic Programming",
+      "url"        : "/blog/2018/06/02/dynamic_programming/",
+      "date"       : "2018-06-02 00:00:00 -0700",
+      "shortdate"  : "June 02, 2018"
+    } ,
+  
+    {
+      "title"      : "LLVM Intro",
+      "url"        : "/blog/2018/05/31/llvm/",
+      "date"       : "2018-05-31 00:00:00 -0700",
+      "shortdate"  : "May 31, 2018"
+    } ,
+  
+    {
+      "title"      : "Vim Script",
+      "url"        : "/blog/2018/05/26/Vim_script/",
+      "date"       : "2018-05-26 00:00:00 -0700",
+      "shortdate"  : "May 26, 2018"
+    } ,
+  
+    {
+      "title"      : "Vim abbreviation and map",
+      "url"        : "/blog/2018/05/25/Vim-abbreviation-and-map/",
+      "date"       : "2018-05-25 00:00:00 -0700",
+      "shortdate"  : "May 25, 2018"
+    } ,
+  
+    {
+      "title"      : "Syntax Analysis",
+      "url"        : "/blog/2018/05/19/syntax_analysis/",
+      "date"       : "2018-05-19 00:00:00 -0700",
+      "shortdate"  : "May 19, 2018"
+    } ,
+  
+    {
+      "title"      : "Constructing Compiler: flex intro ",
+      "url"        : "/blog/2018/05/18/compiler_construct_flex_intro/",
+      "date"       : "2018-05-18 00:00:00 -0700",
+      "shortdate"  : "May 18, 2018"
+    } ,
+  
+    {
       "title"      : "Lexical Analysis ",
       "url"        : "/blog/2018/05/10/Lexical-Analysis/",
       "date"       : "2018-05-10 00:00:00 -0700",
