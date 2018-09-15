@@ -1,6 +1,13 @@
 [
   
     {
+      "title"      : "How to debug a multi-thread program",
+      "url"        : "/blog/2018/09/04/How-to-debug-a-multithread-program/",
+      "date"       : "2018-09-04 00:00:00 -0700",
+      "shortdate"  : "September 04, 2018"
+    } ,
+  
+    {
       "title"      : "Dynamic Programming",
       "url"        : "/blog/2018/06/02/dynamic_programming/",
       "date"       : "2018-06-02 00:00:00 -0700",
