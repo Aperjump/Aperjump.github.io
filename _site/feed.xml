@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2018-09-15T16:35:24-07:00</updated><id>http://localhost:4000/</id><title type="html">Aperjump's Playground</title><subtitle>Embrace your inner geek.</subtitle><author><name>Wang Wei</name></author><entry><title type="html">TimeStamp Ordering Concurrency Control</title><link href="http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering/" rel="alternate" type="text/html" title="TimeStamp Ordering Concurrency Control" /><published>2018-09-15T00:00:00-07:00</published><updated>2018-09-15T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering/">&lt;h2 id=&quot;heading-timestamp-ordering-concurrency-control&quot;&gt;TimeStamp Ordering Concurrency Control&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2018-09-15T16:44:14-07:00</updated><id>http://localhost:4000/</id><title type="html">Aperjump's Playground</title><subtitle>Embrace your inner geek.</subtitle><author><name>Wang Wei</name></author><entry><title type="html">TimeStamp Ordering Concurrency Control</title><link href="http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering/" rel="alternate" type="text/html" title="TimeStamp Ordering Concurrency Control" /><published>2018-09-15T00:00:00-07:00</published><updated>2018-09-15T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering/">&lt;h2 id=&quot;heading-timestamp-ordering-concurrency-control&quot;&gt;TimeStamp Ordering Concurrency Control&lt;/h2&gt;
 &lt;h3 id=&quot;heading-concurrency-control-approaches&quot;&gt;Concurrency Control Approaches&lt;/h3&gt;
 &lt;ul&gt;
   &lt;li&gt;Two-phase Locking(2PL)
@@ -148,7 +148,92 @@ Partitions are protected by a single lock:&lt;/p&gt;
   &lt;li&gt;Most(if not all) txns only need to access a single partition&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Multi-partition txns causes partitions to be idle while txn executes.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Database" /><summary type="html">TimeStamp Ordering Concurrency Control Concurrency Control Approaches Two-phase Locking(2PL) Determine serializability order of conflicting operations at runtime while txns execute Pessimistic Timestamp Ordering(T/O) Determine serializability order of txns before they execute Optimistic T/O Concurrency Control Use timestamps to determine the serializability order of txns if TS(T_i) &amp;lt; TS(T_j), then the DBMS must ensure that the execution schedule is equivalent to a serial schedule where T_i appears before T_j. Timestamp Allocation Each txn T_i is assigned a unique fixed timestamp that is monotonically increasing Let TS(T_i) be the timestamp allocated to txn T_i Different schemes assign timestamps at different times during the txn.</summary></entry><entry><title type="html">How to debug a multi-thread program</title><link href="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/" rel="alternate" type="text/html" title="How to debug a multi-thread program" /><published>2018-09-04T00:00:00-07:00</published><updated>2018-09-04T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/">&lt;h2 id=&quot;heading-how-to-debug-a-multi-thread-program&quot;&gt;How to debug a multi-thread program.&lt;/h2&gt;
+&lt;p&gt;Multi-partition txns causes partitions to be idle while txn executes.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Database" /><summary type="html">TimeStamp Ordering Concurrency Control Concurrency Control Approaches Two-phase Locking(2PL) Determine serializability order of conflicting operations at runtime while txns execute Pessimistic Timestamp Ordering(T/O) Determine serializability order of txns before they execute Optimistic T/O Concurrency Control Use timestamps to determine the serializability order of txns if TS(T_i) &amp;lt; TS(T_j), then the DBMS must ensure that the execution schedule is equivalent to a serial schedule where T_i appears before T_j. Timestamp Allocation Each txn T_i is assigned a unique fixed timestamp that is monotonically increasing Let TS(T_i) be the timestamp allocated to txn T_i Different schemes assign timestamps at different times during the txn.</summary></entry><entry><title type="html">Advanced DB Quert Compilation</title><link href="http://localhost:4000/blog/2018/09/15/Query-Compilation/" rel="alternate" type="text/html" title="Advanced DB Quert Compilation" /><published>2018-09-15T00:00:00-07:00</published><updated>2018-09-15T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/15/Query-Compilation</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/15/Query-Compilation/">&lt;h2 id=&quot;heading-advanced-db-query-compilation&quot;&gt;Advanced DB Query Compilation&lt;/h2&gt;
+&lt;p&gt;Agenda:
+code generation
+JIT compilation&lt;/p&gt;
+
+&lt;p&gt;When switch to an in-memory DBMS, the only way to increase the throughput is to reduce the number of instructions executed. 
+One way to achieve such a reduction in instructions is through &lt;strong&gt;code specialization&lt;/strong&gt;. This means generating code that is specific to a particular task in the DBMS.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-query-processing-model&quot;&gt;Query Processing Model&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Tuple at a time&lt;/li&gt;
+  &lt;li&gt;Operator at a time(Materialization model)-&amp;gt; good for OLTP&lt;/li&gt;
+  &lt;li&gt;vector at a time (batch materialization)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;where B.val = ? + 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;p&gt;We need to look at the schema to lookup B's val value type. 
+Current Tuple -&amp;gt; Query Parameters -&amp;gt; Table Schema
+This is an expensive operation.&lt;/p&gt;
+
+&lt;p&gt;Any CPU intensive entity of database can be natively compiled if they have a similar execution pattern on different inputs.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;access methods&lt;/li&gt;
+  &lt;li&gt;stored procedures&lt;/li&gt;
+  &lt;li&gt;operator execution&lt;/li&gt;
+  &lt;li&gt;predicate evaluation&lt;/li&gt;
+  &lt;li&gt;logging operation&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Benefits&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Attribute types are known &lt;strong&gt;a priori&lt;/strong&gt;
+Data access function calls can be converted to inline pointer casting&lt;/li&gt;
+  &lt;li&gt;Predicates are known &lt;strong&gt;a priori&lt;/strong&gt;
+They can be evaluated using primitive data comparisons&lt;/li&gt;
+  &lt;li&gt;No function calls in loops
+Allows the compiler to efficiently distribute data to registers and increase cache reuse.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/1537027143114.png&quot; alt=&quot;Alt text&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-code-generation&quot;&gt;Code Generation&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Approach 1: Transpilation
+Write code that converts a relational query plan into C/C++ and then run it through a conventional compiler to generate native code&lt;/li&gt;
+  &lt;li&gt;Approach 2: JIT Compilation
+Generate an &lt;strong&gt;intermediate representation&lt;/strong&gt; of they query that can be quickly compiled into native code&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;heading-transpilation&quot;&gt;Transpilation&lt;/h4&gt;
+&lt;p&gt;For a given query plan, create a C/C++ program
+that implements that query’s execution.
+→ Bake in all the predicates and type conversions&lt;/p&gt;
+
+&lt;p&gt;Use an off-shelf compiler to convert the code into
+a shared object, link it to the DBMS process, and
+then invoke the exec function.&lt;/p&gt;
+
+&lt;p&gt;Relational operators are a useful way to reason about a query but are not the most efficient way to execute it. 
+It takes a long time to compile a C/C++ source file into executable code.&lt;/p&gt;
+
+&lt;h4 id=&quot;heading-pipelined-operator&quot;&gt;Pipelined Operator&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/images/1537028381129.png&quot; alt=&quot;Alt text&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-jit-query-compilation&quot;&gt;JIT Query Compilation&lt;/h3&gt;
+&lt;p&gt;Compile queries in-memory into native code using
+the LLVM toolkit.
+Organizes query processing in a way to keep a
+tuple in CPU registers for as long as possible.
+→ Push-based vs. Pull-based
+→ Data Centric vs. Operator Centric&lt;/p&gt;
+
+&lt;p&gt;LLVM
+Collection of modular and reusable compiler and toolchain technologies
+Core component is a low-level programming language(IR) that is similar to assembly. 
+Not all of the DBMS components need to written in LLVM IR.&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-query-compilation-cost&quot;&gt;Query Compilation Cost&lt;/h3&gt;
+&lt;p&gt;LLVM's compilation time grows super-linearly relative to the query size. 
+Solution:&lt;strong&gt;Adaptive Execution&lt;/strong&gt;
+First generate the LLVM IR for the query. Then execute that IR in an interpreter. Compile the query in the background. 
+When the compiled query is ready, seamlessly replace the interpretive execution. 
+&lt;img src=&quot;/assets/images/1537031357631.png&quot; alt=&quot;Alt text&quot; /&gt;&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Database" /><summary type="html">Advanced DB Query Compilation Agenda: code generation JIT compilation</summary></entry><entry><title type="html">How to debug a multi-thread program</title><link href="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/" rel="alternate" type="text/html" title="How to debug a multi-thread program" /><published>2018-09-04T00:00:00-07:00</published><updated>2018-09-04T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/">&lt;h2 id=&quot;heading-how-to-debug-a-multi-thread-program&quot;&gt;How to debug a multi-thread program.&lt;/h2&gt;
 &lt;p&gt;This passage will discuss the usage of &lt;code class=&quot;highlighter-rouge&quot;&gt;lldb&lt;/code&gt; for multi-threading program debug. You can find my code on my github &lt;a href=&quot;https://github.com/Aperjump/blog_code/tree/master/How-to-degbug-A-multithreaded-program&quot;&gt;code&lt;/a&gt;
 The code implements a simple producer-consumer pattern written in C, and use &lt;code class=&quot;highlighter-rouge&quot;&gt;pthread&lt;/code&gt; to create new threads. Although you can compile it without any problem, there are four bugs in the code and our mission is to find them all using &lt;code class=&quot;highlighter-rouge&quot;&gt;lldb&lt;/code&gt;.&lt;/p&gt;
 &lt;h3 id=&quot;heading-lldb&quot;&gt;lldb&lt;/h3&gt;
@@ -1509,31 +1594,4 @@ for (s on newStates) {
 &lt;h3 id=&quot;heading-7-design-for-a-lexical-generator&quot;&gt;7. Design for a Lexical Generator&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;/assets/images/1525981672518.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;The program that serves as the lexical analyzer includes a fixed program that simulates an automaton. We need a single automation that will recognize lexemes matching any of the patterns in the program, so we combine  all the NFA's into one by introducing a new start state with $\epsilon$-transitions to each of the start states of the NFA's $N_i$.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">Lexical Analysis goal: identify each lexeme and return information on token 1 Lexical Analyzer Role (1) read input characters, group them into lexemes, and produce output a sequence of tokens</summary></entry><entry><title type="html">overview for compiler</title><link href="http://localhost:4000/blog/2018/05/09/overview-for-compiler/" rel="alternate" type="text/html" title="overview for compiler " /><published>2018-05-09T00:00:00-07:00</published><updated>2018-05-09T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/05/09/overview%20for%20compiler</id><content type="html" xml:base="http://localhost:4000/blog/2018/05/09/overview-for-compiler/">&lt;h2 id=&quot;heading-overview-for-compiler&quot;&gt;overview for compiler&lt;/h2&gt;
-
-&lt;p&gt;analysis part: breaks the source program into constituent pieces and impose a grammatical structure on them and create symbol table  —&amp;gt; &lt;strong&gt;front end&lt;/strong&gt;
-synthesis part: constructs the desired target program from the intermediate representation and the information in the symbol table.  –&amp;gt; &lt;strong&gt;back end&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-part-1-lexical-analysis--scanning&quot;&gt;part 1. lexical analysis / scanning&lt;/h3&gt;
-&lt;p&gt;scanner reads the character streams making up the source program and groups the characters into meaningful sequences called &lt;strong&gt;lexemes&lt;/strong&gt;. 
-For each lexeme, the lexical analyzer produces a &lt;strong&gt;token&lt;/strong&gt; of the form&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;&amp;lt;token-name, attribute-value&amp;gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;variable names become &lt;strong&gt;id&lt;/strong&gt;–&amp;gt; create symbol table&lt;/p&gt;
-&lt;h3 id=&quot;heading-part-2-syntax-analysis&quot;&gt;part 2. syntax analysis&lt;/h3&gt;
-&lt;p&gt;This phase is called &lt;strong&gt;syntax analysis&lt;/strong&gt; or &lt;strong&gt;parsing&lt;/strong&gt;. The parser uses the first components of the tokens produced by the lexical analyzer to create a tree-like intermediate representation that depicts the grammatical structure of the token stream.  –&amp;gt; &lt;strong&gt;syntax tree&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-part-3-semantic-analysis&quot;&gt;part 3. semantic analysis&lt;/h3&gt;
-&lt;p&gt;The semantic analyzer use the syntax tree and symbol table to check the source program for semantic consistency with the language definition. It also gathers type information and saves it in either the syntax tree or the symbol table, for subsequent use during intermediate-code generation phase. 
-&lt;strong&gt;type checking&lt;/strong&gt; happens in this phase.&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-part-4-intermediate-code-generation&quot;&gt;part 4. intermediate code generation&lt;/h3&gt;
-&lt;p&gt;use syntax tree to create an explicit low-level or machine-like intermediate representation. &lt;strong&gt;three-address code&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-part-5-code-optimization&quot;&gt;part 5. code optimization&lt;/h3&gt;
-&lt;p&gt;The machine-independent code-optimization phase attempts to improve the intermediate code so that better target code will result.&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-part-6-code-generation&quot;&gt;part 6. code generation&lt;/h3&gt;
-&lt;p&gt;The code generator takes intermediate code as input and maps it into the target language. The intermediate instructions are translated into sequence of machine instructions that perform the same task.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">overview for compiler</summary></entry></feed>
+&lt;p&gt;The program that serves as the lexical analyzer includes a fixed program that simulates an automaton. We need a single automation that will recognize lexemes matching any of the patterns in the program, so we combine  all the NFA's into one by introducing a new start state with $\epsilon$-transitions to each of the start states of the NFA's $N_i$.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">Lexical Analysis goal: identify each lexeme and return information on token 1 Lexical Analyzer Role (1) read input characters, group them into lexemes, and produce output a sequence of tokens</summary></entry></feed>
