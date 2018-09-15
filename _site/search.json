@@ -1,6 +1,13 @@
 [
   
     {
+      "title"      : "TimeStamp Ordering Concurrency Control",
+      "url"        : "/blog/2018/09/15/TimeStamp-Ordering/",
+      "date"       : "2018-09-15 00:00:00 -0700",
+      "shortdate"  : "September 15, 2018"
+    } ,
+  
+    {
       "title"      : "How to debug a multi-thread program",
       "url"        : "/blog/2018/09/04/How-to-debug-a-multithread-program/",
       "date"       : "2018-09-04 00:00:00 -0700",

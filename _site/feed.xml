@@ -1,4 +1,154 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2018-09-15T16:27:52-07:00</updated><id>http://localhost:4000/</id><title type="html">Aperjump's Playground</title><subtitle>Embrace your inner geek.</subtitle><author><name>Wang Wei</name></author><entry><title type="html">How to debug a multi-thread program</title><link href="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/" rel="alternate" type="text/html" title="How to debug a multi-thread program" /><published>2018-09-04T00:00:00-07:00</published><updated>2018-09-04T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/">&lt;h2 id=&quot;heading-how-to-debug-a-multi-thread-program&quot;&gt;How to debug a multi-thread program.&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2018-09-15T16:35:24-07:00</updated><id>http://localhost:4000/</id><title type="html">Aperjump's Playground</title><subtitle>Embrace your inner geek.</subtitle><author><name>Wang Wei</name></author><entry><title type="html">TimeStamp Ordering Concurrency Control</title><link href="http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering/" rel="alternate" type="text/html" title="TimeStamp Ordering Concurrency Control" /><published>2018-09-15T00:00:00-07:00</published><updated>2018-09-15T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/15/TimeStamp-Ordering/">&lt;h2 id=&quot;heading-timestamp-ordering-concurrency-control&quot;&gt;TimeStamp Ordering Concurrency Control&lt;/h2&gt;
+&lt;h3 id=&quot;heading-concurrency-control-approaches&quot;&gt;Concurrency Control Approaches&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Two-phase Locking(2PL)
+Determine serializability order of conflicting operations at runtime while txns execute &lt;strong&gt;Pessimistic&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;Timestamp Ordering(T/O)
+Determine serializability order of txns before they execute &lt;strong&gt;Optimistic&lt;/strong&gt;
+    &lt;h4 id=&quot;heading-to-concurrency-control&quot;&gt;T/O Concurrency Control&lt;/h4&gt;
+    &lt;p&gt;Use timestamps to determine the serializability order of txns
+if &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i) &amp;lt; TS(T_j)&lt;/code&gt;, then the DBMS must ensure that the execution schedule is equivalent to a serial schedule where &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; appears before &lt;code class=&quot;highlighter-rouge&quot;&gt;T_j&lt;/code&gt;.&lt;/p&gt;
+    &lt;h4 id=&quot;heading-timestamp-allocation&quot;&gt;Timestamp Allocation&lt;/h4&gt;
+    &lt;p&gt;Each txn &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; is assigned a unique fixed timestamp that is &lt;strong&gt;monotonically increasing&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Let &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i)&lt;/code&gt; be the timestamp allocated to txn &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Different schemes assign timestamps at different times during the txn.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Multiple implementation strategies&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;System Clock&lt;/li&gt;
+  &lt;li&gt;Logical Counter&lt;/li&gt;
+  &lt;li&gt;Hybrid&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Agenda&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Basic Timestamp Ordering&lt;/li&gt;
+  &lt;li&gt;Optimistic Concurrency Control&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;heading-basic-to&quot;&gt;Basic T/O&lt;/h4&gt;
+&lt;p&gt;Txns read and write objects without locks
+Every object &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt; is tagged with timestamp of the last txn that successfully did read/write:
+&lt;code class=&quot;highlighter-rouge&quot;&gt;W-TX(X)&lt;/code&gt; - Write timestamp on &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;R-TX(X)&lt;/code&gt; - Read timestamp on &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt;
+We need to check timestamps for every operation:
+if txn tries to access an object &quot;from the future&quot;, it aborts and restart.&lt;/p&gt;
+
+&lt;h5 id=&quot;heading-reads&quot;&gt;Reads&lt;/h5&gt;
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;W-TS(X)&lt;/code&gt; means the last write transaction on object &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt;. 
+If &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i) &amp;lt; W-TS(X)&lt;/code&gt;, this violates timestamp order of &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; with regard to the writer of &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt;(read into the future)&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Abort &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; and restart it with same TS&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Else:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Allow &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; to read &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Update &lt;code class=&quot;highlighter-rouge&quot;&gt;R-TS(X)&lt;/code&gt; to &lt;code class=&quot;highlighter-rouge&quot;&gt;max(R-TS(X), TS(T_i))&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Have to make a local copy of &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt; to ensure repeatable reads for &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&quot;heading-writes&quot;&gt;Writes&lt;/h5&gt;
+&lt;p&gt;If &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i) &amp;lt; R-TS(X)&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i) &amp;lt; W-TS(X)&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Abort and restart &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Else:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Allow &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; to write &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt; and update &lt;code class=&quot;highlighter-rouge&quot;&gt;W-TS(X)&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Also have to make a local copy of &lt;code class=&quot;highlighter-rouge&quot;&gt;X&lt;/code&gt; to ensure repeatable reads for &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;heading-thomas-write-rule&quot;&gt;Thomas Write Rule&lt;/h4&gt;
+&lt;p&gt;If &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i) &amp;lt; R-TS(X)&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Abort and restart &lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt;
+If &lt;code class=&quot;highlighter-rouge&quot;&gt;TS(T_i) &amp;lt; W-TS(X):
+-&amp;gt; **Thomas Write Rule** : Ignore the write and allow the txn to continue
+This violates timestamp order of &lt;/code&gt;T_i&lt;code class=&quot;highlighter-rouge&quot;&gt;
+Else:
+-&amp;gt; Allow &lt;/code&gt;T_i&lt;code class=&quot;highlighter-rouge&quot;&gt; to write &lt;/code&gt;X&lt;code class=&quot;highlighter-rouge&quot;&gt; and update &lt;/code&gt;W-TS(X)`&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Basic Timestamp Ordering will generate a schedule that is conflict serializable if you do &lt;strong&gt;not&lt;/strong&gt; use the Thomas Write Rule&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;No deadlocks because no txn ever waits&lt;/li&gt;
+  &lt;li&gt;possibility of starvation for &lt;strong&gt;long txns&lt;/strong&gt; if short txns keep causing conflicts.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Permits schedules that are not &lt;strong&gt;recoverable&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;heading-recoverable-schedules&quot;&gt;Recoverable Schedules&lt;/h3&gt;
+&lt;p&gt;A schedule is &lt;strong&gt;recoverable&lt;/strong&gt; if txns commit only after all txns whose changes they read, commit. 
+Otherwise, the DBMS cannot guarantee that txns read data that will restored after recovering from a crash. 
+&lt;img src=&quot;/assets/images/1537048174787.png&quot; alt=&quot;Alt text&quot; /&gt;&lt;/p&gt;
+&lt;h3 id=&quot;heading-basic-io-performance-issues&quot;&gt;Basic I/O Performance Issues&lt;/h3&gt;
+&lt;p&gt;High overhead from copying data to txn's workspace and from updating timestamps
+long running txns can get starved.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The likelihood that a txn will read something from a newer txn increases&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Suffers from timestamp bottleneck.&lt;/p&gt;
+
+&lt;p&gt;If you assume that conflicts between txns are &lt;strong&gt;rare&lt;/strong&gt; and that most txns are &lt;strong&gt;short-lived&lt;/strong&gt;, then forcing txns to wait to acquire locks adds a lot of overhead. A better approach is to optimize for no-conflict case.&lt;/p&gt;
+&lt;h3 id=&quot;heading-optimistic-concurrency-control&quot;&gt;Optimistic Concurrency Control&lt;/h3&gt;
+&lt;p&gt;The DBMS creates a private workspace for each txn. 
+-&amp;gt; All modifications are applied to workspace
+-&amp;gt; Any object read is copied into workspace&lt;/p&gt;
+
+&lt;p&gt;When a txn commits, the DBMS compares its workspace write set to see whether it conflicts with other txns
+If there are no conflicts, the write set is installed into the &quot;global&quot; database. 
+OCC Phases:
+(1) read phase:
+track the read/write sets of txns and store their writes in a private workspace
+(2) validation phase:
+when a txn commits, check whether it conflicts with other txns
+(3) write phase:
+If validation succeeds, apply private changes to database. Otherwise abort and restart the txn.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Txns do not have a timestamp until they enter validation phase&lt;/strong&gt;&lt;/p&gt;
+&lt;h5 id=&quot;heading-occ---validation-phase&quot;&gt;OCC - Validation Phase&lt;/h5&gt;
+&lt;p&gt;The DBMS needs to guarantee only serializable schedules are permitted
+&lt;code class=&quot;highlighter-rouge&quot;&gt;T_i&lt;/code&gt; checks other txns for RW and WW conflicts and makes sure that all conflicts go one way(from older txns to younger txns)&lt;/p&gt;
+
+&lt;p&gt;We need to execute &lt;strong&gt;Validation&lt;/strong&gt; and &lt;strong&gt;Write&lt;/strong&gt; phase inside a protected critical section.&lt;/p&gt;
+
+&lt;p&gt;When to use OCC
+When number of conflicts is low.:
+-&amp;gt; All txns are read-only
+-&amp;gt; Txns access disjoint subsets of data&lt;/p&gt;
+
+&lt;p&gt;If the database is large and the workload is not skewed, then there is a low probability of conflict, so again locking is wasteful.&lt;/p&gt;
+
+&lt;p&gt;When a txn commits, all previous T/O schemes check to see whether there is a conflict with concurrent txns.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;This requires latches&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you have a lot of concurrent txns, then this is slow even if the conflict rate is low.&lt;/p&gt;
+&lt;h3 id=&quot;heading-partition-based-to&quot;&gt;Partition-Based T/O&lt;/h3&gt;
+&lt;p&gt;Split the database up in disjoint subsets called &lt;strong&gt;partitions&lt;/strong&gt;(aka shards)
+Only check for conflicts between txns that are running in the same partition. 
+&lt;img src=&quot;/assets/images/1537050396631.png&quot; alt=&quot;Alt text&quot; /&gt;
+Txns are assigned timestamps based on when they arrive at the DBMS
+Partitions are protected by a single lock:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;each txn is queued at the partitions it needs&lt;/li&gt;
+  &lt;li&gt;The txn acquires a partitions's lock if it has the lowest timestamp in that partition's queue&lt;/li&gt;
+  &lt;li&gt;The txn starts when it has all of the locks for all the partitions that it will read/write&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Partition-based T/O protocol is very fast if:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The DBMS knows what partitions the txn needs before it starts&lt;/li&gt;
+  &lt;li&gt;Most(if not all) txns only need to access a single partition&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Multi-partition txns causes partitions to be idle while txn executes.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Database" /><summary type="html">TimeStamp Ordering Concurrency Control Concurrency Control Approaches Two-phase Locking(2PL) Determine serializability order of conflicting operations at runtime while txns execute Pessimistic Timestamp Ordering(T/O) Determine serializability order of txns before they execute Optimistic T/O Concurrency Control Use timestamps to determine the serializability order of txns if TS(T_i) &amp;lt; TS(T_j), then the DBMS must ensure that the execution schedule is equivalent to a serial schedule where T_i appears before T_j. Timestamp Allocation Each txn T_i is assigned a unique fixed timestamp that is monotonically increasing Let TS(T_i) be the timestamp allocated to txn T_i Different schemes assign timestamps at different times during the txn.</summary></entry><entry><title type="html">How to debug a multi-thread program</title><link href="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/" rel="alternate" type="text/html" title="How to debug a multi-thread program" /><published>2018-09-04T00:00:00-07:00</published><updated>2018-09-04T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program</id><content type="html" xml:base="http://localhost:4000/blog/2018/09/04/How-to-debug-a-multithread-program/">&lt;h2 id=&quot;heading-how-to-debug-a-multi-thread-program&quot;&gt;How to debug a multi-thread program.&lt;/h2&gt;
 &lt;p&gt;This passage will discuss the usage of &lt;code class=&quot;highlighter-rouge&quot;&gt;lldb&lt;/code&gt; for multi-threading program debug. You can find my code on my github &lt;a href=&quot;https://github.com/Aperjump/blog_code/tree/master/How-to-degbug-A-multithreaded-program&quot;&gt;code&lt;/a&gt;
 The code implements a simple producer-consumer pattern written in C, and use &lt;code class=&quot;highlighter-rouge&quot;&gt;pthread&lt;/code&gt; to create new threads. Although you can compile it without any problem, there are four bugs in the code and our mission is to find them all using &lt;code class=&quot;highlighter-rouge&quot;&gt;lldb&lt;/code&gt;.&lt;/p&gt;
 &lt;h3 id=&quot;heading-lldb&quot;&gt;lldb&lt;/h3&gt;
@@ -1386,179 +1536,4 @@ For each lexeme, the lexical analyzer produces a &lt;strong&gt;token&lt;/strong&
 &lt;p&gt;The machine-independent code-optimization phase attempts to improve the intermediate code so that better target code will result.&lt;/p&gt;
 
 &lt;h3 id=&quot;heading-part-6-code-generation&quot;&gt;part 6. code generation&lt;/h3&gt;
-&lt;p&gt;The code generator takes intermediate code as input and maps it into the target language. The intermediate instructions are translated into sequence of machine instructions that perform the same task.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">overview for compiler</summary></entry><entry><title type="html">Syntax Directed Translator</title><link href="http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/" rel="alternate" type="text/html" title="Syntax Directed Translator" /><published>2018-04-22T00:00:00-07:00</published><updated>2018-04-22T00:00:00-07:00</updated><id>http://localhost:4000/blog/2018/04/22/Syntax-Directed%20Translator</id><content type="html" xml:base="http://localhost:4000/blog/2018/04/22/Syntax-Directed-Translator/">&lt;h2 id=&quot;heading-syntax-directed-translator&quot;&gt;Syntax-Directed Translator&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;syntax&lt;/strong&gt;: the proper form of its program -&amp;gt; context-free grammar or BNF(Backus-Naur Form)
-&lt;strong&gt;semantic&lt;/strong&gt;: meaning of the program&lt;/p&gt;
-
-&lt;p&gt;goal: syntax-directed translation of infix expressions to postfix form. 
-&lt;img src=&quot;/assets/images/1523682572902.png&quot; alt=&quot;image&quot; /&gt;
-&lt;img src=&quot;/assets/images/1523682697277.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;These are two intermediate representation forms.&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-syntax-definition&quot;&gt;Syntax Definition&lt;/h3&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;stmt -&amp;gt; if (expr) stmt else stmt
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;This is one &lt;strong&gt;production&lt;/strong&gt;. In a production, lexical elements like the keyword &lt;strong&gt;if&lt;/strong&gt; and the parentheses are called &lt;strong&gt;terminals&lt;/strong&gt;. Variables like &lt;strong&gt;expr&lt;/strong&gt; and &lt;strong&gt;stmt&lt;/strong&gt; represent sequences of terminals and are called &lt;strong&gt;nonterminals&lt;/strong&gt;. 
-&lt;strong&gt;context-free grammar elements&lt;/strong&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;ol&gt;
-    &lt;li&gt;A set of terminal symbols(refered as tokens)&lt;/li&gt;
-    &lt;li&gt;A set of nonterminals, sometimes called &lt;strong&gt;syntactic variables&lt;/strong&gt;&lt;/li&gt;
-    &lt;li&gt;A set of productions, where each production consists of a nonterminal, called the head or left side of the production, an arrow, and a sequence of terminals and/or nonterminals , called the body or right side of the production&lt;/li&gt;
-    &lt;li&gt;A designation of one of the nonterminals as the &lt;strong&gt;start&lt;/strong&gt; symbol.&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/blockquote&gt;
-
-&lt;h4 id=&quot;heading-derivations&quot;&gt;Derivations&lt;/h4&gt;
-&lt;p&gt;A grammar derives strings by beginning with the start symbol and repeatedly replacing a &lt;strong&gt;nonterminal&lt;/strong&gt; by the body of a production for that nonterminal.
-example for function call:&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;call -&amp;gt; id(optparams)
-optparams -&amp;gt; params | epsilon
-params -&amp;gt; params, param | param
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;epsilon&lt;/code&gt; represents empty string of symbols.&lt;/p&gt;
-&lt;h3 id=&quot;heading-parse-trees&quot;&gt;Parse Trees&lt;/h3&gt;
-&lt;p&gt;Parsing is the problem of taking a string of terminals and figuring out how to derive it from the start symbol of the grammar.
- &lt;img src=&quot;/assets/images/1523683797606.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;From left to right , the leaves of a parse tree form the &lt;strong&gt;yield&lt;/strong&gt; of the tree, which is the string &lt;strong&gt;derived&lt;/strong&gt; from the nonterminal at the root of the parse tree.&lt;/p&gt;
-&lt;h3 id=&quot;heading-ambiguity&quot;&gt;Ambiguity&lt;/h3&gt;
-&lt;p&gt;A grammar can have more than one parse tree generating a given string of terminals. Such a grammar is said to be &lt;strong&gt;ambiguous&lt;/strong&gt;.&lt;/p&gt;
-&lt;h4 id=&quot;heading-operator-assocaitivity&quot;&gt;Operator Assocaitivity&lt;/h4&gt;
-&lt;p&gt;Like &lt;code class=&quot;highlighter-rouge&quot;&gt;9 + 5 + 2&lt;/code&gt;, this expression can be evaluated as &lt;code class=&quot;highlighter-rouge&quot;&gt;( 9 + 5 ) + 2&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;9 + (5 + 2)&lt;/code&gt;. We
-say that the operator + associates to the left, because an operand with plus signs on both sides of it belongs to the operator to its left.
-&lt;strong&gt;left-associative&lt;/strong&gt;: addition, subtraction, multiplication, division
-&lt;strong&gt;right-associative&lt;/strong&gt;: equal, exponentiation 
-strings like &lt;code class=&quot;highlighter-rouge&quot;&gt;a = b = c&lt;/code&gt; can be generated by rules like&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;right -&amp;gt; letter = right | letter
-letter -&amp;gt; a | b | ... | z
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;h4 id=&quot;heading-operator-precedence&quot;&gt;Operator Precedence&lt;/h4&gt;
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;*&lt;/code&gt; has higher priority than &lt;code class=&quot;highlighter-rouge&quot;&gt;+&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;term -&amp;gt; term * factor
-		 | term / factor
-		 | factor
-expr -&amp;gt; expr + term
-		| expr - term
-		| term
-factor -&amp;gt; digit | (expr)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;factors are expression which cannot be &quot;torn apart“ by any operator. 
-Terms is an expression that can be &quot;torn apart&quot; by operators of the higher precedence, but not by the lower precedence operators. 
-&lt;img src=&quot;/assets/images/1523684714372.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-syntax-directed-translation&quot;&gt;Syntax-Directed Translation&lt;/h3&gt;
-&lt;p&gt;Syntax-directed translation is done by attaching rules or program fragments to productions in a grammar.
-&lt;strong&gt;Attributes&lt;/strong&gt; An attribute is any quantity associated with a programming construct. 
-Examples of attributes are data types of expressions, the number of instructions in the generated code, or the location of the first instruction in the generated code for a construct , among many other possibilities.
-&lt;strong&gt;translation schemes&lt;/strong&gt; A translation scheme is a notation for attaching program fragments to the productions of a grammar. The program fragments are executed when the production is used during syntax analysis.&lt;/p&gt;
-&lt;h4 id=&quot;heading-synthesized-attributes&quot;&gt;Synthesized Attributes&lt;/h4&gt;
-&lt;p&gt;The idea of associating quantities with programming constructs – for example, values and types with expressions –  can be expressed in terms of grammars. 
-A &lt;strong&gt;syntax-directed definition&lt;/strong&gt; associates:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;With each grammar symbol, a set of attributes, and&lt;/li&gt;
-  &lt;li&gt;With each production, a set of &lt;strong&gt;semantic rules&lt;/strong&gt; for computing the values of the attributes associated with the symbols appearing in the production.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/1523687837245.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/images/1523688227467.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;The string representing the translation of the nonterminal at the head of each production is the concatenation of the translations of the nonterminals in the production body, in the same order as in the production, with some optional additional strings interleaved.
-&lt;img src=&quot;/assets/images/1523816009378.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Tree traversals&lt;/strong&gt; will be used for describing attribute evaluation and for specifying the execution of code fragments in a translation scheme.&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;DFS
-procedure visit(N) {
-	for (each child of N, from left to right) {
-		visit(child);
-	}
-	evaluate rule at N;
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;If the action is done when we first visit a node, then we may refer to the traversal as a preorder traversal. Similarly, if the action is done just before we leave a node for the last time, then we say it is a postorder traversal of the tree.
-A &lt;strong&gt;syntax-directed translation&lt;/strong&gt;  scheme is a notation for specifying a translation by attaching program fragments to productions in a grammar.
-&lt;strong&gt;the order of evaluation of the semantic rules is explicitly specified&lt;/strong&gt;
-Program fragments embedded within production bodies are called &lt;strong&gt;semantic actions&lt;/strong&gt;. The position at which an action is to be executed is shown by enclosing it between curly braces and writing it within the production body&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;rest -&amp;gt; + term {print('+') } rest1
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/images/1523817208488.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;heading-parsing&quot;&gt;Parsing&lt;/h3&gt;
-&lt;p&gt;Parsing is the process of determining how a string of terminals can be generated by a grammar. 
-Parsing techniques : &quot;top-down&quot;, &quot;bottom-up&quot;&lt;/p&gt;
-&lt;h4 id=&quot;heading-top-down-parsing&quot;&gt;Top-Down Parsing&lt;/h4&gt;
-&lt;p&gt;&lt;img src=&quot;/assets/images/1523817869025.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;At node N, labeled with nonterminal A, select one of the productions for A and construct children at N for the symbols in the production body.&lt;/li&gt;
-  &lt;li&gt;Find the next node at which a subtree is to be constructed, typically the leftmost unexpanded nonterminal of the tree.
-This method requires trail and error, and backtracking. May not be a good candidate
-    &lt;h4 id=&quot;heading-predictive-parsing&quot;&gt;Predictive Parsing&lt;/h4&gt;
-    &lt;p&gt;&lt;strong&gt;recursive-descent parsing&lt;/strong&gt; is a top-down approach. Here we consider one simple version–predictive parsing:&lt;/p&gt;
-    &lt;blockquote&gt;
-      &lt;p&gt;The sequence of procedure calls during the analysis of an input string implicitly defines a parse tree for the input&lt;/p&gt;
-    &lt;/blockquote&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;void stmt () {
-	switch ( lookahead ) {
-	case expr:
-		match (expr) ; match (' ; ') ; break;
-	case if:
-		match (if) ; match (' C'); match (expr) ; match (' ) ') ; stmt O ;
-		break;
-	case for:
-		match (for) ; match (' C');
-		optexpr O ; match (' ; ') ; optexprO ; match (' ; ') ; optexprO ;
-		match (' ) ') ; stmt O ; break;
-	case other;
-		match (other) ; break;
-	default:
-		report ( &quot; syntax error &quot; );
-}
-void optexpr() {
-	if ( lookahead = = expr ) match (expr) ;
-}
-void match (terminal t) {
-	if ( lookahead = = t ) lookahead = nextTerminal;
-	else report ( &quot; syntax error &quot; );
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;Predictive parsing relies on information about the first symbols that can be generated by a production body. Our predictive parser uses an E-production as a default when no other production
-can be used.&lt;/p&gt;
-
-&lt;p&gt;let $\alpha$ be a string of grammar symbols (terminals and/or nonterminals). We define First($\alpha$) to be the set of terminals that appear as the first symbols of one or more strings of terminal generated from $\alpha$.&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;FIRST ( stmt) = { expr, if, for, other}
-FIRST( expr ; ) = {expr}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;A predictive parser is a program consisting of a procedure for every nonterminal. The procedure fot nonterminal A does two things:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;It decides which A-production to use by examining the lookahead symbol. The production with body $\alpha$is used if the lookahead symbol is in FIRST ($\alpha$) .&lt;/li&gt;
-  &lt;li&gt;The procedure then mimics the body of the chosen production.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;heading-left-recursion&quot;&gt;Left-recursion&lt;/h4&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;expr -&amp;gt; expr + term
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;p&gt;It's possible for a recursive-descent parser to loop forever if the leftmost symbol is the same as head. Since the lookahead symbol changes only when a terminal in the body is matched, no change to the input took place between recursive calls of &lt;code class=&quot;highlighter-rouge&quot;&gt;expr&lt;/code&gt;.&lt;/p&gt;
-&lt;blockquote&gt;
-  &lt;p&gt;A -&amp;gt; A$\alpha$ | $\beta$
-can be replaced by 
-A -&amp;gt; $\beta$R
-R -&amp;gt; $\alpha$R | $\epsilon$&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;The first one is left-recursive, the second is right-recursive. But right recursive makes it hard to translate left-associate operators. 
-&lt;img src=&quot;/assets/images/1523820504263.png&quot; alt=&quot;image&quot; /&gt;&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">Syntax-Directed Translator syntax: the proper form of its program -&amp;gt; context-free grammar or BNF(Backus-Naur Form) semantic: meaning of the program</summary></entry></feed>
+&lt;p&gt;The code generator takes intermediate code as input and maps it into the target language. The intermediate instructions are translated into sequence of machine instructions that perform the same task.&lt;/p&gt;</content><author><name>Wang Wei</name></author><category term="Compiler" /><summary type="html">overview for compiler</summary></entry></feed>

@@ -4,7 +4,8 @@ title: "TimeStamp Ordering Concurrency Control"
 description: "T/O Concurrency Control"
 categories: [Database]
 tags: [Database]
- - /2018/09/15/
+redirect from:
+  - /2018/09/15/
 ---
 ## TimeStamp Ordering Concurrency Control
 ### Concurrency Control Approaches
