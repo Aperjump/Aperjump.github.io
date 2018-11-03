@@ -1,3 +1,14 @@
+---
+layout: post
+title: "C++ concurrency Notes2"
+description: "C++ concurrency Notes2"
+categories: [concurrency]
+tags: [concurrency]
+redirect from:
+  - /2018/11/03/
+---
+## C++ concurrency Notes1
+
 ## C++ Concurrency: Synchronizing Operations
 `std::this_thread::sleep_for(std::chrono::milliseconds(100));`
 The most basic mechanism for waiting for an event to be triggered by another thread is the **condition variable**. When a thread has determined that the condition is satisfied, it can then notify one or more of the thread waiting on the condition variable in order to wake them up and allow them to continue processing. 
