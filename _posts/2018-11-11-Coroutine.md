@@ -7,6 +7,7 @@ tags: [concurrency]
 redirect from:
   - /2018/11/11/
 ---
+
 ## Coroutine
 coroutine is control structure- similar to python yield
 When the "yield" occurs, the current state of the function is saved and control is returned to the calling function. The calling function can then transfer execution back to the yielding function and its state will be restored to the point where the "yield" was encountered and execution will continue. 
